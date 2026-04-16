@@ -8,20 +8,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
-        body { font-family: "Noto Sans TC", sans-serif; background: #0a192f; margin: 0; padding: 0; overflow-x: hidden; }
-        [v-cloak] { display: none; } /* 防止 Vue 未載入前顯示原始碼 */
-        .app { max-width: 500px; margin: auto; background: #f8fafc; min-height: 100vh; padding-bottom: 90px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        body { font-family: "Noto Sans TC", sans-serif; background: #0a192f; margin: 0; padding: 0; }
+        [v-cloak] { display: none; }
+        .app { max-width: 500px; margin: auto; background: #f8fafc; min-height: 100vh; padding-bottom: 90px; position: relative; }
         .banner { background: #0a192f; color: white; text-align: center; padding: 40px 20px 50px 20px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; }
-        .content { margin-top: -30px; background: #f8fafc; border-radius: 30px; padding: 15px; min-height: 60vh; }
-        .date-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 5px 0 15px 0; scrollbar-width: none; -ms-overflow-style: none; }
-        .date-scroll::-webkit-scrollbar { display: none; }
+        .content { margin-top: -30px; background: #f8fafc; border-radius: 30px; padding: 15px; }
         .date-btn { min-width: 65px; background: white; padding: 12px 5px; border-radius: 18px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .date-btn.active { background: #1d4ed8 !important; color: white !important; }
         .card { background: white; padding: 16px; border-radius: 20px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-left: 5px solid #1d4ed8; }
         .tabbar { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 100; }
-        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #94a3b8; cursor: pointer; border: none; background: none; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #94a3b8; border: none; background: none; }
         .active-tab { color: #1d4ed8 !important; font-weight: bold; }
-        .weather-badge { background: #eff6ff; color: #1d4ed8; border-radius: 50px; padding: 6px 16px; display: inline-flex; align-items: center; gap: 8px; font-weight: bold; margin-bottom: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -32,19 +29,10 @@
 
     <div class="content">
         <div v-show="tab === 'plan'">
-            <div class="date-scroll">
+            <div class="flex overflow-x-auto gap-3 pb-4 mb-2 no-scrollbar">
                 <div v-for="d in dates" :key="d.date" @click="currentDate=d.date" :class="['date-btn', currentDate===d.date?'active':'']">
                     <div class="text-xs opacity-70">{{d.week}}</div>
                     <div class="text-lg font-bold">{{d.day}}</div>
-                </div>
-            </div>
-
-            <div class="text-center">
-                <div class="weather-badge">
-                    <span>{{ weather.icon }}</span>
-                    <span>{{ weather.temp }}°C</span>
-                    <span class="opacity-30">|</span>
-                    <span class="text-xs">體感 {{ weather.feel }}°C</span>
                 </div>
             </div>
 
@@ -54,130 +42,67 @@
                     <span class="text-gray-300">❯</span>
                 </div>
                 <div class="font-bold text-gray-800">{{item.name}}</div>
-                <div class="text-xs text-gray-400 mt-1">{{item.note}}</div>
+                <div class="text-xs text-gray-500 mt-1 leading-relaxed" v-html="item.note"></div>
             </div>
         </div>
 
         <div v-show="tab === 'info'">
-            <h2 class="font-bold mb-4 text-blue-900 px-2">ℹ️ 旅遊資訊</h2>
-            <div class="card">✈️ 航班：HB703 (08/28 13:30 抵達)</div>
-            <div class="card">🏨 香港：旭逸酒店 荃灣</div>
-            <div class="card">🏨 澳門：利澳酒店</div>
+            <h2 class="font-bold mb-4 px-2">ℹ️ 交通與住宿資訊</h2>
+            <div class="card">🏨 香港：旭逸酒店 荃灣 (Hotel Ease Tsuen Wan)</div>
+            <div class="card">🏨 澳門：利澳酒店 (Rio Hotel Macau)</div>
             <div class="card bg-blue-50">
-                <div class="font-bold mb-2 text-sm text-blue-800">💱 匯率換算 (HKD to TWD)</div>
-                <input v-model.number="hkd" type="number" class="border rounded-lg p-3 w-full mb-2 outline-none" placeholder="輸入港幣金額">
+                <div class="font-bold mb-2 text-sm text-blue-800">💱 匯率換算</div>
+                <input v-model.number="hkd" type="number" class="border rounded-lg p-3 w-full mb-2 outline-none">
                 <div class="text-blue-600 font-bold text-lg">約 NT$ {{ Math.round(hkd * 4.1) }}</div>
-            </div>
-        </div>
-
-        <div v-show="tab === 'shop'">
-            <h2 class="font-bold mb-4 px-2">🛒 必買清單</h2>
-            <div class="card" v-for="s in shop" :key="s">
-                <label class="flex items-center gap-3 w-full cursor-pointer">
-                    <input type="checkbox" class="w-5 h-5"> <span>{{s}}</span>
-                </label>
-            </div>
-        </div>
-
-        <div v-show="tab === 'money'">
-            <div class="bg-blue-600 text-white p-6 rounded-2xl mb-6 shadow-lg shadow-blue-200">
-                <div class="text-sm opacity-80">總花費估算</div>
-                <div class="text-3xl font-bold">HK$ {{total}}</div>
-            </div>
-            <div class="card" v-for="m in money" :key="m.name">
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-600">{{m.name}}</span>
-                    <span class="font-bold text-gray-800">HK$ {{m.price}}</span>
-                </div>
             </div>
         </div>
     </div>
 
     <nav class="tabbar">
-        <button class="tab-item" :class="{'active-tab': tab==='plan'}" @click="tab='plan'">
-            <span class="text-xl">📍</span><span>行程</span>
-        </button>
-        <button class="tab-item" :class="{'active-tab': tab==='info'}" @click="tab='info'">
-            <span class="text-xl">ℹ️</span><span>資訊</span>
-        </button>
-        <button class="tab-item" :class="{'active-tab': tab==='shop'}" @click="tab='shop'">
-            <span class="text-xl">🛒</span><span>購物</span>
-        </button>
-        <button class="tab-item" :class="{'active-tab': tab==='money'}" @click="tab='money'">
-            <span class="text-xl">💰</span><span>花費</span>
-        </button>
+        <button class="tab-item" :class="{'active-tab': tab==='plan'}" @click="tab='plan'"><span class="text-xl">📍</span><span>行程</span></button>
+        <button class="tab-item" :class="{'active-tab': tab==='info'}" @click="tab='info'"><span class="text-xl">ℹ️</span><span>資訊</span></button>
     </nav>
 </div>
 
 <script>
-const { createApp, ref, computed, onMounted } = Vue
-
+const { createApp, ref, computed } = Vue
 createApp({
     setup() {
         const tab = ref("plan")
         const currentDate = ref("day1")
         const hkd = ref(100)
-        const weather = ref({ temp: "--", feel: "--", icon: "☀️" })
-
         const dates = [
             { week: "Fri", day: "28", date: "day1" },
             { week: "Sat", day: "29", date: "day2" },
             { week: "Sun", day: "30", date: "day3" }
         ]
-
         const itinerary = {
             day1: [
-                { time: "13:30", type: "航班", name: "香港機場 (HKG)", note: "抵達後搭 S1 巴士前往東薈城" },
-                { time: "15:00", type: "購物", name: "東薈城 Citygate Outlets", note: "重點看 COACH" },
-                { time: "18:00", type: "住宿", name: "旭逸酒店 荃灣", note: "搭乘 E32 往葵興站" },
-                { time: "19:30", type: "美食", name: "竺扶大班燒味", note: "推：金牌厚切叉燒" },
-                { time: "22:00", type: "美食", name: "佳佳甜品", note: "推：芝麻糊、薑汁湯丸" }
+                { time: "13:30", type: "抵達", name: "香港國際機場", note: "辦理入境後，搭乘 <b>S1 巴士</b> 前往東薈城。" },
+                { time: "15:00", type: "購物", name: "東薈城 Citygate Outlets", note: "行李可寄存。重點：COACH、Nike、Adidas 折扣店。" },
+                { time: "17:30", type: "交通", name: "前往酒店", note: "搭乘 <b>E32 巴士</b> 往葵興站方向，前往旭逸酒店。" },
+                { time: "19:00", type: "住宿", name: "旭逸酒店 荃灣", note: "辦理 Check-in 並稍作休息。" },
+                { time: "20:00", type: "美食", name: "竺扶大班燒味", note: "推：金牌厚切叉燒、燒肉。步行即可到達。" },
+                { time: "21:30", type: "宵夜", name: "佳佳甜品", note: "若體力尚可，搭 MTR 至佐敦站。推：芝麻糊、芋茸蓮子西米露。" }
             ],
             day2: [
-                { time: "10:30", type: "美食", name: "一點心 One Dim Sum", note: "必點：薄皮鮮蝦餃" },
-                { time: "14:30", type: "交通", name: "港澳快線太子站", note: "搭車前往澳門" },
-                { time: "18:00", type: "景點", name: "大三巴牌坊", note: "回力站下車後前往飯店" }
+                { time: "09:30", type: "早餐", name: "蘭芳園", note: "搭 MTR 至中環。推：絲襪奶茶、豬扒包。" },
+                { time: "11:00", type: "美食", name: "一點心", note: "搭 MTR 至太子站。推：薄皮鮮蝦餃、炸鮮奶。" },
+                { time: "13:30", type: "交通", name: "港澳快線太子站", note: "提前 30 分鐘抵達車站，搭車前往澳門。" },
+                { time: "16:00", type: "住宿", name: "利澳酒店", note: "抵達澳門後搭乘接駁車或計程車 Check-in。" },
+                { time: "18:00", type: "景點", name: "大三巴牌坊", note: "議事亭前地、玫瑰堂、大三巴拍美照。" },
+                { time: "20:00", type: "景點", name: "永利皇宮纜車", note: "免費搭乘水舞秀纜車，欣賞路氹金光大道夜景。" }
             ],
             day3: [
-                { time: "10:30", type: "美食", name: "世紀咖啡", note: "瓦煲奶茶、厚蛋吐司" },
-                { time: "15:00", type: "景點", name: "威尼斯人 / 官也街", note: "伴手禮最後衝刺" },
-                { time: "19:30", type: "航班", name: "澳門機場 (MFM)", note: "準備回國" }
+                { time: "09:30", type: "早餐", name: "世紀咖啡", note: "推：瓦煲奶茶、厚蛋吐司、豬扒包。" },
+                { time: "11:00", type: "購物", name: "官也街", note: "買伴手禮：安德魯蛋塔、晃記餅家、晃記杏仁餅。" },
+                { time: "14:00", type: "景點", name: "威尼斯人 / 倫敦人", note: "室內大運河拍照，逛百貨商城。" },
+                { time: "17:30", type: "交通", name: "前往澳門機場", note: "準備回國，建議提前 2 小時抵達。" },
+                { time: "19:30", type: "航班", name: "回程航班", note: "帶著滿滿的回憶回台灣！" }
             ]
         }
-
-        const shop = ref(["COACH 包包", "珍妮曲奇", "兆成行精油", "最香餅家杏仁餅", "安德魯蛋塔"])
-        const money = ref([
-            { name: "港澳快線車資", price: 180 },
-            { name: "預計三日餐飲", price: 1500 },
-            { name: "交通雜項", price: 300 }
-        ])
-
-        const total = computed(() => money.value.reduce((a, b) => a + b.price, 0))
-
-        const go = (q) => {
-            window.open("https://www.google.com/maps/search/" + encodeURIComponent(q));
-        }
-
-        const fetchWeather = async () => {
-            try {
-                const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=22.31&longitude=114.16&current=temperature_2m,apparent_temperature,weathercode");
-                const data = await res.json();
-                const code = data.current.weathercode;
-                let icon = "☀️";
-                if (code >= 1 && code <= 3) icon = "⛅";
-                else if (code >= 45) icon = "☁️";
-                else if (code >= 61) icon = "🌧️";
-                weather.value = {
-                    temp: Math.round(data.current.temperature_2m),
-                    feel: Math.round(data.current.apparent_temperature),
-                    icon: icon
-                };
-            } catch (e) { console.error("Weather data failed"); }
-        }
-
-        onMounted(() => { fetchWeather(); })
-
-        return { tab, dates, currentDate, itinerary, shop, money, total, hkd, go, weather }
+        const go = (q) => window.open("https://www.google.com/maps/search/" + encodeURIComponent(q));
+        return { tab, dates, currentDate, itinerary, hkd, go }
     }
 }).mount('#app')
 </script>
