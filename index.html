@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2026港澳吃喝團</title>
-
+<link rel="manifest" href="manifest.json">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3"></script>
 
@@ -213,3 +213,8 @@ return {tab,dates,currentDate,itinerary,shop,money,total,hkd,go}
 
 </body>
 </html>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
