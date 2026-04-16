@@ -1,0 +1,15 @@
+{
+  "name": "2026港澳吃喝團之小馬哥首航",
+  "short_name": "港澳吃喝團",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a192f",
+  "theme_color": "#0a192f",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
