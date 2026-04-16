@@ -7,7 +7,6 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 body {
@@ -35,6 +34,30 @@ body {
   border-radius: 30px;
   padding: 15px;
 }
+.date-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.date-btn {
+  min-width: 70px;
+  background: white;
+  padding: 10px;
+  border-radius: 15px;
+  text-align: center;
+}
+.active {
+  background: #1d4ed8;
+  color: white;
+}
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -45,103 +68,87 @@ body {
   justify-content: space-around;
   padding: 10px;
 }
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
 </style>
 </head>
 
 <body>
 <div id="app" class="app">
 
-  <!-- Banner -->
-  <div class="banner">
-    <h1 class="text-xl font-bold">
-      2026港澳吃喝團<br>之小馬哥首航
-    </h1>
+<div class="banner">
+  <h1 class="text-xl font-bold">
+    2026港澳吃喝團<br>之小馬哥首航
+  </h1>
+</div>
+
+<div class="content">
+
+<!-- Tabs -->
+<div class="flex justify-around mb-3">
+  <button @click="tab='plan'">📍行程</button>
+  <button @click="tab='info'">ℹ️資訊</button>
+  <button @click="tab='shop'">🛒購物</button>
+  <button @click="tab='money'">💰花費</button>
+</div>
+
+<!-- 行程 -->
+<div v-if="tab==='plan'">
+
+  <!-- 日期 -->
+  <div class="date-scroll">
+    <div v-for="d in dates" :key="d.date"
+      @click="currentDate=d.date"
+      :class="['date-btn', currentDate===d.date?'active':'']">
+      <div class="text-sm">{{d.week}}</div>
+      <div class="text-lg font-bold">{{d.day}}</div>
+    </div>
   </div>
 
-  <!-- Content -->
-  <div class="content">
-
-    <!-- Tabs -->
-    <div class="flex justify-around mb-3">
-      <button @click="tab='plan'">📍行程</button>
-      <button @click="tab='info'">ℹ️資訊</button>
-      <button @click="tab='shop'">🛒購物</button>
-      <button @click="tab='money'">💰花費</button>
-    </div>
-
-    <!-- 行程 -->
-    <div v-if="tab==='plan'">
-
-      <!-- 天氣 -->
-      <div class="card text-center">
-        ☀️ 30°C / 體感 33°C
-      </div>
-
-      <div v-for="item in itinerary" class="card" @click="go(item.name)">
-        <div class="text-sm text-blue-500">{{item.type}}</div>
-        <div class="font-bold">{{item.name}}</div>
-        <div class="text-xs text-gray-500">{{item.note}}</div>
-      </div>
-
-      <button @click="addPlan" class="fixed bottom-20 right-5 bg-blue-600 text-white rounded-full w-12 h-12 text-xl">+</button>
-    </div>
-
-    <!-- 資訊 -->
-    <div v-if="tab==='info'">
-      <div class="card">
-        ✈️ 航班：HB703 → 香港
-      </div>
-      <div class="card">
-        🏨 香港住宿：旭逸酒店 荃灣
-      </div>
-      <div class="card">
-        🏨 澳門住宿：利澳酒店
-      </div>
-
-      <div class="card">
-        💱 匯率換算
-        <input v-model="hkd" placeholder="輸入港幣" class="border p-1 w-full mt-2">
-        👉 約 NTD {{hkd*4}}
-      </div>
-    </div>
-
-    <!-- 購物 -->
-    <div v-if="tab==='shop'">
-      <div v-for="s in shopList" class="card">
-        {{s}}
-      </div>
-      <button @click="addShop" class="fixed bottom-20 right-5 bg-blue-600 text-white rounded-full w-12 h-12">+</button>
-    </div>
-
-    <!-- 花費 -->
-    <div v-if="tab==='money'">
-      <div class="card">
-        總花費：{{total}}
-      </div>
-
-      <div v-for="m in money" class="card">
-        {{m.name}} - {{m.price}}
-      </div>
-
-      <button @click="addMoney" class="fixed bottom-20 right-5 bg-blue-600 text-white rounded-full w-12 h-12">+</button>
-    </div>
-
+  <!-- 天氣 -->
+  <div class="card text-center">
+    ☀️ 30°C / 體感 33°C
   </div>
 
-  <!-- 底部 -->
-  <div class="tabbar">
-    <i data-lucide="map"></i>
-    <i data-lucide="info"></i>
-    <i data-lucide="shopping-basket"></i>
-    <i data-lucide="wallet"></i>
+  <!-- 行程 -->
+  <div v-for="item in itinerary[currentDate]" class="card"
+       @click="go(item.name)">
+    <div class="text-xs text-blue-500">{{item.time}}｜{{item.type}}</div>
+    <div class="font-bold text-lg">{{item.name}}</div>
+    <div class="text-sm text-gray-500">{{item.note}}</div>
   </div>
+
+</div>
+
+<!-- 資訊 -->
+<div v-if="tab==='info'">
+  <div class="card">✈️ 航班：HB703（08/28 13:30 抵達香港）</div>
+  <div class="card">🏨 香港：旭逸酒店 荃灣</div>
+  <div class="card">🏨 澳門：利澳酒店</div>
+  <div class="card">
+    💱 匯率
+    <input v-model="hkd" class="border p-1 w-full mt-2">
+    👉 約 NT$ {{hkd*4}}
+  </div>
+</div>
+
+<!-- 購物 -->
+<div v-if="tab==='shop'">
+  <div class="card" v-for="s in shop">{{s}}</div>
+</div>
+
+<!-- 花費 -->
+<div v-if="tab==='money'">
+  <div class="card">總花費：{{total}}</div>
+  <div class="card" v-for="m in money">{{m.name}} - {{m.price}}</div>
+</div>
+
+</div>
+
+<div class="tabbar">
+  <div>📍</div>
+  <div>ℹ️</div>
+  <div>🛒</div>
+  <div>💰</div>
+</div>
 
 </div>
 
@@ -153,52 +160,55 @@ setup(){
 
 const tab = ref("plan")
 
-const itinerary = ref([
-  {type:"航班", name:"香港機場", note:"13:30 抵達"},
-  {type:"購物", name:"東薈城", note:"COACH outlet"},
-  {type:"住宿", name:"旭逸酒店", note:"荃灣"},
-])
+const currentDate = ref("day1")
 
-const shopList = ref(["COACH包","曲奇餅"])
+const dates = [
+  {week:"Fri", day:"28", date:"day1"},
+  {week:"Sat", day:"29", date:"day2"},
+  {week:"Sun", day:"30", date:"day3"},
+]
 
-const money = ref([
-  {name:"交通", price:100},
-  {name:"餐飲", price:200}
-])
+const itinerary = {
 
-const total = computed(()=>{
-  return money.value.reduce((a,b)=>a+b.price,0)
-})
+day1: [
+{time:"13:30", type:"航班", name:"香港機場", note:"抵達 HKG"},
+{time:"15:00", type:"購物", name:"東薈城", note:"COACH outlet"},
+{time:"18:00", type:"住宿", name:"旭逸酒店", note:"放行李"},
+{time:"19:30", type:"美食", name:"竺扶大班燒味", note:"叉燒燒肉"},
+{time:"20:30", type:"景點", name:"山頂纜車", note:"維港夜景"},
+{time:"22:00", type:"美食", name:"佳佳甜品", note:"芝麻糊"}
+],
 
+day2: [
+{time:"10:30", type:"美食", name:"一點心", note:"蝦餃必吃"},
+{time:"12:00", type:"購物", name:"上環商圈", note:"珍妮曲奇"},
+{time:"14:30", type:"交通", name:"港澳快線", note:"前往澳門"},
+{time:"18:00", type:"景點", name:"大三巴牌坊", note:"拍照"},
+{time:"20:00", type:"景點", name:"永利皇宮纜車", note:"免費夜景"}
+],
+
+day3: [
+{time:"10:30", type:"美食", name:"世紀咖啡", note:"厚蛋吐司"},
+{time:"12:00", type:"購物", name:"官也街", note:"伴手禮"},
+{time:"15:00", type:"景點", name:"威尼斯人", note:"拍照"},
+{time:"19:30", type:"航班", name:"澳門機場", note:"回台灣"}
+]
+
+}
+
+const shop = ref(["COACH","曲奇餅"])
+const money = ref([{name:"餐飲",price:200}])
+
+const total = computed(()=>money.value.reduce((a,b)=>a+b.price,0))
 const hkd = ref(0)
 
 const go = (q)=>{
   window.open("https://www.google.com/maps/search/"+q)
 }
 
-const addPlan = ()=>{
-  const name = prompt("新增行程")
-  if(name) itinerary.value.push({type:"其他",name, note:""})
-}
-
-const addShop = ()=>{
-  const name = prompt("買什麼")
-  if(name) shopList.value.push(name)
-}
-
-const addMoney = ()=>{
-  const name = prompt("項目")
-  const price = prompt("金額")
-  if(name && price){
-    money.value.push({name, price: Number(price)})
-  }
-}
-
-return {tab,itinerary,shopList,money,total,hkd,go,addPlan,addShop,addMoney}
+return {tab,dates,currentDate,itinerary,shop,money,total,hkd,go}
 }
 }).mount("#app")
-
-lucide.createIcons()
 </script>
 
 </body>
