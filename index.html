@@ -93,5 +93,97 @@
         </div>
     </div>
 
-    
+    <div class="tabbar">
+        <div class="tab-item" :class="{'active-tab': tab==='plan'}" @click="tab='plan'">
+            <span class="text-xl">📍</span><span>行程</span>
+        </div>
+        <div class="tab-item" :class="{'active-tab': tab==='info'}" @click="tab='info'">
+            <span class="text-xl">ℹ️</span><span>資訊</span>
+        </div>
+        <div class="tab-item" :class="{'active-tab': tab==='shop'}" @click="tab='shop'">
+            <span class="text-xl">🛒</span><span>購物</span>
+        </div>
+        <div class="tab-item" :class="{'active-tab': tab==='money'}" @click="tab='money'">
+            <span class="text-xl">💰</span><span>花費</span>
+        </div>
+    </div>
+</div>
 
+<script>
+const { createApp, ref, computed, onMounted } = Vue
+
+createApp({
+    setup() {
+        const tab = ref("plan")
+        const currentDate = ref("day1")
+        const hkd = ref(100)
+        const weather = ref({ temp: "--", feel: "--", icon: "☀️" })
+
+        const dates = [
+            { week: "Fri", day: "28", date: "day1" },
+            { week: "Sat", day: "29", date: "day2" },
+            { week: "Sun", day: "30", date: "day3" }
+        ]
+
+        const itinerary = {
+            day1: [
+                { time: "13:30", type: "航班", name: "香港機場", note: "抵達 HKG" },
+                { time: "15:00", type: "購物", name: "東薈城", note: "COACH outlet" },
+                { time: "18:00", type: "住宿", name: "旭逸酒店 荃灣", note: "葵興站轉接駁車" },
+                { time: "19:30", type: "美食", name: "竺扶大班燒味", note: "金牌叉燒必吃" },
+                { time: "22:00", type: "美食", name: "佳佳甜品", note: "推薦：芝麻糊" }
+            ],
+            day2: [
+                { time: "10:30", type: "美食", name: "一點心", note: "平價米其林一星" },
+                { time: "14:30", type: "交通", name: "港澳快線太子站", note: "前往澳門" },
+                { time: "18:00", type: "景點", name: "大三巴牌坊", note: "澳門地標" }
+            ],
+            day3: [
+                { time: "10:30", type: "美食", name: "世紀咖啡", note: "瓦煲奶茶與厚蛋吐司" },
+                { time: "19:30", type: "航班", name: "澳門機場", note: "準備回國" }
+            ]
+        }
+
+        const shop = ref(["COACH 包包", "珍妮曲奇", "兆成行精油", "最香餅家杏仁餅"])
+        const money = ref([
+            { name: "機場快線/巴士", price: 100 },
+            { name: "預計餐飲", price: 1500 },
+            { name: "住宿費用", price: 2000 }
+        ])
+
+        const total = computed(() => money.value.reduce((a, b) => a + b.price, 0))
+
+        const go = (q) => {
+            window.open("https://www.google.com/maps/search/" + encodeURIComponent(q));
+        }
+
+        const fetchWeather = async () => {
+            try {
+                // 預設抓香港座標
+                const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=22.31&longitude=114.16&current=temperature_2m,apparent_temperature,weathercode");
+                const data = await res.json();
+                const code = data.current.weathercode;
+                let icon = "☀️";
+                if (code >= 1 && code <= 3) icon = "⛅";
+                if (code >= 45) icon = "☁️";
+                if (code >= 61) icon = "🌧️";
+                weather.value = {
+                    temp: Math.round(data.current.temperature_2m),
+                    feel: Math.round(data.current.apparent_temperature),
+                    icon: icon
+                };
+            } catch (e) {
+                console.error("天氣抓取失敗");
+            }
+        }
+
+        onMounted(() => {
+            fetchWeather();
+        })
+
+        return { tab, dates, currentDate, itinerary, shop, money, total, hkd, go, weather }
+    }
+}).mount("#app")
+</script>
+</body>
+</html>
