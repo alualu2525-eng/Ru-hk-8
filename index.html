@@ -3,77 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 港澳吃喝團之小馬哥首航</title>
+    <title>2026 港澳吃喝團</title>
     <style>
-        :root { --main-blue: #0a1128; --accent: #0284c7; --bg: #f8fafc; }
-        body { font-family: "Noto Sans TC", sans-serif; background-color: var(--main-blue); margin: 0; padding: 0; color: #334155; }
-        .app-container { max-width: 500px; margin: auto; background: var(--bg); min-height: 100vh; position: relative; padding-bottom: 80px; }
+        :root { --main: #0a1128; --blue: #0284c7; --bg: #f1f5f9; }
+        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background-color: var(--main); margin: 0; padding: 0; }
+        .app { max-width: 500px; margin: auto; background: var(--bg); min-height: 100vh; padding-bottom: 80px; }
         
-        /* 頁首圓弧設計 */
-        .hero { background: linear-gradient(180deg, #0a1128 0%, #1c2b4b 100%); color: white; padding: 40px 20px 80px; border-radius: 0 0 40px 40px; text-align: center; }
-        .hero h1 { margin: 0; font-size: 22px; font-weight: 900; }
-        .hero p { margin: 5px 0 0; font-size: 10px; opacity: 0.6; letter-spacing: 2px; }
+        /* 頁首美感：深藍色背景 + 圓弧 */
+        .header { 
+            background: linear-gradient(180deg, #0a1128 0%, #1c2b4b 100%); 
+            color: white; padding: 40px 20px 80px; 
+            border-radius: 0 0 45px 45px; text-align: center; 
+        }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 900; }
+        .header p { margin: 5px 0 0; font-size: 10px; opacity: 0.7; letter-spacing: 2px; }
 
-        .main-content { margin-top: -60px; padding: 0 15px; }
+        .content { margin-top: -60px; padding: 0 16px; }
 
-        /* 日期選單：星期大、日期小 */
-        .date-slider { display: flex; overflow-x: auto; gap: 12px; padding: 10px 0; scrollbar-width: none; }
-        .date-btn { min-width: 75px; height: 90px; background: white; border-radius: 20px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
-        .date-btn.active { background: var(--accent); color: white; }
-        .date-btn .week { font-size: 18px; font-weight: 900; }
-        .date-btn .date { font-size: 12px; }
+        /* 日期選擇器：星期大數字小 */
+        .date-tabs { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .date-btn { 
+            min-width: 70px; height: 90px; background: white; border-radius: 18px; 
+            border: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
+        }
+        .date-btn.active { background: var(--blue); color: white; transform: scale(1.05); }
+        .date-btn .wk { font-size: 18px; font-weight: 900; }
+        .date-btn .dt { font-size: 12px; margin-top: 2px; }
 
-        /* 行程卡片 */
-        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; border-left: 6px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: none; }
-        .card.show { display: block; }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .tag { font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 6px; background: #e0f2fe; color: #0369a1; }
-        .cost { font-size: 12px; font-weight: 800; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 8px; }
-        .card-title { font-size: 18px; font-weight: 900; margin: 5px 0; color: #1e293b; }
+        /* 行程卡片：日系風 */
+        .card { 
+            background: white; border-radius: 20px; padding: 18px; margin-bottom: 18px; 
+            border-left: 6px solid var(--blue); box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            display: none; /* 預設隱藏，由 JS 切換 */
+        }
+        .card.active { display: block; }
+
+        .tag-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .tag { font-size: 10px; font-weight: bold; padding: 3px 8px; background: #e0f2fe; color: #0369a1; border-radius: 6px; }
+        .price { font-size: 11px; font-weight: 800; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 8px; }
+        
+        .title { font-size: 17px; font-weight: 900; color: #1e293b; margin-bottom: 8px; }
 
         /* 導航細節框 */
-        .nav-box { background: #f0f9ff; border: 1px dashed #bae6fd; border-radius: 12px; padding: 12px; font-size: 12px; color: #0369a1; line-height: 1.6; margin-top: 10px; }
-        .nav-box b { color: #0284c7; }
-        
-        .info-row { font-size: 11px; color: #64748b; margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
-        .btn-map { background: none; border: none; color: var(--accent); font-size: 12px; font-weight: bold; text-decoration: underline; padding: 0; cursor: pointer; margin-top: 10px; }
+        .guide-box { 
+            background: #f0f9ff; border: 1px dashed #bae6fd; border-radius: 12px; 
+            padding: 12px; font-size: 12px; color: #0369a1; line-height: 1.6; margin: 10px 0; 
+        }
+        .guide-box b { color: #0284c7; }
 
-        /* 底部標籤 */
-        .footer-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; display: flex; border-top: 1px solid #e2e8f0; padding: 15px 0; }
-        .footer-nav div { flex: 1; text-align: center; font-size: 12px; font-weight: bold; color: #94a3b8; }
-        .footer-nav div.active { color: var(--accent); }
+        .meta { font-size: 11px; color: #64748b; line-height: 1.5; }
+        .map-link { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--blue); font-weight: bold; text-decoration: underline; }
+
+        /* 底部導航 */
+        .footer { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; border-top: 1px solid #eee; display: flex; padding: 15px 0; }
+        .footer div { flex: 1; text-align: center; font-size: 12px; color: #94a3b8; font-weight: bold; }
+        .footer div.on { color: var(--blue); }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="hero">
-        <h1>2026 港澳吃喝團</h1>
-        <p>小馬哥首航．超詳細導航版</p>
+<div class="app">
+    <div class="header">
+        <h1>2026 港澳吃喝團之小馬哥首航</h1>
+        <p>ITINERARY & NAVIGATION GUIDE</p>
     </div>
 
-    <div class="main-content">
-        <div class="date-slider">
-            <button class="date-btn active" onclick="showDay(1, this)">
-                <span class="week">五</span><span class="date">08/28</span>
-            </button>
-            <button class="date-btn" onclick="showDay(2, this)">
-                <span class="week">六</span><span class="date">08/29</span>
-            </button>
-            <button class="date-btn" onclick="showDay(3, this)">
-                <span class="week">日</span><span class="date">08/30</span>
-            </button>
+    <div class="content">
+        <div class="date-tabs">
+            <button class="date-btn active" onclick="tabDay(1, this)"><span class="wk">五</span><span class="dt">08/28</span></button>
+            <button class="date-btn" onclick="tabDay(2, this)"><span class="wk">六</span><span class="dt">08/29</span></button>
+            <button class="date-btn" onclick="tabDay(3, this)"><span class="wk">日</span><span class="dt">08/30</span></button>
         </div>
 
         <div id="itinerary-list" style="margin-top: 20px;">
-            <div class="card day1 show">
-                <div class="card-header"><span class="tag">13:30 | 航班</span><span class="cost">HK$ 3.7</span></div>
-                <div class="card-title">抵達香港機場 (HKG)</div>
-                <div class="nav-box">出關後往地面運輸中心，搭乘 <b>S1 巴士</b>至終點站「東薈城」。</div>
-                <button class="btn-map" onclick="goMap('東薈城')">開啟 Google Map 導航</button>
+            <div class="card d1 active">
+                <div class="tag-row"><span class="tag">13:30 | 航班</span><span class="price">HK$ 3.7</span></div>
+                <div class="title">抵達香港機場 (HKG)</div>
+                <div class="guide-box">航站樓外巴士站搭乘 <b>S1 巴士</b>至終點站「東薈城」下車。</div>
+                <div class="meta">💡 航班：HB703 (11:30 TPE 起飛)</div>
             </div>
 
-            <div class="card day1 show">
-                <div class="card-header"><span class="tag">15:00 | 購物</span><span class="cost">HK$ 10.8</span></div>
-                <div class="card-title">東薈城 COACH Outlet</div>
-                <div class="
+            <div class="card d1 active">
+                <div class="tag-row"><span class="tag">15:00 | 購物</span><span class="price">HK$ 10.8</span></div>
+                <div class="title">東薈城 COACH Outlet</div>
+                <div class="guide-box">東薈城 2 樓。隨後回總站搭 <b>E32</b> 往葵芳，於「葵興站」下車。</div>
+                <div class="meta">🕒 營業：10:00 - 22:00</div>
+            </div>
+
+            <div class="card d1 active">
+                <div class="tag-row"><span class="tag">17:30 | 住宿</span></div>
+                <div class="title">旭逸酒店 荃灣</div>
+                <div class="guide-box"><b>葵興站 B 出口</b>出來，過天橋至新葵興廣場地下 <b>7-11 旁</b>搭酒店接駁車。</div>
+                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Ease+Tsuen+Wan" target="_blank" class="map-link">Google Map 導航</a>
+            </div>
+
+            <div class="card d1 active">
+                <div class="tag-row"><span class="tag">19:00 | 美食</span><span class="price">HK$ 15.0</span></div>
+                <div class="title">竺扶大班燒味</div>
+                <div class="guide-box">地鐵搭
