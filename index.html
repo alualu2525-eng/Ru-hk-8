@@ -11,7 +11,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #0a1128; margin: 0; color: #1e293b; }
         .app-bg { background: linear-gradient(180deg, #0a1128 0%, #1e293b 100%); min-height: 100vh; }
-        .glass { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(12px); border-radius: 28px; }
+        .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 28px; }
         .date-scroll::-webkit-scrollbar { display: none; }
         .boarding-pass { background: #fff; border-radius: 16px; border-left: 6px solid #3b82f6; position: relative; }
         .boarding-pass::after { content: ''; position: absolute; right: 28%; top: 10%; bottom: 10%; border-left: 2px dashed #e2e8f0; }
@@ -19,15 +19,15 @@
     </style>
 </head>
 <body>
-<div id="app" v-cloak class="app-bg pb-28">
+<div id="app" v-cloak class="app-bg pb-32">
     
     <header class="pt-12 pb-4 text-center">
         <h1 class="text-3xl font-black text-blue-400 tracking-tighter">2026 港澳吃喝團</h1>
-        <p class="text-white/60 text-xs font-bold mt-1 tracking-widest uppercase">Ma's First Flight</p>
+        <p class="text-white text-lg font-bold mt-1 uppercase">小馬哥首航</p>
         
         <div class="mt-6 flex justify-center">
             <div class="bg-white/10 px-4 py-2 rounded-full border border-white/20 backdrop-blur-md flex items-center">
-                <i data-lucide="cloud-sun" class="w-4 h-4 text-yellow-400 mr-2"></i>
+                <i data-lucide="sun" class="w-4 h-4 text-yellow-400 mr-2"></i>
                 <span class="text-white text-xs font-bold">香港 29°C | 體感 31°C</span>
             </div>
         </div>
@@ -36,7 +36,7 @@
     <section class="px-5 mb-6">
         <div class="boarding-pass p-5 shadow-2xl">
             <div class="flex justify-between items-center mb-3">
-                <span class="text-[10px] font-black bg-blue-100 text-blue-700 px-2 py-0.5 rounded">去程 DEPARTURE ✈️</span>
+                <span class="text-[10px] font-black bg-blue-100 text-blue-700 px-2 py-0.5 rounded">去程 DEPARTURE</span>
                 <span class="text-gray-400 text-[10px] font-bold">2026/08/28</span>
             </div>
             <div class="flex justify-between items-center">
@@ -45,7 +45,7 @@
                     <p class="text-xs font-bold text-blue-500">11:30</p>
                 </div>
                 <div class="flex-1 px-4 text-center">
-                    <p class="text-[9px] font-bold text-gray-400 mb-1">HB703 | 2h</p>
+                    <p class="text-[9px] font-bold text-gray-400 mb-1">✈️ HB703 | 2h</p>
                     <div class="h-px bg-gray-200 w-full relative">
                         <i data-lucide="plane" class="w-3 h-3 text-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-90"></i>
                     </div>
@@ -73,7 +73,7 @@
             
             <div v-if="item.type === 'flight-return'" class="boarding-pass p-5 shadow-xl mb-6 border-l-slate-800">
                 <div class="flex justify-between items-center mb-3 text-slate-800">
-                    <span class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded">回程 RETURN ✈️</span>
+                    <span class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded">回程 RETURN</span>
                     <span class="text-gray-400 text-[10px] font-bold">2026/08/30</span>
                 </div>
                 <div class="flex justify-between items-center">
@@ -82,7 +82,7 @@
                         <p class="text-xs font-bold text-slate-600">20:50</p>
                     </div>
                     <div class="flex-1 px-4 text-center">
-                        <p class="text-[9px] font-bold text-gray-400 mb-1">JX206 | 1h 50m</p>
+                        <p class="text-[9px] font-bold text-gray-400 mb-1">✈️ JX206 | 1h 50m</p>
                         <div class="h-px bg-gray-200 w-full relative">
                             <i data-lucide="plane" class="w-3 h-3 text-slate-800 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-90"></i>
                         </div>
@@ -97,7 +97,7 @@
             <div v-else class="glass p-6 shadow-xl relative border-t-4 border-blue-500">
                 <div class="flex justify-between items-start mb-4">
                     <span :class="catColor(item.cat)" class="px-3 py-1 rounded-lg text-[10px] font-black tracking-tighter uppercase">{{ item.cat }}</span>
-                    <span v-if="item.cost" class="text-red-500 font-black text-sm">HK$ {{ item.cost }}</span>
+                    <span v-if="item.cost" class="text-red-600 font-black text-sm">HK$ {{ item.cost }}</span>
                 </div>
                 
                 <h3 class="text-xl font-black text-slate-800 leading-tight mb-1">{{ item.name }}</h3>
@@ -111,29 +111,25 @@
 
                 <div class="space-y-3 mb-5">
                     <div v-if="item.hours" class="flex items-start">
-                        <div class="w-5 h-5 bg-gray-100 rounded flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                            <i data-lucide="store" class="w-3 h-3 text-gray-500"></i>
-                        </div>
+                        <i data-lucide="store" class="w-3 h-3 text-gray-400 mr-2 mt-0.5"></i>
                         <p class="text-xs text-gray-600 font-bold"><span class="text-gray-400">營業：</span>{{ item.hours }}</p>
                     </div>
                     <div v-if="item.note" class="flex items-start">
-                        <div class="w-5 h-5 bg-orange-50 rounded flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                            <i data-lucide="star" class="w-3 h-3 text-orange-500"></i>
-                        </div>
-                        <p class="text-xs text-gray-600 font-bold"><span class="text-orange-400">必點/備註：</span>{{ item.note }}</p>
+                        <i data-lucide="star" class="w-3 h-3 text-orange-400 mr-2 mt-0.5"></i>
+                        <p class="text-xs text-gray-600 font-bold"><span class="text-orange-400">推薦：</span>{{ item.note }}</p>
                     </div>
                 </div>
 
                 <button @click="goMap(item.name)" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center space-x-2 active:scale-95 transition-all shadow-lg shadow-slate-900/30">
                     <i data-lucide="navigation" class="w-4 h-4 text-blue-400"></i>
-                    <span>開始詳細導航</span>
+                    <span>Google Maps 導航</span>
                 </button>
             </div>
 
             <div v-if="index !== filteredItinerary.length - 1 && item.type !== 'flight-return'" class="flex flex-col items-center my-2">
                 <div class="h-8 w-px bg-white/20 border-l border-dashed"></div>
                 <div class="bg-white/5 px-4 py-1 rounded-full text-[10px] font-black text-blue-300 border border-white/10 italic">
-                    步行/交通約 {{ item.gap || '15' }} min
+                    下個行程約 {{ item.gap || '15' }} min
                 </div>
                 <div class="h-8 w-px bg-white/20 border-l border-dashed"></div>
             </div>
@@ -145,7 +141,7 @@
                 :class="activeTab === t.id ? 'text-blue-600' : 'text-gray-400'"
                 class="flex flex-col items-center flex-1 transition-all">
             <i :data-lucide="t.icon" class="w-6 h-6"></i>
-            <span class="text-[9px] font-black mt-1">{{ t.name }}</span>
+            <span class="text-[9px] font-black mt-1 uppercase">{{ t.name }}</span>
         </button>
     </nav>
 </div>
@@ -158,9 +154,9 @@
             const activeTab = ref('plan');
             const currentDate = ref('08.28');
             const tabs = [
-                { id: 'plan', name: '行程表', icon: 'map' },
-                { id: 'info', name: '資訊', icon: 'book-open' },
-                { id: 'cost', name: '花費', icon: 'wallet' },
+                { id: 'plan', name: '行程', icon: 'map' },
+                { id: 'info', name: '資訊', icon: 'info' },
+                { id: 'cost', name: '花費', icon: 'dollar-sign' },
                 { id: 'bag', name: '行李', icon: 'luggage' }
             ];
             const days = [
@@ -170,24 +166,26 @@
             ];
 
             const itinerary = ref([
-                // DAY 1
-                { date: '08.28', time: '14:30', cat: '交通', name: '機場 → 東薈城', route: '出關後跟隨「往市區巴士」指標至<b>地面運輸中心</b> ➔ 搭乘 <b>S1 巴士</b> (循環線) ➔ 「東薈城」總站下車。', cost: '3.7', gap: '20' },
-                { date: '08.28', time: '15:00', cat: '購物', name: '東薈城 COACH Outlet', route: '進入商場上 <b>2 樓</b>。結帳後回到 1 樓巴士總站準備搭車。', hours: '10:00-22:00', gap: '45' },
-                { date: '08.28', time: '17:30', cat: '住宿', name: '旭逸酒店 荃灣', route: '搭 <b>E32</b> 往葵芳 ➔ 於<b>「葵興站」</b>下車 ➔ 走 <b>B 出口</b> 經天橋進入新葵興廣場 ➔ 下至地下 <b>7-11 旁</b> 搭接駁車。', cost: '10.8', gap: '60' },
-                { date: '08.28', time: '19:00', cat: '美食', name: '竺扶大班燒味', route: '葵興站地鐵往中環 ➔ <b>金鐘站</b>轉港島線 ➔ <b>灣仔站 A3 出口</b> ➔ 右轉步行 3 分鐘。', cost: '15.0', note: '金牌厚切叉燒、脆皮燒肉', gap: '30' },
-                { date: '08.28', time: '20:30', cat: '體驗', name: '半山手扶梯', route: '餐廳外莊士敦道搭<b>叮叮車 (西行)</b> ➔ 於<b>「租庇利街」</b>下車 ➔ 沿斜坡步行 3 分鐘見手扶梯入口。', cost: '3.0', gap: '60' },
-                
+                // DAY 1 
+                { date: '08.28', time: '14:30', cat: '交通', name: '機場 → 東薈城', route: '出關後往「往市區巴士」➔ 搭 <b>S1 巴士</b> ➔ 「東薈城」總站下車。', cost: '3.7', gap: '20' },
+                { date: '08.28', time: '17:30', cat: '住宿', name: '旭逸酒店 荃灣', route: '搭 <b>E32</b> ➔ 葵興站 <b>B 出口</b> ➔ 走天橋入新葵興廣場 ➔ 下至 <b>7-11 旁</b> 搭接駁車。', cost: '10.8', gap: '60' },
+                { date: '08.28', time: '19:30', cat: '體驗', name: '半山手扶梯', route: '從灣仔搭叮叮車 ➔ <b>租庇利街</b>下車 ➔ 沿斜坡走 3 分鐘即達扶梯起點。', cost: '3.0', gap: '20' },
+                { date: '08.28', time: '20:30', cat: '景點', name: '山頂纜車總站', route: '從手扶梯下至「皇后大道中」➔ 沿<b>德輔道中</b>步行 ➔ 左轉<b>花園道</b>直行陡坡 10 分鐘即達總站。', cost: '108.0', gap: '60' },
+                { date: '08.28', time: '21:30', cat: '交通', name: '15號巴士站 (下山)', route: '山頂廣場巴士總站 ➔ 搭 <b>15號巴士</b> ➔ 「中環天星碼頭」終點站下車。', cost: '12.1', gap: '30' },
+                { date: '08.28', time: '22:30', cat: '美食', name: '佳佳甜品 & 樂酒場', route: '搭天星小輪 ➔ 尖沙咀碼頭 ➔ 沿 <b>廣東道</b> 直走 10 分鐘 ➔ 右轉 <b>寧波街</b> ➔ 佳佳甜品。樂酒場在附近步行 3 分鐘。', cost: '5.0', note: '芝麻糊、湯丸、串燒', gap: '60' },
+
                 // DAY 2
-                { date: '08.29', time: '10:00', cat: '流程', name: '太子站寄物', route: '地鐵至<b>太子站 C2 出口</b> ➔ 沿上海街直走至 <b>695 號</b> 港澳快線門市寄行李。', gap: '10' },
-                { date: '08.29', time: '11:00', cat: '美食', name: '一點心', route: '從門市沿上海街回頭走 ➔ 通菜街 209 號。', hours: '10:00-22:30', note: '薄皮鮮蝦餃、炸鮮奶', gap: '90' },
-                { date: '08.29', time: '13:00', cat: '購物', name: '上環/中環精油與曲奇', route: '地鐵至<b>上環站 A2 出口</b> ➔ 右轉永樂街直走 ➔ 見<b>蘇杭街左轉</b> (兆成行) ➔ 走回永和街 (珍妮曲奇) ➔ 步行至結志街 (蘭芳園)。', gap: '120' },
-                { date: '08.29', time: '17:30', cat: '住宿', name: '利澳酒店 (澳門)', route: '太子上海街上車 ➔ 澳門<b>回力站</b>下車 ➔ 沿水塘步行 8 分鐘抵達高美士街。', cost: '180', gap: '120' },
-                
+                { date: '08.29', time: '11:00', cat: '美食', name: '一點心 (太子)', route: '太子站 <b>C2 出口</b> ➔ 上海街直走至 695 號門市寄行李 ➔ 轉入通菜街。', gap: '90' },
+                { date: '08.29', time: '12:30', cat: '購物', name: '上環購物', route: '上環站 <b>A2 出口</b> ➔ 右轉永樂街 ➔ <b>蘇杭街左轉</b> (兆成行) ➔ 永和街 (珍妮曲奇) ➔ 蘭芳園。', gap: '120' },
+                { date: '08.29', time: '17:30', cat: '住宿', name: '利澳酒店 (澳門)', route: '太子上車 ➔ 澳門<b>回力站</b>下車 ➔ 沿水塘步行 8 分鐘達高美士街。', cost: '180', gap: '40' },
+                { date: '08.29', time: '18:30', cat: '景點', name: '大三巴與古蹟', route: '酒店搭 3 號巴士 ➔ <b>新馬路</b>站下車 ➔ 沿議事亭前地步行 ➔ 經玫瑰堂 ➔ 抵達大三巴。', note: '黑椒燒鵝必吃', gap: '40' },
+                { date: '08.29', time: '19:30', cat: '購物', name: '最香餅家 & 禮記雪糕', route: '大三巴走下坡 ➔ <b>夜呣街</b> (最香餅家) ➔ 往<b>荷蘭園</b>方向步行至禮記雪糕。', note: '炭燒杏仁餅、紅豆雪糕三文治', gap: '60' },
+                { date: '08.29', time: '21:00', cat: '夜景', name: '永利皇宮纜車', route: '新馬路搭巴士至路氹 ➔ 永利皇宮 ➔ 路氹東輕軌站 ➔ 排角站 ➔ 官也街。', gap: '60' },
+
                 // DAY 3
-                { date: '08.30', time: '10:30', cat: '美食', name: '世紀咖啡 (官也街)', route: '抵達官也街 ➔ 尋找<b>消防局</b> ➔ 對面即是世紀咖啡。', note: '厚蛋吐司、瓦煲奶茶', gap: '60' },
-                { date: '08.30', time: '12:00', cat: '購物', name: '威尼斯人 COACH', route: '官也街步行過自動步道 ➔ 進入威尼斯人 <b>DFS T 廣場</b>。', hours: '10:00-23:00', gap: '180' },
-                { date: '08.30', time: '16:00', cat: '景點', name: '倫敦人/巴黎人拍照', route: '威尼斯人走連廊 ➔ 倫敦人拍大笨鐘 ➔ 走過馬路至巴黎人草地。', gap: '120' },
-                { date: '08.30', type: 'flight-return' } // 特別標記回程航班
+                { date: '08.30', time: '10:30', cat: '美食', name: '世紀咖啡', route: '官也街消防局對面。', note: '瓦煲奶茶、厚蛋吐司', gap: '120' },
+                { date: '08.30', time: '13:00', cat: '購物', name: '威尼斯人 COACH', route: '進入威尼斯人 <b>DFS T 廣場</b>。', gap: '180' },
+                { date: '08.30', type: 'flight-return' }
             ]);
 
             const filteredItinerary = computed(() => itinerary.value.filter(item => item.date === currentDate.value));
@@ -195,7 +193,7 @@
                 const colors = { '美食': 'bg-orange-100 text-orange-600', '購物': 'bg-pink-100 text-pink-600', '交通': 'bg-emerald-100 text-emerald-600', '景點': 'bg-purple-100 text-purple-600', '住宿': 'bg-slate-800 text-white' };
                 return colors[cat] || 'bg-blue-100 text-blue-600';
             };
-            const goMap = (name) => window.open(`https://www.google.com/maps/search/?api=1&query={encodeURIComponent(name)}`, '_blank');
+            const goMap = (name) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`, '_blank');
             onMounted(() => lucide.createIcons());
 
             return { activeTab, currentDate, tabs, days, filteredItinerary, catColor, goMap };
