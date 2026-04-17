@@ -225,7 +225,7 @@
 
     <div class="header-bg relative">
         <div class="header-image-container">
-            <img src="IMG_4330.PNG" alt="2026港澳吃喝團之小馬哥首航">
+            <img src="IMG_4330.PNG" alt="北海道家族旅行計畫">
         </div>
         
         <div class="snow-layer"></div> 
@@ -380,7 +380,7 @@ bg-white/10 rounded-full -ml-10 -mb-10 blur-2xl"></div>
                 <div class="flex items-center justify-between space-x-3 relative z-10">
                     <div class="flex-1">
                         <label class="text-[10px] 
-text-cyan-200 block mb-1 uppercase tracking-wider">HKD (港幣)</label>
+text-cyan-200 block mb-1 uppercase tracking-wider">JPY (日幣)</label>
                         <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2.5 text-white placeholder-white/50 focus:outline-none focus:bg-white/30 text-lg font-bold" placeholder="¥">
                     </div>
                     <i class="fa-solid fa-arrow-right-arrow-left text-cyan-300 mt-5"></i>
@@ -391,7 +391,7 @@ text-cyan-200 block mb-1 uppercase tracking-wider">HKD (港幣)</label>
                         </div>
                     </div>
                 </div>
-                <p class="text-[10px] text-cyan-300 mt-3 text-right relative z-10">匯率基準: 4.2</p>
+                <p class="text-[10px] text-cyan-300 mt-3 text-right relative z-10">匯率基準: 0.215</p>
             </div>
             
             <div class="bg-white rounded-3xl p-5 card-shadow">
@@ -401,24 +401,24 @@ text-cyan-200 block mb-1 uppercase tracking-wider">HKD (港幣)</label>
                         <div class="flex justify-between text-sm font-bold text-deep-sea-blue mb-1">
                             <span>TPE 台北</span>
                             <i class="fa-solid fa-plane text-xs"></i>
-                            <span>HKG 香港</span>
+                            <span>CTS 札幌</span>
                         </div>
                         <div class="flex justify-between text-xs text-slate-500">
-                            <span>11:30</span>
-                            <span>HB702 (8/28)</span>
-                            <span>13:30</span>
+                            <span>08:35</span>
+                            <span>CI0130 (2/1)</span>
+                            <span>13:15</span>
                         </div>
                     </div>
                     <div class="bg-orange-50 rounded-xl p-3 border border-orange-100">
                         <div class="flex justify-between text-sm font-bold text-orange-800 mb-1">
-                            <span>MFM 澳門</span>
+                            <span>CTS 札幌</span>
                             <i class="fa-solid fa-plane text-xs"></i>
                             <span>TPE 台北</span>
                         </div>
                         <div class="flex justify-between text-xs text-slate-500">
-                            <span>20:50</span>
-                            <span>JX206 (8/30)</span>
-                            <span>22:40</span>
+                            <span>14:40</span>
+                            <span>CI0131 (2/7)</span>
+                            <span>18:15</span>
                         </div>
                     </div>
                 </div>
@@ -440,6 +440,64 @@ text-cyan-200 block mb-1 uppercase tracking-wider">HKD (港幣)</label>
                             <p class="flex items-start"><i class="fa-solid fa-map-pin w-4 text-center mr-2 mt-1 text-slate-300"></i> {{ hotel.address }}</p>
                         </div>
                     </li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 card-shadow">
+                <h3 class="font-bold text-slate-800 mb-3 border-b border-slate-100 pb-3"><i class="fa-solid fa-car text-green-500 mr-2"></i> 租車資訊</h3>
+                <div class="text-sm space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">公司</span>
+                        <span class="font-bold text-slate-700">Nissan Rent a Car</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">取車點</span>
+                        <span class="font-bold text-slate-700 text-right">札幌駅南口アスティ店</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">期間</span>
+                        <span class="font-bold text-slate-700">2/2 08:00 - 2/6 20:00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">車型</span>
+                        <span class="font-bold text-slate-700">Kicks (油電)</span>
+                    </div>
+                    <button @click="openMap('Nissan Rent a Car Sapporo Station South Exit Asty')" class="w-full mt-4 bg-green-50 text-green-700 py-3 rounded-xl text-sm font-bold hover:bg-green-100 transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-diamond-turn-right mr-2"></i> 導航去取車點
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-red-50 rounded-3xl p-6 border border-red-100">
+                <h3 class="font-bold text-red-800 mb-4"><i class="fa-solid fa-kit-medical mr-2"></i> 緊急聯絡</h3>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <a href="tel:110" class="bg-white py-3 rounded-xl shadow-sm text-red-600 font-bold block border border-red-100 hover:bg-red-600 hover:text-white transition-all">
+                        <i class="fa-solid fa-user-shield mr-1"></i> 警察 110
+                    </a>
+                    <a href="tel:119" class="bg-white py-3 rounded-xl shadow-sm text-red-600 font-bold block border border-red-100 hover:bg-red-600 
+hover:text-white transition-all">
+                        <i class="fa-solid fa-truck-medical mr-1"></i> 救護 119
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'shopping'" class="animate-fade-in">
+            <div class="grid grid-cols-2 gap-4">
+                <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-2xl p-3 card-shadow relative group">
+                    <div class="aspect-square bg-slate-50 rounded-xl mb-3 overflow-hidden relative border border-slate-100">
+                        <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
+                        <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
+                            <i class="fa-solid fa-bag-shopping text-3xl"></i>
+                        </div>
+                        <button @click="removeShoppingItem(idx)" class="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <p class="font-bold text-sm text-slate-800 truncate px-1">{{ item.name }}</p>
+                </div>
+                
+                <div v-if="shoppingList.length % 2 !== 0" class="h-0 invisible"></div>
                 
                 <div v-if="shoppingList.length === 0" class="col-span-2 text-center py-16 text-slate-300">
                     <i class="fa-solid fa-bag-shopping text-5xl mb-3 text-slate-200"></i>
@@ -569,10 +627,11 @@ rounded-xl p-3 text-sm text-slate-600 outline-none">
                 <div class="grid grid-cols-2 gap-3">
                     <input v-model="newItinerary.startTime" type="text" placeholder="時間 (e.g. 09:30)" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
                     <select v-model="newItinerary.transportType" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                        <option value="walk">步行</option
+                        <option value="walk">步行</option>
+                        <option value="car">自駕</option>
                         <option value="bus">巴士</option>
                         <option value="public">地鐵/JR</option>
-                        <option value="flight">飛機</option
+                        <option value="flight">飛機</option>
                         <option value="other">其他</option>
                     </select>
                 </div>
@@ -602,7 +661,7 @@ rounded-xl p-3 text-sm text-slate-600 outline-none">
     createApp({
         setup() {
             // 匯率基準
-            const EXCHANGE_RATE = 4.2;
+            const EXCHANGE_RATE = 0.215;
 
             // 標籤顏色與圖示定義
             const CATEGORY_MAP = {
@@ -626,20 +685,25 @@ rounded-xl p-3 text-sm text-slate-600 outline-none">
             // --- 資料定義：已根據使用者最新行程全部更新 ---
             
             const dates = ref([
-                { date: '8/28', weekday: '五', hasCar: false, tollFee: 0 },
-                { date: '8/29', weekday: '六', hasCar: true, tollFee: 0 },
-                { date: '8/30', weekday: '日', hasCar: true, tollFee: 0 },
-             
+                { date: '2/1', weekday: '五', hasCar: false, tollFee: 0 },
+                { date: '2/2', weekday: '六', hasCar: true, tollFee: 0 }, // 2/2 租車日開始
+                { date: '2/3', weekday: '日', hasCar: true, tollFee: 0 },
+                { date: '2/4', weekday: '一', hasCar: true, tollFee: 0 },
+                { date: '2/5', weekday: '二', hasCar: true, tollFee: 0 },
+                { date: '2/6', weekday: '三', hasCar: true, tollFee: 0 }, // 2/6 還車
+                { date: '2/7', weekday: '四', hasCar: false, tollFee: 0 },
+            ]);
 
             const hotels = ref([
-                { name: '旭逸飯店 · 荃灣', date: '8/28 - 8/29 (1晚)', phone: '+852-39588333', address: '香港, 葵青區, 葵涌圳邊街15-19號 },
-                { name: '利澳酒店  (Rio Hotel Macau)', date: '8/29 (1晚)', phone: '+85328718718', address: '
-新口岸高美士街33號, 澳門, 中國澳門' },
-         
+                { name: '札幌大通東急STAY酒店', date: '2/1 - 2/3 (2晚)', phone: '+81-11-200-5109', address: '〒060-0042 北海道札幌市中央区大通西９丁目３−3' },
+                { name: '富良野ホテル (Furano Hotel)', date: '2/3 (1晚)', phone: '+81-167-22-1133', address: '〒076-0035 北海道富良野市学田三区' },
+                { name: '登別溫泉第一瀧本館', date: '2/4 - 2/6 (2晚)', phone: '+81-143-84-2111', address: '〒059-0551 北海道登別市登別温泉町５５' },
+                { name: '札幌西三井花園飯店', date: '2/6 (1晚)', phone: '+81-11-280-5531', address: '〒060-0004 北海道札幌市中央区北４条西７丁目１−2' },
+            ]);
             
             // 使用者的完整行程資料 (已根據最新的排程更新)
             const itineraryData = ref([
-                // Day 1: 8/28 (五) 香港市區
+                // Day 1: 2/1 (日) 札幌市區遊
                 [
                     { id: 101, name: '桃園機場報到', category: 'flight', startTime: '06:00', address: '桃園國際機場 (TPE)', note: '中華航空 CI0130 08:35起飛', hours: null, price: null, transportType: 'flight', travelTime: null, isNoteExpanded: false },
                     { id: 102, name: '新千歲機場 (CTS) 抵達', category: 'flight', startTime: '13:15', address: '新千歲機場', note: '領取行李與確認巴士站牌', hours: null, price: null, transportType: 'flight', travelTime: '4h40m', isNoteExpanded: false },
@@ -651,7 +715,7 @@ rounded-xl p-3 text-sm text-slate-600 outline-none">
                     { id: 108, name: '成吉思汗烤肉 (宵夜/晚餐)', category: 'food', startTime: '~21:30', address: '成吉思汗烤肉YUHI 薄野本店', note: '或是北海道ジンギスカンMASAJINすすきの本店', hours: '17:00–23:00/00:00', price: null, transportType: 'walk', travelTime: '15m', isNoteExpanded: false },
                     { id: 109, name: '業務超市', category: 'shopping', startTime: '~22:30', address: '業務スーパー (大通西17条店)', note: '大份量、價格實惠，採購零食或隔日早餐', hours: '9:00–22:00', price: null, transportType: 'walk', travelTime: '20m', isNoteExpanded: false },
                 ],
-                // Day 2: 8/29 (六) 香港-澳門
+                // Day 2: 2/2 (一) 小樽
                 [
                     { id: 201, name: '札幌市區取車', category: 'transport', startTime: '08:00', address: 'Nissan Rent a Car 札幌駅南口アスティ店', note: '租車日開始！', hours: null, price: null, transportType: 'walk', travelTime: '20m', isNoteExpanded: false },
                     { id: 202, name: '小樽水族館', category: 'sightseeing', startTime: '09:00', address: '小樽水族館', note: '海獸樂園表演 (海豚/海獅) 11:00、企鵝散步 11:30 (冬季限定)。', hours: '9:00-16:00', price: '¥1,800/成人', transportType: 'car', travelTime: '55m', isNoteExpanded: false },
@@ -662,7 +726,7 @@ rounded-xl p-3 text-sm text-slate-600 outline-none">
                     { id: 207, name: '晚餐', category: 'food', startTime: '~19:00', address: '小樽運河周邊餐廳', note: '在小樽用餐後再開車回札幌', hours: null, price: null, transportType: 'car', travelTime: '15m', isNoteExpanded: false },
                     { id: 208, name: '返回札幌大通東急STAY酒店', category: 'accommodation', startTime: '~20:30', address: '札幌東急大通酒店', note: '休息準備隔日退房', hours: null, price: null, transportType: 'car', travelTime: '1h', isNoteExpanded: false },
                 ],
-                // Day 3: 8/30 (日) 澳門-回家
+                // Day 3: 2/3 (二) 旭川 & 美瑛 & 富良野
                 [
                     { id: 301, name: '早餐 (Sandria三明治)', category: 'food', startTime: '08:00', address: 'Sandria三明治 (札幌市區)', note: '雙倍蛋沙拉、炸蝦三明治，外帶車上享用。', hours: '24小時', price: null, transportType: 'car', travelTime: '15m', isNoteExpanded: false },
                     { id: 302, name: '旭山動物園', category: 'sightseeing', startTime: '09:30', address: '旭山動物園', note: '冬季營業時間 10:30-15:30。必看冬季限定企鵝散步、北極熊館。', hours: '10:30-15:30 (冬季)', price: '¥1,000/成人', transportType: 'car', travelTime: '2h', isNoteExpanded: false },
@@ -671,8 +735,48 @@ rounded-xl p-3 text-sm text-slate-600 outline-none">
                     { id: 305, name: '富良野 森林精靈露台', category: 'sightseeing', startTime: '~17:00', address: '森林精靈露台', note: '手工藝品小木屋，晚上點燈很美，免費入場。', hours: '10:00-20:45', price: '免費', transportType: 'car', travelTime: '1h', isNoteExpanded: false },
                     { id: 306, name: '晚餐', category: 'food', startTime: '~19:00', address: '富良野周邊餐廳', note: '富良野當地特色餐廳', hours: null, price: null, transportType: 'car', travelTime: '15m', isNoteExpanded: false },
                     { id: 307, name: 'COOP超市 & Seicomart', category: 'shopping', startTime: '~20:30', address: 'COOP超市 / Seicomart', note: 'Seicomart 的 Hot Chef 熟食和 Secoma 自有品牌。', hours: null, price: null, transportType: 'car', travelTime: '10m', isNoteExpanded: false },
-                    { id: 308, name: '富良野ホテル Check-in', category: 'accommodation      { id: 705, name: '機場購物/候機', category: 'shopping', startTime: '~13:30', address: '新千歲機場', note: '國內線航廈伴手禮店、多啦A夢樂園、Royce\' Chocolate World。', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
-              
+                    { id: 308, name: '富良野ホテル Check-in', category: 'accommodation', startTime: '~21:30', address: '富良野ホテル (Furano Hotel)', note: '本日住宿：富良野', hours: null, price: null, transportType: 'car', travelTime: '10m', isNoteExpanded: false },
+                ],
+                // Day 4: 2/4 (三) 登別溫泉
+                [
+                    { id: 401, name: '白色戀人工廠', category: 'sightseeing', startTime: '09:00', address: '白い恋人パーク', note: '歐式庭園，參觀餅乾生產線，可 DIY 體驗。', hours: '10:00-19:00', price: '¥800/成人', transportType: 'car', travelTime: '2h30m', isNoteExpanded: false },
+                    { id: 402, name: '午餐 (牛津巧克力酒廊)', category: 'food', startTime: '~12:00', address: '白色戀人工廠內', note: '或在前往下一個景點途中用餐', hours: null, price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 403, name: '國營瀧野鈴蘭丘陵公園', category: 'sightseeing', startTime: '~14:00', address: '國営滝野すずらん公園', note: '冬季免費入園 (瀧野雪之世界)，玩雪、雪上橡皮艇。', hours: '9:00-17:00 (冬季免費)', price: '冬季免費', transportType: 'car', travelTime: '45m', isNoteExpanded: false },
+                    { id: 404, name: '登別溫泉第一瀧本館 Check-in', category: 'accommodation', startTime: '~16:30', address: '登別溫泉第一瀧本館', note: '本日住宿：登別溫泉 (本日車程較長)', hours: null, price: null, transportType: 'car', travelTime: '1h20m', isNoteExpanded: false },
+                    { id: 405, name: '晚餐 (旅館內)', category: 'food', startTime: '~18:00', address: '登別溫泉第一瀧本館', note: '享用溫泉旅館豐盛的晚餐', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 406, name: '閻魔堂地獄審判', category: 'sightseeing', startTime: '~19:30', address: '閻魔堂', note: '溫泉街上的閻羅王變臉秀表演。', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 407, name: '登別溫泉街', category: 'shopping', startTime: '~20:30', address: '登別溫泉街', note: '逛街、買伴手禮、免費足湯。', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                ],
+                // Day 5: 2/5 (四) 登別
+                [
+                    { id: 501, name: '尼克斯海洋公園', category: 'sightseeing', startTime: '09:30', address: '登別尼克斯海洋公園', note: '歐洲城堡水族館、企鵝遊行、海豚海獅表演。', hours: '9:00-17:00', price: '¥3,000/成人', transportType: 'car', travelTime: '10m', isNoteExpanded: false },
+                    { id: 502, name: '尼克斯海洋公園 企鵝遊行', category: 'sightseeing', startTime: '11:00', address: '登別尼克斯海洋公園', note: '企鵝會在園區內大搖大擺散步。', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 503, name: '午餐', category: 'food', startTime: '~12:30', address: '尼克斯海洋公園內或登別溫泉街', note: '可選擇回到溫泉街用餐', hours: null, price: null, transportType: 'car', travelTime: '10m', isNoteExpanded: false },
+                    { id: 504, name: '登別熊牧場', category: 'sightseeing', startTime: '~14:00', address: '登別熊牧場', note: '搭纜車上山，人之籠看熊，俱多樂湖展望台。', hours: '9:30-16:30', price: '¥3,000/成人 (含纜車)', transportType: 'car', travelTime: '10m', isNoteExpanded: false },
+                    { id: 505, name: '登別地獄谷', category: 'sightseeing', startTime: '~16:00', address: '登別地獄谷', note: '壯麗地貌，爆裂火山口、鐵泉池間歇泉，免費參觀。', hours: '全天', price: '免費', transportType: 'car', travelTime: '5m', isNoteExpanded: false },
+                    { id: 506, name: '晚餐 (旅館內) / 溫泉休息', category: 'food', startTime: '~18:00', address: '登別溫泉第一瀧本館', note: '本日繼續享受溫泉', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 507, name: '鬼火之路', category: 'sightseeing', startTime: '~20:00', address: '登別地獄谷', note: '夜晚步道兩側點燈，營造奇幻氛圍', hours: null, price: '免費', transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                ],
+                // Day 6: 2/6 (五) 札幌
+                [
+                    { id: 601, name: '羊之丘展望台', category: 'sightseeing', startTime: '09:00', address: 'さっぽろ羊ヶ丘展望台', note: '與克拉克博士雕像合影。冬季可玩雪。', hours: null, price: '¥1,000/成人', transportType: 'car', travelTime: '1h', isNoteExpanded: false },
+                    { id: 602, name: '午餐 (羊之丘)', category: 'food', startTime: '~12:00', address: '羊之丘休息屋', note: '可品嚐成吉思汗烤肉或白色戀人冰淇淋。', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 603, name: '三井OUTLET PARK 札幌北廣島', category: 'shopping', startTime: '~14:00', address: '三井アウトレットパーク 札幌北広島', note: '購物血拼。', hours: '10:00-20:00', price: null, transportType: 'car', travelTime: '30m', isNoteExpanded: false },
+                    { id: 604, name: '歸還租車', category: 'transport', startTime: '~19:00', address: 'Nissan Rent a Car 札幌駅南口アスティ店', note: '本日晚上歸還租車。', hours: null, price: null, transportType: 'car', travelTime: '1h', isNoteExpanded: false },
+                    { id: 605, name: '札幌西三井花園飯店 Check-in', category: 'accommodation', startTime: '~20:00', address: '札幌西三井花園飯店', note: '本日住宿：札幌', hours: null, price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 606, name: '晚餐 (串鳥)', category: 'food', startTime: '~20:30', address: '串鳥 札幌駅北口店', note: '人氣餐點：雞肉串、豬肉串、豬五花蘆筍捲。', hours: '16:30–23:30', price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                ],
+                // Day 7: 2/7 (六) 回家
+                [
+                    { id: 701, name: '早餐 (飯店/札幌車站周邊)', category: 'food', startTime: '08:00', address: '札幌車站周邊', note: '享用早餐', hours: null, price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 702, name: '前往新千歲機場 (JR/巴士)', category: 'transport', startTime: '09:30', address: '新千歲機場', note: '搭乘 JR 或機場巴士，預計 11:30 報到。', hours: null, price: null, transportType: 'public', travelTime: '40m-1h', isNoteExpanded: false },
+                    { id: 703, name: '機場報到/托運行李', category: 'flight', startTime: '11:30', address: '新千歲機場 (CTS)', note: '預計 11:30 報到', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 704, name: '午餐 (一幻拉麵)', category: 'food', startTime: '~12:30', address: '一幻拉麵 (國內線航廈)', note: '推薦濃厚蝦湯頭搭配粗麵。', hours: '9:00-21:00', price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 705, name: '機場購物/候機', category: 'shopping', startTime: '~13:30', address: '新千歲機場', note: '國內線航廈伴手禮店、多啦A夢樂園、Royce\' Chocolate World。', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 706, name: '新千歲機場起飛 (CI0131)', category: 'flight', startTime: '14:30', address: '桃園國際機場 (TPE)', note: '預計 18:15 抵達桃園', hours: null, price: null, transportType: 'flight', travelTime: '3h45m', isNoteExpanded: false },
+                ],
+            ]);
+
             // 預設天氣資訊
             const weatherData = ref([
                 { condition: 'snow', temp: '0/-5', feel: '-8' },
