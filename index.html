@@ -3,189 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 港澳吃喝團 - 小馬哥首航</title>
+    <title>2026 港澳首航 - 五人團</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0a0a0c; color: #e0e0e0; }
-        .neon-border { border: 1px solid rgba(0, 255, 255, 0.3); box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); }
-        .hk-gradient { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
-        .neon-text-pink { text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff; }
-        .neon-text-blue { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0b0e14; color: #e6edf3; }
+        .hk-neon-gradient { background: linear-gradient(180deg, #0b0e14 0%, #1c1c2d 100%); }
+        .tab-active { color: #00f2ff; border-bottom: 3px solid #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        .card-neon { border: 1px solid #30363d; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(10px); }
+        .boarding-pass { background: #ffffff; color: #1a1a1a; border-radius: 16px; position: relative; border-left: 10px solid #0052cc; }
+        .boarding-pass::after { content: ''; position: absolute; right: 90px; top: 0; bottom: 0; border-right: 2px dashed #ddd; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .boarding-pass { background: #fff; color: #333; border-radius: 15px; position: relative; overflow: hidden; }
-        .boarding-pass::after { content: ""; position: absolute; bottom: 30px; left: 0; right: 0; border-top: 2px dashed #ccc; }
-        .tab-active { border-bottom: 3px solid #00ffff; color: #00ffff; }
         [v-cloak] { display: none; }
+        .member-tag { background: rgba(0, 242, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3); color: #00f2ff; font-size: 10px; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
     </style>
 </head>
-<body>
-    <div id="app" v-cloak class="max-w-md mx-auto min-h-screen pb-20 relative hk-gradient">
+<body class="hk-neon-gradient">
+    <div id="app" v-cloak class="max-w-md mx-auto min-h-screen pb-28">
         
         <header class="p-6 text-center border-b border-gray-800">
-            <h1 class="text-2xl font-bold neon-text-blue">2026 港澳吃喝團</h1>
-            <p class="text-sm tracking-widest opacity-80 mt-1">小馬哥首航專號</p>
+            <h1 class="text-xl font-black text-cyan-400 tracking-widest uppercase">2026 港澳吃喝團</h1>
+            <p class="text-[11px] text-gray-500 mt-1">小馬哥首航專號</p>
+            <div class="flex flex-wrap justify-center gap-2 mt-3">
+                <span class="member-tag" v-for="m in members" :key="m">{{ m }}</span>
+            </div>
         </header>
 
-        <div class="px-4 py-3 flex justify-between items-center bg-black bg-opacity-40 mx-4 mt-4 rounded-xl neon-border">
-            <div class="flex items-center gap-3">
-                <i data-lucide="sun" class="text-yellow-400"></i>
-                <div>
-                    <p class="text-xs opacity-70">香港 / 晴</p>
-                    <p class="text-lg font-bold">31°C <span class="text-xs font-normal">體感 34°C</span></p>
-                </div>
+        <div class="flex justify-between px-6 py-3 text-[10px] bg-black bg-opacity-40">
+            <div class="flex items-center gap-1 text-yellow-500">
+                <i data-lucide="sun" class="w-3 h-3"></i>
+                <span>HK 31°C / 體感 34°C</span>
             </div>
-            <div class="text-right">
-                <p class="text-[10px] text-cyan-400">HKD/TWD: 4.12</p>
-            </div>
+            <div class="text-cyan-500 font-mono italic">LIVE: 1 HKD = 4.12 TWD</div>
         </div>
 
-        <nav class="flex overflow-x-auto hide-scrollbar px-4 mt-4 gap-6 text-sm font-medium border-b border-gray-800">
-            <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id" :class="{'tab-active': currentTab === tab.id}" class="pb-2 whitespace-nowrap">
-                {{ tab.name }}
+        <nav class="flex overflow-x-auto hide-scrollbar sticky top-0 z-50 bg-gray-900 bg-opacity-95 border-b border-gray-800">
+            <button v-for="t in tabs" :key="t.id" @click="currentTab = t.id" 
+                    :class="currentTab === t.id ? 'tab-active' : 'text-gray-500'"
+                    class="px-5 py-4 whitespace-nowrap text-xs font-black transition-all">
+                {{ t.name }}
             </button>
         </nav>
 
-        <main class="p-4">
+        <main class="p-5">
             
             <div v-if="currentTab === 'itinerary'">
-                <div class="flex gap-4 overflow-x-auto hide-scrollbar py-2 mb-4">
-                    <div v-for="d in days" :key="d.date" @click="selectedDay = d.day" 
-                         :class="selectedDay === d.day ? 'bg-cyan-500 text-black' : 'bg-gray-800 text-gray-400'"
-                         class="flex-shrink-0 w-16 h-20 rounded-2xl flex flex-col items-center justify-center transition-all">
-                        <span class="text-lg font-bold leading-none">{{ d.weekday }}</span>
-                        <span class="text-xs mt-1">{{ d.date }}</span>
+                <div class="flex gap-4 mb-8 overflow-x-auto hide-scrollbar">
+                    <div v-for="d in days" :key="d.date" @click="selectedDay = d.day"
+                         :class="selectedDay === d.day ? 'bg-cyan-500 text-black scale-105 border-cyan-300' : 'bg-gray-800 text-gray-500 border-gray-700'"
+                         class="flex-shrink-0 w-16 h-20 rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-300">
+                        <span class="text-lg font-black leading-none">{{ d.weekday }}</span>
+                        <span class="text-[10px] mt-1">{{ d.date }}</span>
                     </div>
                 </div>
 
-                <div v-if="selectedDay === 1" class="boarding-pass mb-6 p-4 shadow-xl">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-[10px] font-bold bg-blue-600 text-white px-2 py-1 rounded">BOARDING PASS</span>
-                        <span class="text-blue-900 font-bold">HB703</span>
+                <div v-if="selectedDay === 1" class="boarding-pass p-5 mb-8 shadow-2xl">
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-bold text-blue-600 uppercase">Flight Ticket</span>
+                            <span class="text-xl font-black italic">HB703</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase">Gate</span>
+                            <p class="font-bold">T1</p>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center mb-6 text-black">
-                        <div class="text-center">
+                    <div class="flex justify-between items-center text-gray-900">
+                        <div class="w-1/3 text-center">
                             <p class="text-3xl font-black">TPE</p>
-                            <p class="text-[10px]">TAIPEI</p>
+                            <p class="text-[10px] font-medium opacity-60">11:30</p>
                         </div>
-                        <i data-lucide="plane" class="text-blue-500 rotate-90"></i>
-                        <div class="text-center">
+                        <div class="w-1/3 flex flex-col items-center">
+                            <i data-lucide="plane" class="w-6 h-6 text-blue-600 rotate-90"></i>
+                            <div class="h-[1px] w-full bg-gray-200 mt-2"></div>
+                        </div>
+                        <div class="w-1/3 text-center">
                             <p class="text-3xl font-black">HKG</p>
-                            <p class="text-[10px]">HONG KONG</p>
+                            <p class="text-[10px] font-medium opacity-60">13:30</p>
                         </div>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-600 mb-8">
-                        <div><p>DATE</p><p class="font-bold">28 AUG</p></div>
-                        <div><p>TIME</p><p class="font-bold">11:30</p></div>
-                        <div><p>GATE</p><p class="font-bold">T1</p></div>
                     </div>
                 </div>
 
-                <div class="space-y-6">
-                    <div v-for="(item, index) in filteredSchedule" :key="index" class="relative pl-4 border-l-2 border-dashed border-cyan-900">
-                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
+                <div class="space-y-8 relative">
+                    <div v-for="(item, idx) in filteredSchedule" :key="idx" class="relative pl-8 border-l-2 border-dashed border-gray-800">
+                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-cyan-500 border-4 border-gray-900 shadow-[0_0_15px_#00f2ff]"></div>
                         
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-cyan-400 font-bold text-sm">{{ item.time }}</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-pink-900 text-pink-200">{{ item.type }}</span>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-black text-cyan-400 bg-cyan-950 px-2 py-1 rounded">{{ item.time }}</span>
+                            <span class="text-[9px] font-bold text-gray-500 uppercase border border-gray-700 px-2 py-0.5 rounded">{{ item.type }}</span>
                         </div>
 
-                        <div @click="openGoogleMaps(item.location)" class="bg-gray-900 rounded-xl p-4 neon-border active:scale-95 transition-transform">
-                            <h3 class="text-white font-bold mb-1 flex items-center justify-between">
-                                {{ item.title }}
-                                <i data-lucide="map-pin" class="w-4 h-4 text-cyan-400"></i>
-                            </h3>
-                            <p v-if="item.openTime" class="text-[11px] text-gray-400 mb-2">🕒 {{ item.openTime }}</p>
-                            <div class="text-xs text-gray-300 leading-relaxed space-y-1">
-                                <p v-if="item.transport" class="text-yellow-200">🚌 {{ item.transport }}</p>
-                                <p v-if="item.desc" class="opacity-80">✨ {{ item.desc }}</p>
-                                <p v-if="item.cost" class="text-green-400 font-bold">💰 {{ item.cost }}</p>
+                        <div class="card-neon p-5 rounded-2xl active:opacity-60 transition-all cursor-pointer" @click="goMap(item.title)">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-black text-white text-base leading-tight">{{ item.title }}</h3>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-cyan-400"></i>
                             </div>
-                        </div>
-
-                        <div v-if="index < filteredSchedule.length - 1" class="my-4 text-center">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-800 rounded-full text-[10px] text-gray-500">
-                                <i data-lucide="move-down" class="w-3 h-3"></i>
-                                <span>交通估計: {{ item.nextTime || '15-30' }} 分鐘</span>
+                            
+                            <div class="mt-4 space-y-3 text-[11px] leading-relaxed">
+                                <div v-if="item.trans" class="bg-blue-900 bg-opacity-30 p-3 rounded-xl border border-blue-800 text-blue-100">
+                                    <span class="font-black text-blue-400 block mb-1">📍 詳細動線：</span>{{ item.trans }}
+                                </div>
+                                <p class="text-gray-300"><span class="text-cyan-400 font-bold">💡 建議：</span>{{ item.desc }}</p>
+                                <p v-if="item.cost" class="font-black text-pink-400 text-xs">💰 費用：{{ item.cost }}</p>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div v-if="currentTab === 'budget'" class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="card-neon p-5 rounded-3xl text-center">
+                        <p class="text-[10px] text-gray-500 font-bold mb-1 uppercase">團體總支出 (HKD)</p>
+                        <p class="text-3xl font-black text-cyan-400">${{ totalBudget }}</p>
+                    </div>
+                    <div class="card-neon p-5 rounded-3xl text-center border-blue-500">
+                        <p class="text-[10px] text-gray-500 font-bold mb-1 uppercase">每人應付 (5人)</p>
+                        <p class="text-3xl font-black text-pink-500">${{ (totalBudget/5).toFixed(1) }}</p>
+                    </div>
+                </div>
+
+                <div class="card-neon p-6 rounded-3xl">
+                    <h3 class="font-black text-sm mb-5 flex items-center gap-2">
+                        <i data-lucide="credit-card" class="w-4 h-4 text-cyan-400"></i> 墊付明細 (新增陳RuRu)
+                    </h3>
+                    <div class="space-y-4">
+                        <div v-for="bill in bills" :key="bill.id" class="flex justify-between items-center border-b border-gray-800 pb-3">
+                            <div>
+                                <span class="text-xs font-black text-white bg-gray-800 px-2 py-1 rounded mr-2">{{ bill.payer }}</span>
+                                <span class="text-[10px] text-gray-500">{{ bill.note }}</span>
+                            </div>
+                            <span class="font-mono font-bold text-cyan-400">${{ bill.amount }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="currentTab === 'packing'" class="space-y-6">
+                <div v-for="(list, category) in packingList" :key="category">
+                    <h3 class="text-xs font-black text-gray-500 mb-3 px-2 uppercase tracking-widest">{{ category }}</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div v-for="item in list" :key="item" class="flex items-center gap-4 p-4 bg-gray-900 rounded-2xl border border-gray-800">
+                            <input type="checkbox" class="w-5 h-5 rounded-lg border-gray-700 bg-black text-cyan-500">
+                            <span class="text-sm font-medium">{{ item }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="currentTab === 'shopping'" class="space-y-4">
+                <div v-for="item in shoppingItems" :key="item.name" class="card-neon p-5 rounded-3xl flex items-center gap-4">
+                    <div class="bg-gray-800 w-12 h-12 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="shopping-bag" class="text-cyan-400 w-6 h-6"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-black text-white text-sm">{{ item.name }}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">地點：{{ item.loc }}</p>
+                    </div>
+                    <div class="text-right font-bold text-pink-500 text-xs">{{ item.price }}</div>
                 </div>
             </div>
 
             <div v-if="currentTab === 'info'" class="space-y-6">
-                <section>
-                    <h2 class="text-pink-500 font-bold mb-4 flex items-center gap-2">
-                        <i data-lucide="hotel"></i> 住宿資訊
+                <section class="card-neon p-6 rounded-3xl">
+                    <h2 class="text-cyan-400 font-black text-sm mb-5 flex items-center gap-2">
+                        <i data-lucide="home"></i> 住宿導航
                     </h2>
-                    <div class="bg-gray-900 p-4 rounded-xl neon-border space-y-4">
-                        <div>
-                            <p class="text-xs text-gray-500">HONG KONG</p>
-                            <p class="font-bold">旭逸酒店 荃灣 (Hotel Ease)</p>
-                            <p class="text-xs opacity-70">葵涌圳邊街15-19號</p>
+                    <div class="space-y-6">
+                        <div @click="goMap('旭逸酒店 荃灣')" class="cursor-pointer">
+                            <p class="text-xs font-black text-white">香港：旭逸酒店 荃灣</p>
+                            <p class="text-[10px] text-gray-500">葵涌圳邊街15-19號</p>
                         </div>
-                        <hr class="border-gray-800">
-                        <div>
-                            <p class="text-xs text-gray-500">MACAU</p>
-                            <p class="font-bold">利澳酒店 (Rio Hotel)</p>
-                            <p class="text-xs opacity-70">澳門新口岸高美士街33號</p>
+                        <div class="h-[1px] bg-gray-800 w-full"></div>
+                        <div @click="goMap('澳門利澳酒店')" class="cursor-pointer">
+                            <p class="text-xs font-black text-white">澳門：利澳酒店</p>
+                            <p class="text-[10px] text-gray-500">澳門新口岸高美士街33號</p>
                         </div>
                     </div>
                 </section>
-
-                <section>
-                    <h2 class="text-cyan-500 font-bold mb-4 flex items-center gap-2">
-                        <i data-lucide="calculator"></i> 匯率換算 (1 HKD ≈ 4.12 TWD)
-                    </h2>
-                    <div class="bg-gray-900 p-4 rounded-xl neon-border">
-                        <div class="flex items-center gap-4">
-                            <input v-model="hkdInput" type="number" class="bg-black border border-gray-700 p-2 rounded w-full text-white" placeholder="輸入港幣">
-                            <span>➔</span>
-                            <div class="w-full text-xl font-bold text-cyan-400">NT$ {{ (hkdInput * 4.12).toFixed(0) }}</div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <div v-if="currentTab === 'budget'" class="space-y-4">
-                <div class="bg-gray-900 p-4 rounded-xl neon-border">
-                    <p class="text-sm text-gray-400">總花費累計</p>
-                    <p class="text-3xl font-black text-pink-500">HK$ {{ totalExpense }}</p>
-                </div>
-                <div class="space-y-2">
-                    <div v-for="exp in expenses" :key="exp.id" class="flex justify-between bg-black p-3 rounded-lg border border-gray-800">
-                        <span>{{ exp.note }}</span>
-                        <span class="text-green-400">${{ exp.amount }}</span>
-                    </div>
-                </div>
             </div>
 
         </main>
 
-        <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black bg-opacity-90 border-t border-gray-800 p-4 flex justify-around text-xs">
-            <div class="flex flex-col items-center text-cyan-400"><i data-lucide="calendar"></i><span>行程</span></div>
-            <div class="flex flex-col items-center text-gray-500"><i data-lucide="shopping-bag"></i><span>購物</span></div>
-            <div class="flex flex-col items-center text-gray-500"><i data-lucide="wallet"></i><span>記帳</span></div>
-            <div class="flex flex-col items-center text-gray-500"><i data-lucide="check-square"></i><span>清單</span></div>
-        </div>
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-gray-900 bg-opacity-95 backdrop-blur-md border-t border-gray-800 flex justify-around py-4 px-2 z-[100]">
+            <button @click="currentTab = 'itinerary'" :class="currentTab === 'itinerary' ? 'text-cyan-400' : 'text-gray-600'" class="flex flex-col items-center">
+                <i data-lucide="calendar" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-bold">行程</span>
+            </button>
+            <button @click="currentTab = 'shopping'" :class="currentTab === 'shopping' ? 'text-cyan-400' : 'text-gray-600'" class="flex flex-col items-center">
+                <i data-lucide="shopping-cart" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-bold">購物</span>
+            </button>
+            <button @click="currentTab = 'budget'" :class="currentTab === 'budget' ? 'text-cyan-400' : 'text-gray-600'" class="flex flex-col items-center">
+                <i data-lucide="banknote" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-bold">分帳</span>
+            </button>
+            <button @click="currentTab = 'packing'" :class="currentTab === 'packing' ? 'text-cyan-400' : 'text-gray-600'" class="flex flex-col items-center">
+                <i data-lucide="package-check" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-bold">清單</span>
+            </button>
+            <button @click="currentTab = 'info'" :class="currentTab === 'info' ? 'text-cyan-400' : 'text-gray-600'" class="flex flex-col items-center">
+                <i data-lucide="info" class="w-5 h-5"></i><span class="text-[9px] mt-1 font-bold">資訊</span>
+            </button>
+        </nav>
     </div>
 
     <script>
-        const { createApp, ref, computed, onMounted, nextTick } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
 
         createApp({
             setup() {
                 const currentTab = ref('itinerary');
                 const selectedDay = ref(1);
-                const hkdInput = ref(0);
                 
+                // 更新成員名單：加入陳RuRu
+                const members = ['小馬哥', '小村', '陳RuRu', 'Ruby', '妹妹'];
+
                 const tabs = [
-                    { id: 'itinerary', name: '每日行程表' },
-                    { id: 'info', name: '旅遊資訊' },
-                    { id: 'budget', name: '總花費/分帳' },
-                    { id: 'packing', name: '行李清單' }
+                    { id: 'itinerary', name: '行程表' },
+                    { id: 'shopping', name: '購物清單' },
+                    { id: 'budget', name: '五人分帳' },
+                    { id: 'packing', name: '行李清單' },
+                    { id: 'info', name: '資訊' }
                 ];
 
                 const days = [
@@ -196,42 +232,48 @@
 
                 const schedule = ref([
                     // Day 1
-                    { day: 1, time: '13:30', type: '航班', title: '抵達香港機場 (T1)', location: '香港國際機場', desc: '辦理入境、提領行李', nextTime: '30' },
-                    { day: 1, time: '14:30', type: '交通', title: '機場 ➔ 東薈城', location: 'Citygate Outlets', transport: '搭乘 S1 巴士，約15分鐘', cost: 'HK$3.7' },
-                    { day: 1, time: '15:00', type: '購物', title: '東薈城 Citygate Outlets', openTime: '10:00-22:00', location: '東薈城', desc: '推薦 COACH Outlet 折扣力度大', nextTime: '60' },
-                    { day: 1, time: '18:30', type: '美食', title: '竺扶大班燒味', openTime: '10:00-21:00', location: '灣仔竺扶大班燒味', desc: '必點：金牌厚切叉燒、脆皮燒肉', transport: '灣仔站 A3 出口' },
-                    { day: 1, time: '20:30', type: '景點', title: '山頂纜車 ➔ 維港夜景', location: '花園道山頂纜車總站', desc: '搭纜車上山看景，搭15號巴士下山', cost: 'HK$108' },
-                    
+                    { day: 1, time: '13:30', type: '航班', title: '抵達香港機場 (HKG)', desc: '提領行李、入境香港', nextGap: '60' },
+                    { day: 1, time: '14:30', type: '交通', title: '機場 ➔ 東薈城', trans: '搭 S1 巴士至「東薈城」下車。', cost: 'HK$3.7' },
+                    { day: 1, time: '15:00', type: '購物', title: '東薈城 COACH 巡禮', desc: '五人團戰第一站，鎖定 Outlet 折扣。' },
+                    { day: 1, time: '17:00', type: '住宿', title: '旭逸酒店 荃灣 (Check-in)', trans: '搭 E32 至葵興站，轉酒店接駁車。' },
+                    { day: 1, time: '18:30', type: '美食', title: '竺扶大班燒味', desc: '必吃：厚切叉燒、燒肉。' },
                     // Day 2
-                    { day: 2, time: '10:00', type: '住宿', title: '退房 ➔ 太子站', location: '太子上海街695號', desc: '寄存行李於中港通門市' },
-                    { day: 2, time: '11:00', type: '美食', title: '一點心 One Dim Sum', location: '太子通菜街209號', desc: '必點：薄皮鮮蝦餃、炸鮮奶', transport: '太子站 C2 出口' },
-                    { day: 2, time: '14:30', type: '交通', title: '港澳快線：香港 ➔ 澳門', location: '澳門利澳酒店', transport: '於太子上海街上車，回力站下車', cost: 'HK$180' },
-                    { day: 2, time: '20:00', type: '景點', title: '永利皇宮觀光纜車', location: '永利皇宮', desc: '免費看音樂噴泉，體驗澳門奢華夜景' }
+                    { day: 2, time: '11:00', type: '美食', title: '一點心 (One Dim Sum)', desc: '五人分食最划算，必點炸鮮奶。' },
+                    { day: 2, time: '14:30', type: '交通', title: '港澳快線 ➔ 澳門', trans: '太子站上車，直達澳門回力。', cost: 'HK$180' },
+                    { day: 2, time: '18:00', type: '景點', title: '大三巴 / 最香餅家', desc: '買炭燒杏仁餅、拍地標合照。' },
+                    // Day 3
+                    { day: 3, time: '10:00', type: '美食', title: '世紀咖啡早餐', desc: '瓦煲奶茶、厚蛋吐司，開跑最後一天。' },
+                    { day: 3, time: '14:00', type: '景點', title: '倫敦人大笨鐘 / 威尼斯人', desc: '最後採買與拍照，檢查 COACH 漏網之魚。' },
+                    { day: 3, time: '19:30', type: '交通', title: '抵達澳門機場 (MFM)', desc: 'JX206 (20:50起飛)' }
                 ]);
 
-                const expenses = ref([
-                    { id: 1, amount: 3.7, note: 'S1 巴士' },
-                    { id: 2, amount: 180, note: '港澳快線' }
+                // 墊付明細：加入陳RuRu
+                const bills = ref([
+                    { id: 1, payer: '小馬哥', amount: 900, note: '港澳快線 5 人' },
+                    { id: 2, payer: '陳RuRu', amount: 400, note: '山頂纜車全團票' },
+                    { id: 3, payer: '小村', amount: 350, note: '一點心早午餐' },
+                    { id: 4, payer: 'Ruby', amount: 150, note: '天星小輪與叮叮車' },
+                    { id: 5, payer: '妹妹', amount: 200, note: '第一天交通雜項' }
                 ]);
 
-                const totalExpense = computed(() => expenses.value.reduce((sum, item) => sum + item.amount, 0));
+                const shoppingItems = [
+                    { name: 'COACH 皮件', loc: '東薈城/威尼斯人', price: '必買' },
+                    { name: '珍妮曲奇', loc: '上環', price: 'HK$80' },
+                    { name: '最香餅家', loc: '澳門', price: 'MOP$40' }
+                ];
 
-                const filteredSchedule = computed(() => {
-                    return schedule.value.filter(item => item.day === selectedDay.value);
-                });
-
-                const openGoogleMaps = (loc) => {
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank');
+                const packingList = {
+                    "重要物品": ["護照/港簽", "英規轉接頭", "五人分享器/網卡"],
+                    "舒適隨身": ["好走的鞋", "防冷氣外套", "行動電源"]
                 };
 
-                onMounted(() => {
-                    lucide.createIcons();
-                });
+                const totalBudget = computed(() => bills.value.reduce((s, b) => s + b.amount, 0));
+                const filteredSchedule = computed(() => schedule.value.filter(s => s.day === selectedDay.value));
+                const goMap = (query) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
 
-                return { 
-                    currentTab, tabs, days, selectedDay, schedule, filteredSchedule, 
-                    openGoogleMaps, hkdInput, expenses, totalExpense 
-                };
+                onMounted(() => lucide.createIcons());
+
+                return { currentTab, tabs, days, selectedDay, filteredSchedule, goMap, bills, totalBudget, shoppingItems, packingList, members };
             }
         }).mount('#app');
     </script>
