@@ -28,16 +28,35 @@
         </div>
     </header>
 
-    <section class="px-5 mb-6">
+    <section class="px-5 mb-6 space-y-4">
         <div class="boarding-pass p-4 shadow-xl">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-[10px] font-black bg-blue-100 text-blue-700 px-2 py-0.5 rounded uppercase italic">Depart Flight</span>
                 <span class="text-gray-400 text-[10px] font-bold">2026/08/28</span>
             </div>
-            <div class="flex justify-between items-center">
-                <div class="text-center"><p class="text-xl font-black">TPE</p><p class="text-xs text-blue-500">11:30</p></div>
-                <div class="flex-1 px-4"><div class="h-px bg-gray-200 w-full relative"><i data-lucide="plane" class="w-3 h-3 text-blue-500 absolute -top-1.5 left-1/2 rotate-90"></i></div></div>
-                <div class="text-center"><p class="text-xl font-black">HKG</p><p class="text-xs text-blue-500">13:30</p></div>
+            <div class="flex justify-between items-center px-2">
+                <div class="text-center"><p class="text-2xl font-black">TPE</p><p class="text-xs text-blue-500">11:30</p></div>
+                <div class="flex-1 px-4 flex items-center">
+                    <div class="h-[1px] bg-gray-200 w-full relative border-t border-dashed border-gray-300">
+                        <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-1 text-blue-500">✈️</span>
+                    </div>
+                </div>
+                <div class="text-center"><p class="text-2xl font-black">HKG</p><p class="text-xs text-blue-500">13:30</p></div>
+            </div>
+        </div>
+        <div class="boarding-pass p-4 shadow-xl border-l-red-500">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-black bg-red-100 text-red-700 px-2 py-0.5 rounded uppercase italic">Return Flight</span>
+                <span class="text-gray-400 text-[10px] font-bold">2026/08/30</span>
+            </div>
+            <div class="flex justify-between items-center px-2">
+                <div class="text-center"><p class="text-2xl font-black">MFM</p><p class="text-xs text-red-500">20:50</p></div>
+                <div class="flex-1 px-4 flex items-center">
+                    <div class="h-[1px] bg-gray-200 w-full relative border-t border-dashed border-gray-300">
+                        <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-1 text-red-500">✈️</span>
+                    </div>
+                </div>
+                <div class="text-center"><p class="text-2xl font-black">TPE</p><p class="text-xs text-red-500">22:40</p></div>
             </div>
         </div>
     </section>
@@ -58,13 +77,12 @@
                     {{d.label}}
                 </button>
             </div>
-
             <div class="space-y-6">
                 <div v-for="(item, index) in filteredItinerary" :key="index">
                     <div class="glass p-5 shadow-xl border-t-4 border-blue-500">
                         <div class="flex justify-between mb-3">
                             <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-[10px] font-black italic">{{item.cat}}</span>
-                            <span v-if="item.cost" class="text-red-500 font-black text-sm">HK$ {{item.cost}}</span>
+                            <span v-if="item.cost > 0" class="text-red-500 font-black text-sm">HK$ {{item.cost}}</span>
                         </div>
                         <h3 class="text-lg font-black text-slate-800 mb-1 leading-tight">{{item.name}}</h3>
                         <p class="text-blue-600 font-bold text-xs mb-3">🕒 {{item.time}}</p>
@@ -76,7 +94,6 @@
                             <span class="text-sm">Google Map 導航</span>
                         </button>
                     </div>
-                    <div v-if="index !== filteredItinerary.length - 1" class="h-6 w-px bg-white/20 mx-auto my-2 border-l border-dashed"></div>
                 </div>
             </div>
         </div>
@@ -84,28 +101,32 @@
         <div v-if="activeTab === 'tips'" class="space-y-4">
             <div v-for="tip in proTips" class="glass p-5 border-l-8 border-orange-400">
                 <h4 class="font-black text-slate-800 mb-2 flex items-center"><i data-lucide="alert-circle" class="w-4 h-4 mr-2 text-orange-500"></i>{{tip.title}}</h4>
-                <ul class="space-y-2">
-                    <li v-for="li in tip.items" class="text-[12px] text-slate-600 flex items-start">
-                        <i data-lucide="check" class="w-3 h-3 text-green-500 mr-2 mt-1"></i>{{li}}
-                    </li>
+                <ul class="space-y-2 text-[12px] text-slate-600">
+                    <li v-for="li in tip.items" class="flex items-start"><i data-lucide="check" class="w-3 h-3 text-green-500 mr-2 mt-1 flex-shrink-0"></i>{{li}}</li>
                 </ul>
             </div>
         </div>
 
         <div v-if="activeTab === 'cost'" class="space-y-6">
             <div class="glass p-6 text-center">
-                <p class="text-xs text-gray-400 font-bold mb-1 uppercase">Estimated Total</p>
+                <p class="text-xs text-gray-400 font-bold mb-1 uppercase tracking-widest">Estimated Total Cost</p>
                 <h2 class="text-4xl font-black text-slate-800">HK$ {{totalCost}}</h2>
-                <div class="flex justify-center mt-3 gap-4">
-                    <div class="text-center"><p class="text-[10px] text-gray-400">每人預算</p><p class="font-black text-blue-600">HK$ {{(totalCost/members.length).toFixed(1)}}</p></div>
+                <div class="mt-4 p-3 bg-blue-50 rounded-2xl">
+                    <p class="text-[10px] text-blue-400 font-bold uppercase mb-1">每人平均預估</p>
+                    <p class="text-2xl font-black text-blue-600 italic">HK$ {{(totalCost/members.length).toFixed(1)}}</p>
                 </div>
             </div>
             <div class="glass p-5">
-                <h4 class="font-black mb-4 flex items-center"><i data-lucide="calculator" class="w-4 h-4 mr-2 text-blue-500"></i>手動編輯費用 (可在程式碼修改)</h4>
-                <div class="space-y-2">
-                    <div v-for="item in itineraryData" v-if="item.cost" class="flex justify-between text-xs p-2 bg-slate-50 rounded">
-                        <span class="text-slate-500">{{item.name}}</span>
-                        <span class="font-bold">HK$ {{item.cost}}</span>
+                <h4 class="font-black text-slate-800 mb-4 border-b pb-2 flex items-center text-sm">
+                    <i data-lucide="list" class="w-4 h-4 mr-2 text-blue-500"></i> 詳細支出清單
+                </h4>
+                <div class="space-y-3">
+                    <div v-for="item in itineraryData" v-if="item.cost > 0" class="flex justify-between items-center text-xs p-2 bg-slate-50 rounded-lg border border-slate-100">
+                        <div>
+                            <span class="text-[9px] bg-slate-200 px-1 rounded mr-2 text-slate-500">{{item.date}}</span>
+                            <span class="font-bold text-slate-700">{{item.name}}</span>
+                        </div>
+                        <span class="font-black text-red-500">HK$ {{item.cost}}</span>
                     </div>
                 </div>
             </div>
@@ -113,11 +134,11 @@
 
         <div v-if="activeTab === 'luggage'" class="space-y-4">
             <div v-for="(category, name) in luggageList" class="glass p-5">
-                <h4 class="font-black text-blue-600 mb-3 border-b pb-2">{{name}}</h4>
+                <h4 class="font-black text-blue-600 mb-3 border-b pb-2 flex justify-between items-center text-sm">{{name}} <i data-lucide="check-square" class="w-4 h-4"></i></h4>
                 <div class="grid grid-cols-1 gap-2">
-                    <label v-for="item in category" class="flex items-center space-x-3 text-sm text-slate-600 p-1">
-                        <input type="checkbox" class="w-4 h-4 rounded text-blue-500">
-                        <span>{{item}}</span>
+                    <label v-for="item in category" class="flex items-center space-x-3 text-sm text-slate-600 p-1 active:opacity-50">
+                        <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="font-medium">{{item}}</span>
                     </label>
                 </div>
             </div>
@@ -141,43 +162,42 @@ createApp({
         const activeTab = ref('plan');
         const currentDate = ref('08.28');
         const members = ['小馬哥', '小村', '陳RuRu', 'Ruby', '妹妹'];
-        
         const tabs = [
             { id: 'plan', name: '行程', icon: 'map' },
             { id: 'tips', name: '大師叮嚀', icon: 'zap' },
             { id: 'cost', name: '費用', icon: 'dollar-sign' },
             { id: 'luggage', name: '行李清單', icon: 'briefcase' }
         ];
-
         const days = [{ label: '8/28(五)', date: '08.28' }, { label: '8/29(六)', date: '08.29' }, { label: '8/30(日)', date: '08.30' }];
 
-        // 行程數據 (費用可在這裡修改)
+        // 行程與費用數據 (cost可直接在此修改數字)
         const itineraryData = ref([
-            { date: '08.28', time: '13:30', cat: '抵達', name: '香港機場入境/儲值八達通', route: '領完行李後往入境大廳。', cost: 0 },
-            { date: '08.28', time: '15:00', cat: '購物', name: '東薈城名店倉', route: '機場搭 S1 巴士至「東涌站」。', cost: 3.7 },
-            { date: '08.28', time: '16:45', cat: '住宿', name: '旭逸酒店放行李', route: '東涌搭 E32 至「昌榮路」下車。', cost: 11.3 },
-            { date: '08.28', time: '18:45', cat: '美食', name: '竺扶大班燒味', route: '酒店接駁至葵興站 -> 灣仔 A3 出口。', cost: 15.0 },
-            { date: '08.28', time: '19:45', cat: '景點', name: '叮叮車體驗', route: '柯布連道(43E) -> 銀行街(31E)。', cost: 3.0 },
-            { date: '08.28', time: '20:15', cat: '景點', name: '太平山夜景', route: '步行至花園道纜車站。', cost: 88.0 },
-            { date: '08.28', time: '21:45', cat: '交通', name: '天星小輪往尖沙咀', route: '15號巴士 -> 中環碼頭 -> 渡輪。', cost: 17.1 },
-            { date: '08.28', time: '22:30', cat: '美食', name: '佳佳甜品 & 樂酒場', route: '步行至維港後往佐敦移動。', cost: 5.0 },
-            { date: '08.28', time: '00:30', cat: '交通', name: '回酒店休息', route: '深夜建議搭計程車(約$120/5人)。', cost: 24.0 },
+            { date: '08.28', time: '13:30', cat: '流程', name: '機場入境/儲值八達通', route: '領完行李後往入境大廳。', cost: 0 },
+            { date: '08.28', time: '15:00', cat: '交通', name: 'S1巴士至東涌', route: '機場搭 S1 巴士至「東涌站」。', cost: 3.7 },
+            { date: '08.28', time: '16:45', cat: '交通', name: 'E32巴士至飯店', route: '東涌搭 E32 至「昌榮路」下車。', cost: 11.3 },
+            { date: '08.28', time: '18:45', cat: '交通', name: '地鐵至灣仔', route: '酒店接駁至葵興站 -> 灣仔 A3 出口。', cost: 15.0 },
+            { date: '08.28', time: '19:45', cat: '交通', name: '叮叮車體驗', route: '柯布連道(43E) -> 銀行街(31E)。', cost: 3.0 },
+            { date: '08.28', time: '20:15', cat: '景點', name: '山頂纜車(來回)', route: '步行至花園道纜車站。', cost: 88.0 },
+            { date: '08.28', time: '21:45', cat: '交通', name: '15號巴士+小輪', route: '15號巴士至中環 -> 天星小輪。', cost: 17.1 },
+            { date: '08.28', time: '22:30', cat: '交通', name: '尖沙咀小客車/巴士', route: '步行至維港後往佐敦移動。', cost: 5.0 },
+            { date: '08.28', time: '00:30', cat: '交通', name: '回店計程車(預估)', route: '深夜計程車回葵涌。', cost: 24.0 },
             
-            { date: '08.29', time: '09:30', cat: '出發', name: '退房前往太子', route: '葵興站 -> 太子站 B2 出口。', cost: 9.5 },
-            { date: '08.29', time: '10:15', cat: '美食', name: '早餐：一點心', route: '上海街 695 號寄行李 -> 步行至通菜街。', cost: 100 },
-            { date: '08.29', time: '12:00', cat: '購物', name: '上環採買/兆成行', route: '太子站 -> 上環站 E2 出口。', cost: 13.0 },
+            { date: '08.29', time: '09:30', cat: '交通', name: '地鐵至太子', route: '葵興站 -> 太子站 B2 出口。', cost: 9.5 },
+            { date: '08.29', time: '10:15', cat: '美食', name: '早餐預算：一點心', route: '上海街寄行李 -> 步行至通菜街。', cost: 100 },
+            { date: '08.29', time: '12:00', cat: '交通', name: '地鐵至上環', route: '太子站 -> 上環站 E2 出口。', cost: 13.0 },
             { date: '08.29', time: '13:30', cat: '美食', name: '蘭芳園奶茶', route: '步行至結志街 2 號。', cost: 25.0 },
-            { date: '08.29', time: '15:00', cat: '交通', name: '港澳快線赴澳', route: '上海街 695 號上車。', cost: 160 },
-            { date: '08.29', time: '17:30', cat: '景點', name: '大三巴牌坊', route: '利澳酒店門口搭 3 或 10 號巴士。', cost: 6.0 },
-            { date: '08.29', time: '19:30', cat: '美食', name: '晚餐：葡式料理', route: '新口岸中土大廈。', cost: 250 },
+            { date: '08.29', time: '14:15', cat: '交通', name: '地鐵回太子', route: '中環回太子拿行李。', cost: 13.0 },
+            { date: '08.29', time: '15:00', cat: '交通', name: '港澳快線(赴澳)', route: '上海街 695 號上車。', cost: 160.0 },
+            { date: '08.29', time: '17:30', cat: '交通', name: '澳門巴士', route: '搭 3 或 10 號巴士至新馬路。', cost: 6.0 },
+            { date: '08.29', time: '19:30', cat: '美食', name: '晚餐：葡式料理', route: '新口岸中土大廈。', cost: 250.0 },
 
-            { date: '08.30', time: '09:30', cat: '出發', name: '威尼斯人寄存', route: '搭計程車前往(約$80/5人)。', cost: 16 },
-            { date: '08.30', time: '10:15', cat: '美食', name: '世記咖啡', route: '經自動步行系統至官也街。', cost: 60 }
+            { date: '08.30', time: '09:30', cat: '交通', name: '計程車至威尼斯人', route: '帶行李移動至氹仔。', cost: 16.0 },
+            { date: '08.30', time: '10:15', cat: '美食', name: '世紀咖啡/官也街', route: '自動步行系統至官也街。', cost: 60.0 }
         ]);
 
         const proTips = [
             { title: '行李寄存', items: ['Day 2 香港：太子站港澳快線合作候車室。', 'Day 3 澳門：威尼斯人西翼大堂 (MOP 30-50/件)。'] },
-            { title: '支付工具', items: ['香港：現金必備！兆成行、珍妮曲奇、蘭芳園不收電子支付。', '澳門：巴士可用八達通，但匯率不划算(1:1)。'] },
+            { title: '支付工具', items: ['香港：現金必備！兆成行、珍妮曲奇、蘭芳園不收電子支付。', '澳門：巴士可用八達通，但匯率不划算。'] },
             { title: '交通秘訣', items: ['叮叮車：後門上車、前門下車刷卡。', '港澳快線：週末務必提早官網預約班次。'] }
         ];
 
