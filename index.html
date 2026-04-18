@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 港澳吃喝團之小馬哥首航</title>
+    <title>2026 港澳吃喝首航團</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
@@ -33,7 +34,7 @@
         </div>
     </header>
 
-    <!-- Nav (對調順序：行程 -> 大師叮嚀 -> 清單 -> 資訊) -->
+    <!-- Nav (順序：行程-資訊-行李清單-大師叮嚀) -->
     <nav class="sticky top-0 z-50 bg-white border-b flex justify-around p-2 gap-1 shadow-sm">
         <button v-for="t in tabs" @click="activeTab = t.id"
                 :class="activeTab === t.id ? 'tab-active' : 'text-slate-500 bg-slate-50'"
@@ -45,7 +46,7 @@
 
     <main class="px-4 mt-6">
         
-        <!-- 行程分頁 (完全保留所有項目) -->
+        <!-- 行程分頁 (第二天路線大補強) -->
         <div v-if="activeTab === 'plan'" class="space-y-6">
             <div class="flex space-x-2 overflow-x-auto no-scrollbar">
                 <button v-for="d in days" @click="currentDate = d.date"
@@ -120,7 +121,7 @@
                                     <p class="text-[11px] text-slate-700 leading-relaxed font-medium" v-html="item.route"></p>
                                 </div>
                                 <div v-if="item.alt" class="bg-emerald-50 rounded-lg p-2 border border-emerald-100">
-                                    <p class="text-[10px] font-black text-emerald-700 mb-1">🚶 步行/替代</p>
+                                    <p class="text-[10px] font-black text-emerald-700 mb-1">🚶 提醒/步行</p>
                                     <p class="text-[10px] text-emerald-800" v-html="item.alt"></p>
                                 </div>
                             </div>
@@ -130,70 +131,12 @@
                             <span class="text-[8px] text-slate-400 font-bold text-center">{{ item.imgName }}</span>
                         </div>
                     </div>
-                    <div v-if="item.cost" class="mt-2 text-[10px] font-bold text-slate-400">💰 預估費用: {{ item.cost }}</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 大師叮嚀分頁 (詳細內容) -->
-        <div v-if="activeTab === 'tips'" class="space-y-4">
-            <section class="glass p-6">
-                <h3 class="font-black text-lg mb-4 text-orange-600 border-b pb-2 flex items-center gap-2">
-                    <i data-lucide="zap" class="w-5 h-5"></i> 港澳生存地頭蛇攻略
-                </h3>
-                <div class="space-y-6">
-                    <div>
-                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
-                            <i data-lucide="dollar-sign" class="w-4 h-4 text-orange-400"></i> 金錢支付與匯率
-                        </p>
-                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
-                            <li>• <b>現金為王</b>：香港老牌茶餐廳（如蘭芳園、澳洲牛奶公司）多只收現金，建議準備充足 100/500 面額。</li>
-                            <li>• <b>不收千元鈔</b>：許多店家明確標示「不收千元大鈔」，換錢時請盡量換 500 以下。</li>
-                            <li>• <b>澳門支付</b>：澳門可直接用港幣，但店家多以 1:1 給付（不補匯差），小金額無妨，大額刷卡較划算。</li>
-                        </ul>
-                    </div>
-                    <div class="pt-4 border-t border-slate-100">
-                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
-                            <i data-lucide="utensils" class="w-4 h-4 text-red-400"></i> 飲食文化與潛規則
-                        </p>
-                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
-                            <li>• <b>併桌(搭檯)文化</b>：尖峰時段必併桌，且服務生會直接指位，請迅速坐好點餐，吃完即走。</li>
-                            <li>• <b>洗筷子文化</b>：第一杯倒在塑膠碗裡的淡茶通常是洗餐具用的，別急著喝下去。</li>
-                            <li>• <b>衛生紙</b>：港澳餐廳通常不附面紙，或是要額外收費。包包裡一定要自備。</li>
-                        </ul>
-                    </div>
-                    <div class="pt-4 border-t border-slate-100">
-                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
-                            <i data-lucide="smartphone" class="w-4 h-4 text-blue-400"></i> 通訊與交通小技巧
-                        </p>
-                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
-                            <li>• <b>離線地圖</b>：地鐵深層收訊極差，建議將飯店與重要出口的 Google Map 截圖。</li>
-                            <li>• <b>叮叮車</b>：固定 $3，後門上車不用刷，前門下車刷卡。</li>
-                            <li>• <b>免費接駁巴士</b>：澳門各大賭場接駁車（發財車）非常發達，善用威尼斯人、倫敦人接駁車可省下大量車資。</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- 清單分頁 (分類細節強化) -->
-        <div v-if="activeTab === 'bag'" class="space-y-4">
-            <div v-for="(group, gIdx) in packingGroups" :key="gIdx" class="glass p-5 shadow-sm">
-                <h3 class="font-black text-sm mb-4 text-blue-800 flex items-center gap-2 border-b pb-2">
-                    <i :data-lucide="group.icon" class="w-4 h-4"></i> {{ group.title }}
-                </h3>
-                <div class="grid grid-cols-1 gap-2">
-                    <label v-for="i in group.items" :key="i" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 border border-transparent">
-                        <input type="checkbox" class="w-5 h-5 rounded-md border-slate-300 text-blue-600">
-                        <span class="text-xs text-slate-700 font-bold">{{ i }}</span>
-                    </label>
                 </div>
             </div>
         </div>
 
         <!-- 資訊分頁 (住宿 + 連結) -->
         <div v-if="activeTab === 'info'" class="space-y-4">
-            <!-- 住宿 -->
             <section class="glass p-6">
                 <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2">🏨 住宿資訊</h3>
                 <div class="space-y-6">
@@ -227,8 +170,6 @@
                     </div>
                 </div>
             </section>
-
-            <!-- 連結 -->
             <section class="glass p-6">
                 <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2">🔗 重要連結</h3>
                 <div class="space-y-3">
@@ -239,6 +180,59 @@
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                     </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- 清單分頁 -->
+        <div v-if="activeTab === 'bag'" class="space-y-4">
+            <div v-for="(group, gIdx) in packingGroups" :key="gIdx" class="glass p-5 shadow-sm">
+                <h3 class="font-black text-sm mb-4 text-blue-800 flex items-center gap-2 border-b pb-2">
+                    <i :data-lucide="group.icon" class="w-4 h-4"></i> {{ group.title }}
+                </h3>
+                <div class="grid grid-cols-1 gap-2">
+                    <label v-for="i in group.items" :key="i" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 border border-transparent">
+                        <input type="checkbox" class="w-5 h-5 rounded-md border-slate-300 text-blue-600">
+                        <span class="text-xs text-slate-700 font-bold">{{ i }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 大師叮嚀分頁 -->
+        <div v-if="activeTab === 'tips'" class="space-y-4">
+            <section class="glass p-6">
+                <h3 class="font-black text-lg mb-4 text-orange-600 border-b pb-2 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5"></i> 港澳生存地頭蛇攻略
+                </h3>
+                <div class="space-y-6">
+                    <div>
+                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                            <i data-lucide="dollar-sign" class="w-4 h-4 text-orange-400"></i> 金錢支付與匯率
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
+                            <li>• <b>不收千元鈔</b>：許多店家明確標示「不收千元大鈔」，換錢時請盡量換 500 以下。</li>
+                            <li>• <b>澳門支付</b>：澳門可直接用港幣，但店家多以 1:1 給付（不補匯差），小金額無妨，大額刷卡較划算。</li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                            <i data-lucide="utensils" class="w-4 h-4 text-red-400"></i> 飲食文化與潛規則
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
+                            <li>• <b>併桌(搭檯)文化</b>：尖峰時段必併桌，且服務生會直接指位，請迅速坐好點餐，吃完即走。</li>
+                            <li>• <b>洗筷子文化</b>：第一杯倒在塑膠碗裡的淡茶通常是洗餐具用的，別急著喝下去。</li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                            <i data-lucide="smartphone" class="w-4 h-4 text-blue-400"></i> 通訊與交通小技巧
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
+                            <li>• <b>離線地圖</b>：地鐵深層收訊極差，建議將飯店與重要出口的 Google Map 截圖。</li>
+                            <li>• <b>免費接駁巴士</b>：澳門各大賭場接駁車（發財車）非常發達，善用威尼斯人、倫敦人接駁車可省下大量車資。</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
         </div>
@@ -257,9 +251,9 @@
             
             const tabs = [
                 { id: 'plan', name: '行程', icon: 'map' },
-                { id: 'tips', name: '大師叮嚀', icon: 'zap' },
+                { id: 'info', name: '資訊', icon: 'link' },
                 { id: 'bag', name: '清單', icon: 'check-square' },
-                { id: 'info', name: '資訊', icon: 'link' }
+                { id: 'tips', name: '大師叮嚀', icon: 'zap' }
             ];
 
             const days = [
@@ -269,50 +263,49 @@
             ];
 
             const packingGroups = [
-                { title: '身分證件 (必帶)', icon: 'briefcase', items: ['護照正本 (效期6個月)', '台胞證 或 港簽列印本', '身分證正本 (機場備查)', '保險單影本', '行程與車票QR Code截圖'] },
-                { title: '金錢與通訊', icon: 'smartphone', items: ['港幣現金 (2500元以上)', '信用卡 (JCB/VISA各一)', '八達通卡', '漫遊網卡/eSIM (已安裝)', '行動電源 (10000mAh+)', '充電頭與英規轉接頭', '充電線 (Type-C/Lightning)'] },
-                { title: '個人衛生與藥品', icon: 'pill', items: ['個人日常藥品 (感冒/腸胃)', '隨身面紙/濕紙巾 (港澳必備)', '摺疊雨傘/雨衣', '太陽眼鏡', '醫療口罩備用', '薄外套 (室內冷氣極強)'] },
-                { title: '衣物與配件', icon: 'shirt', items: ['換洗衣物三套', '好走的步行球鞋 (勿帶新鞋)', '涼拖鞋備用', '行李束帶', '空的大提袋 (買伴手禮用)'] }
+                { title: '身分證件 (必帶)', icon: 'briefcase', items: ['護照正本 (效期6個月)', '台胞證 或 港簽列印本', '身分證正本 (機場備查)', '行程與車票QR Code截圖'] },
+                { title: '金錢與通訊', icon: 'smartphone', items: ['港幣現金 (2500元以上)', '信用卡 (JCB/VISA各一)', '八達通卡', '行動電源 (10000mAh+)', '英規轉接頭'] },
+                { title: '個人衛生與藥品', icon: 'pill', items: ['個人日常藥品', '隨身面紙/濕紙巾 (港澳餐廳必備)', '摺疊雨傘', '薄外套 (室內冷氣強)'] }
             ];
 
             const itinerary = [
+                // Day 1 保留
                 { date: '08.28', time: '14:30', cat: '購物', name: '東薈城名店倉 (Outlet)', img: 'https://images.unsplash.com/photo-1605902711622-cfb43c443ffb?w=200', imgName: 'Coach/Nike',
-                  route: '機場搭 <b>S1 巴士</b> ➔ 終點站「東涌站」下車，右手邊即是入口。', 
-                  alt: '🚕 <b>計程車：</b>直達飯店約 $180 (省體力方案)。', cost: '$3.7' },
+                  route: '機場搭 <b>S1 巴士</b> ➔ 終點站「東涌站」下車，右手邊即是入口。', alt: '計程車直達飯店約 $180。' },
                 { date: '08.28', time: '17:00', cat: '流程', name: '回飯店放行李 (旭逸)',
-                  route: '從東涌站搭地鐵至 <b>葵興站</b> ➔ 出口 B 下樓平台搭乘 <b>飯店免費接駁車</b>。',
-                  alt: '休息至 18:30 再出發去市區吃晚餐。', cost: '免費' },
-                { date: '08.28', time: '19:30', cat: '美食', name: '竺扶大班燒味', img: 'https://images.unsplash.com/photo-1512132411229-c30391241dd8?w=200', imgName: '厚切叉燒',
-                  route: '搭接駁車至葵興站 ➔ 地鐵至 <b>灣仔站 (A3 出口)</b> ➔ 過馬路右轉走 3 分鐘。', 
-                  alt: '🚶 吃完步行 5 分鐘去搭「叮叮車」。', cost: '$100' },
-                { date: '08.28', time: '20:45', cat: '交通', name: '叮叮車 ➔ 半山扶梯 ➔ 纜車',
-                  route: '搭路面 <b>叮叮車</b> 往西 ➔ <b>租庇利街</b> 下車 ➔ 步行上 <b>半山扶梯</b> 拍照 ➔ 步行至花園道搭纜車。', 
-                  alt: '🚋 <b>叮叮車：</b>後門上車，下車刷卡，固定 $3。', cost: '$103' },
-                { date: '08.28', time: '22:00', cat: '景點', name: '15號巴士下山 ➔ 星光大道', img: 'https://images.unsplash.com/photo-1549646441-b7740d2159e1?w=200', imgName: '維港夜景',
-                  route: '山頂搭 <b>15 號巴士</b> 下山 ➔ <b>中環 7 號碼頭</b> 搭天星小輪 ➔ 抵達尖沙咀 ➔ 步行至星光大道。', cost: '$20' },
-                { date: '08.28', time: '23:30', cat: '美食', name: '佳佳甜品 ➔ 樂酒場', img: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=200', imgName: '芝麻糊/居酒屋',
-                  route: '尖東地鐵搭一站到 <b>佐敦站 (A 出口)</b> ➔ 吃甜品 ➔ 隔壁樂酒場續攤。', 
-                  alt: '🚕 <b>回程：</b>深夜建議叫 Uber/計程車回飯店約 $120。', cost: '$150+' },
-                { date: '08.29', time: '10:00', cat: '流程', name: '退房 ➔ 太子站寄存行李', 
-                  route: '飯店退房 ➔ 搭地鐵/巴士至 <b>太子站 (C2 出口)</b> ➔ 往上海街 695 號門市寄放行李。', cost: '$30/件' },
-                { date: '08.29', time: '11:00', cat: '美食', name: '一點心 (One Dim Sum)', img: 'https://images.unsplash.com/photo-1563245339-612e17f0d0c1?w=200', imgName: '平價米其林',
-                  route: '步行 2 分鐘即可抵達，建議提早排隊。', cost: '$120' },
-                { date: '08.29', time: '12:30', cat: '購物', name: '上環巡禮 (兆成行/珍妮/蘭芳園)', img: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=200', imgName: '小熊餅乾',
-                  route: '地鐵至 <b>上環站 (E2 出口)</b> ➔ 步行 5 分鐘買 <b>珍妮曲奇</b> ➔ 步行 2 分鐘 <b>兆成行</b> ➔ 最後去 <b>蘭芳園</b>。', 
-                  alt: '🚶 三個點都在方圓 500 公尺內。', cost: '採買費' },
-                { date: '08.29', time: '14:30', cat: '交通', name: '回太子站 ➔ 港澳快線', 
-                  route: '回太子取行李 ➔ 15:00 上車經港珠澳大橋 ➔ 抵達澳門利澳酒店。', cost: '$180' },
-                { date: '08.29', time: '20:30', cat: '景點', name: '永利皇宮纜車 ➔ 杏香園', img: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=200', imgName: '馬蹄沙',
-                  route: '搭輕軌至路氹東站 ➔ 坐免費纜車 ➔ 結束後搭車至 <b>杏香園甜品</b>。', 
-                  alt: '🚶 杏香園後可散步回飯店 (15分)。', cost: '$100' },
-                { date: '08.30', time: '10:00', cat: '流程', name: '退房 ➔ 威尼斯人西翼', 
-                  route: '利澳退房 ➔ 搭 <b>MT1</b> 或 <b>計程車</b> 直達威尼斯人西翼大堂寄行李。', cost: '$30/件' },
-                { date: '08.30', time: '11:30', cat: '美食', name: '官也街 (世紀咖啡/蛋塔)', img: 'https://images.unsplash.com/photo-1598214886806-c87b84b7078b?w=200', imgName: '豬扒包/蛋塔',
-                  route: '威尼斯人西翼出口 ➔ 經 <b>自動步行系統</b> (冷氣步道) ➔ 步行 10 分鐘直達。', cost: '$100' },
-                { date: '08.30', time: '14:30', cat: '購物', name: '威尼斯人 3 樓商場', 
-                  route: '走原路步行系統回飯店，開始大運河中心購物行程。', duration: '3小時' },
-                { date: '08.30', time: '18:30', cat: '流程', name: '領物 ➔ 澳門機場', 
-                  route: '回西翼大廳取行李 ➔ 出口搭 <b>「機場專線」免費巴士</b> ➔ 5 分鐘到。', cost: '免費' }
+                  route: '東涌站搭地鐵至 <b>葵興站</b> ➔ 出口 B ➔ 平台搭乘 <b>飯店免費接駁車</b>。' },
+                { date: '08.28', time: '19:30', cat: '美食', name: '竺扶大班燒味', img: 'https://images.unsplash.com/photo-1512132411229-c30391241dd8?w=200',
+                  route: '葵興站 ➔ 地鐵至 <b>灣仔站 (A3 出口)</b> ➔ 右轉走 3 分鐘。' },
+                { date: '08.28', time: '20:45', cat: '交通', name: '叮叮車 ➔ 半山扶梯',
+                  route: '搭路面 <b>叮叮車</b> 往西 ➔ <b>租庇利街</b> 下車 ➔ 步行上 <b>半山扶梯</b>。' },
+                
+                // Day 2 補全路線規劃
+                { date: '08.29', time: '10:00', cat: '流程', name: '飯店退房 ➔ 太子寄存行李', 
+                  route: '飯店搭接駁車至葵興站 ➔ 搭地鐵至 <b>太子站 (C2 出口)</b> ➔ 步行至 <b>上海街 695 號</b> 門市寄行李。', 
+                  alt: '<b>重要：</b>這裡就是下午搭「港澳快線」的地點，原處寄放最方便！' },
+                { date: '08.29', time: '11:00', cat: '美食', name: '一點心 (One Dim Sum)', 
+                  route: '從行李寄放處步行 2 分鐘即可抵達。', alt: '平價米其林，需現場排隊。' },
+                { date: '08.29', time: '13:00', cat: '購物', name: '上環巡禮 (蘭芳園/珍妮曲奇)', 
+                  route: '太子站搭 <b>荃灣線</b> 直達 <b>中環站</b> ➔ 轉 <b>港島線</b> 往上環方向 ➔ <b>上環站 (E2 出口)</b>。', 
+                  alt: '步行即可買完珍妮曲奇與蘭芳園絲襪奶茶。' },
+                { date: '08.29', time: '14:45', cat: '交通', name: '上環 ➔ 回太子站取行李', 
+                  route: '從 <b>上環站</b> 搭地鐵回 <b>太子站 (C2 出口)</b> ➔ 步行回上海街 695 號門市。',
+                  alt: '<b>提醒：</b>需預留 30 分鐘車程，確保 15:15 前抵達門市報到。' },
+                { date: '08.29', time: '15:30', cat: '流程', name: '搭乘港澳快線 (跨海大橋)', 
+                  route: '由太子站門市上車 ➔ 經港珠澳大橋 ➔ 抵達澳門。', alt: '車程約 100-120 分鐘，過關需帶行李下車。' },
+                { date: '08.29', time: '18:00', cat: '流程', name: '澳門金沙下車 ➔ 利澳酒店', 
+                  route: '於「澳門金沙酒店」下車 ➔ 轉搭 <b>計程車 (約5分鐘)</b> 或 <b>步行 10-12 分鐘</b> 抵達利澳酒店。',
+                  alt: '🚶 步行路線：沿友誼大馬路走至高美士街。' },
+                { date: '08.29', time: '20:30', cat: '景點', name: '永利皇宮纜車', 
+                  route: '飯店搭計程車或公車至路氹 ➔ 坐免費纜車。' },
+
+                // Day 3 保留
+                { date: '08.30', time: '10:00', cat: '流程', name: '退房 ➔ 威尼斯人寄行李', 
+                  route: '利澳搭計程車直達威尼斯人西翼大堂寄行李。' },
+                { date: '08.30', time: '11:30', cat: '美食', name: '官也街 (世紀咖啡)', 
+                  route: '威尼斯人西翼出口 ➔ 經 <b>自動步行系統</b> (冷氣步道) ➔ 步行 10 分鐘直達。' },
+                { date: '08.30', time: '18:30', cat: '流程', name: '取件 ➔ 澳門機場', 
+                  route: '威尼斯人西翼搭 <b>「機場專線」免費巴士</b> ➔ 5 分鐘抵達。' }
             ];
 
             const getBorderColor = (cat) => {
@@ -333,3 +326,5 @@
 </script>
 </body>
 </html>
+
+```
