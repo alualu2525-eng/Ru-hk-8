@@ -1,7 +1,119 @@
-<div style="display:flex;gap:10px;align-items:center;">
-  <img :src="p.img" class="img-small" style="width:90px;height:90px;">
-  <div>
-    <h3>{{p.name}}</h3>
-    <p style="font-size:12px;opacity:0.8">{{p.desc}}</p>
-  </div>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>港澳AI導航完整版</title>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+
+<style>
+body{margin:0;font-family:sans-serif;background:#0b1220;color:white;}
+.topbar{display:flex;justify-content:space-around;background:#111;padding:10px;}
+.tab{padding:8px;color:#aaa;cursor:pointer;}
+.active{color:white;border-bottom:2px solid #3b82f6;}
+.card{background:rgba(255,255,255,0.08);margin:12px;padding:16px;border-radius:16px;}
+button{width:100%;padding:10px;border-radius:10px;background:#2563eb;color:white;border:none;}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+<h2 style="text-align:center">🧭 港澳AI導航完整版</h2>
+
+<!-- 分頁 -->
+<div class="topbar">
+<div class="tab" :class="{active:tab==='plan'}" @click="tab='plan'">行程</div>
+<div class="tab" :class="{active:tab==='weather'}" @click="tab='weather'">天氣</div>
+<div class="tab" :class="{active:tab==='bag'}" @click="tab='bag'">行李</div>
+<div class="tab" :class="{active:tab==='info'}" @click="tab='info'">資訊</div>
 </div>
+
+<!-- 行程 -->
+<div v-if="tab==='plan'">
+<div class="card" v-for="p in plans">
+<h3>{{p.name}}</h3>
+<p>{{p.desc}}</p>
+<p>距離：{{distance(p)}} m</p>
+<button @click="nav(p)">📍導航</button>
+</div>
+</div>
+
+<!-- 天氣 -->
+<div v-if="tab==='weather'" class="card">
+🌤 香港：{{weather.hk}}°C<br>
+🌤 澳門：{{weather.mo}}°C
+</div>
+
+<!-- 行李 -->
+<div v-if="tab==='bag'" class="card">
+<div v-for="b in bag">
+<input type="checkbox"> {{b}}<br>
+</div>
+</div>
+
+<!-- 資訊 -->
+<div v-if="tab==='info'" class="card">
+📍 GitHub Pages 上線後可用<br>
+📍 PWABuilder 可轉APK<br>
+📍 iPhone可加入主畫面
+</div>
+
+</div>
+
+<script>
+const {createApp,ref,onMounted}=Vue;
+
+createApp({
+setup(){
+
+const tab=ref('plan');
+
+const weather=ref({hk:32,mo:31});
+
+const bag=[
+"護照","現金","八達通","充電器","行動電源","雨傘"
+];
+
+const plans=[
+{name:"大三巴",lat:22.197,lng:113.541,desc:"往人潮上坡走"},
+{name:"禮記雪糕",lat:22.195,lng:113.542,desc:"下坡左轉3分鐘"}
+];
+
+const loc=ref({lat:0,lng:0});
+
+function gps(){
+navigator.geolocation.watchPosition(p=>{
+loc.value={lat:p.coords.latitude,lng:p.coords.longitude}
+});
+}
+
+function distance(p){
+const R=6371000;
+const dLat=(p.lat-loc.value.lat)*Math.PI/180;
+const dLng=(p.lng-loc.value.lng)*Math.PI/180;
+const a=Math.sin(dLat/2)**2+
+Math.cos(loc.value.lat*Math.PI/180)*
+Math.cos(p.lat*Math.PI/180)*
+Math.sin(dLng/2)**2;
+return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
+function nav(p){
+if(/iPhone/.test(navigator.userAgent)){
+location.href=`http://maps.apple.com/?daddr=${p.lat},${p.lng}`;
+}else{
+location.href=`https://www.google.com/maps/dir/?destination=${p.lat},${p.lng}`;
+}
+}
+
+onMounted(()=>gps());
+
+return{tab,plans,bag,weather,distance,nav}
+}
+}).mount("#app");
+</script>
+
+</body>
+</html>
