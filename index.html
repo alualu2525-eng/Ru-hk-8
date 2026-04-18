@@ -1,246 +1,144 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 港澳吃喝團</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0a1128; margin: 0; color: #1e293b; }
-        .app-bg { background: linear-gradient(180deg, #0a1128 0%, #1c1c2e 100%); min-height: 100vh; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.2); }
-        .tab-active { color: #60a5fa; border-bottom: 3px solid #60a5fa; transform: scale(1.1); }
-        .flight-card { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 24px; }
-        [v-cloak] { display: none; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026港澳吃喝團之小馬哥首航</title>
+
+<link rel="manifest" href="manifest.json">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+
+<style>
+body {margin:0;font-family:sans-serif;}
+.bg {
+background:url('https://images.unsplash.com/photo-1506973035872-a4f23ef3d6f8') center/cover;
+min-height:100vh;
+}
+.card{
+background:rgba(255,255,255,0.9);
+border-radius:16px;
+padding:16px;
+margin-bottom:16px;
+}
+img{width:100%;border-radius:12px;}
+</style>
 </head>
+
 <body>
-<div id="app" v-cloak class="app-bg pb-24">
-    
-    <header class="pt-10 pb-4 text-center">
-        <h1 class="text-3xl font-black text-blue-400 tracking-tighter italic">2026 港澳吃喝團</h1>
-        <p class="text-white/60 text-xs font-bold mt-1 uppercase tracking-widest text-blue-200 italic">Hong Kong & Macau Voyage</p>
-    </header>
+<div id="app" class="bg p-4">
 
-    <!-- 頂部成員與狀態 -->
-    <section class="px-5 mb-6">
-        <div class="flex flex-wrap justify-center gap-2">
-            <span v-for="m in members" class="bg-blue-500/10 text-blue-300 text-[10px] px-3 py-1 rounded-full font-black border border-blue-500/30 italic">
-                ● {{ m }}
-            </span>
-        </div>
-    </section>
+<h1 style="color:white;text-align:center;">
+2026港澳吃喝團之小馬哥首航
+</h1>
 
-    <!-- 主導航欄 -->
-    <nav class="sticky top-0 z-50 bg-[#0a1128]/80 backdrop-blur-md border-b border-white/10 mb-6">
-        <div class="flex justify-around py-4">
-            <button v-for="tab in tabs" @click="activeTab = tab.id"
-                :class="activeTab === tab.id ? 'tab-active' : 'text-gray-400'"
-                class="text-sm font-black transition-all px-4 flex items-center space-x-2">
-                <i :data-lucide="tab.icon" class="w-4 h-4"></i>
-                <span>{{ tab.name }}</span>
-            </button>
-        </div>
-    </nav>
+<!-- 天氣 -->
+<div class="card">
+<h3>🌤 即時天氣</h3>
+<div v-if="weather">
+香港：{{weather.hk.temp}}°C {{weather.hk.desc}}<br>
+澳門：{{weather.mo.temp}}°C {{weather.mo.desc}}
+</div>
+</div>
 
-    <main class="px-5">
-        <!-- 行程導航分頁 -->
-        <div v-if="activeTab === 'plan'">
-            <!-- 日期選擇 -->
-            <div class="flex space-x-3 mb-6 overflow-x-auto no-scrollbar py-2">
-                <button v-for="d in days" @click="currentDate = d.date"
-                    :class="currentDate === d.date ? 'bg-blue-600 text-white scale-105 shadow-xl shadow-blue-600/30' : 'bg-white/10 text-white/60'"
-                    class="flex-shrink-0 px-6 py-3 rounded-2xl flex flex-col items-center transition-all min-w-[100px]">
-                    <span class="text-lg font-black">{{ d.label }}</span>
-                </button>
-            </div>
+<!-- 行程 -->
+<div class="card" v-for="p in plans">
+<img :src="p.img">
+<h3>{{p.name}}</h3>
 
-            <!-- 行程列表 -->
-            <div class="space-y-6">
-                <div v-for="(item, index) in filteredItinerary" :key="index">
-                    
-                    <!-- 航班卡片樣式 -->
-                    <div v-if="item.cat === '航班'" class="flight-card p-6 shadow-2xl relative overflow-hidden text-white mb-6">
-                        <div class="absolute -right-4 -top-4 opacity-10">
-                            <i data-lucide="plane" class="w-24 h-24 rotate-45"></i>
-                        </div>
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase">Boarding Pass</span>
-                            <span class="text-xs font-bold tracking-widest">{{ item.flightNo }}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="text-center">
-                                <p class="text-3xl font-black">{{ item.from }}</p>
-                                <p class="text-sm font-bold opacity-80">{{ item.depTime }}</p>
-                            </div>
-                            <div class="flex-1 px-4 text-center">
-                                <div class="h-px bg-white/30 w-full relative">
-                                    <i data-lucide="plane" class="w-4 h-4 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-90"></i>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-3xl font-black">{{ item.to }}</p>
-                                <p class="text-sm font-bold opacity-80">{{ item.arrTime }}</p>
-                            </div>
-                        </div>
-                    </div>
+<p>{{p.desc}}</p>
 
-                    <!-- 一般行程卡片 -->
-                    <div v-else class="glass p-6 shadow-xl relative border-t-4 border-blue-500">
-                        <div class="flex justify-between items-start mb-4">
-                            <span :class="catColor(item.cat)" class="px-3 py-1 rounded-lg text-[10px] font-black tracking-tighter uppercase">{{ item.cat }}</span>
-                            <span v-if="item.time" class="flex items-center text-blue-600 font-bold text-xs">
-                                <i data-lucide="clock" class="w-3 h-3 mr-1"></i> {{ item.time }}
-                            </span>
-                        </div>
-                        
-                        <h3 class="text-xl font-black text-slate-800 leading-tight mb-3">{{ item.name }}</h3>
+<p>💰 {{p.cost}}</p>
+<p>⏱ {{p.time}}</p>
 
-                        <div class="bg-blue-50/80 border-l-4 border-blue-400 p-4 rounded-r-xl mb-4">
-                            <p class="text-[13px] text-blue-900 leading-relaxed font-medium" v-html="item.route"></p>
-                        </div>
+<button @click="nav(p)">
+📍一鍵導航
+</button>
+</div>
 
-                        <div v-if="item.note" class="bg-orange-50 p-3 rounded-xl mb-5 flex items-start border border-orange-100">
-                            <i data-lucide="star" class="w-4 h-4 text-orange-400 mr-2 flex-shrink-0"></i>
-                            <p class="text-[11px] text-orange-800 font-bold leading-relaxed">{{ item.note }}</p>
-                        </div>
+<!-- 行李 -->
+<div class="card">
+<h3>🎒 行李清單</h3>
+<div v-for="b in bag">
+<input type="checkbox"> {{b}}<br>
+</div>
+</div>
 
-                        <button @click="goMap(item.name)" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center space-x-2 active:scale-95 transition-all shadow-lg shadow-slate-900/30">
-                            <i data-lucide="navigation" class="w-4 h-4 text-blue-400"></i>
-                            <span>導航至該地點</span>
-                        </button>
-                    </div>
-                    
-                    <!-- 間隔虛線 -->
-                    <div v-if="index !== filteredItinerary.length - 1" class="flex flex-col items-center my-2">
-                        <div class="h-6 w-px bg-white/20 border-l border-dashed"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 大師叮嚀分頁 -->
-        <div v-if="activeTab === 'tips'" class="space-y-6">
-            <div v-for="tip in proTips" class="glass p-6 border-l-8 border-orange-400">
-                <h4 class="text-lg font-black text-slate-800 mb-3 flex items-center">
-                    <i data-lucide="info" class="w-5 h-5 mr-2 text-orange-500"></i>
-                    {{ tip.title }}
-                </h4>
-                <ul class="space-y-3">
-                    <li v-for="item in tip.items" class="text-[13px] text-slate-600 leading-relaxed flex items-start">
-                        <i data-lucide="check-circle" class="w-3 h-3 text-emerald-500 mr-2 mt-1 flex-shrink-0"></i>
-                        <span>{{ item }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- 底部切換 -->
-    <nav class="fixed bottom-6 left-5 right-5 glass p-4 shadow-2xl flex justify-around items-center z-50 border border-white/20">
-        <button v-for="t in tabs" @click="activeTab = t.id"
-                :class="activeTab === t.id ? 'text-blue-600' : 'text-gray-400'"
-                class="flex flex-col items-center flex-1 transition-all">
-            <i :data-lucide="t.icon" class="w-6 h-6"></i>
-            <span class="text-[9px] font-black mt-1 uppercase">{{ t.name }}</span>
-        </button>
-    </nav>
 </div>
 
 <script>
-    const { createApp, ref, computed, onMounted } = Vue;
+// 天氣 API
+async function getWeather(){
+let hk=await fetch("https://api.openweathermap.org/data/2.5/weather?q=HongKong&appid=YOUR_KEY&units=metric");
+let mo=await fetch("https://api.openweathermap.org/data/2.5/weather?q=Macau&appid=YOUR_KEY&units=metric");
 
-    createApp({
-        setup() {
-            const activeTab = ref('plan');
-            const currentDate = ref('08.28');
-            const members = ['小馬哥', '小村', '陳RuRu', 'Ruby', '妹妹'];
-            
-            const tabs = [
-                { id: 'plan', name: '行程導航', icon: 'map-pin' },
-                { id: 'tips', name: '大師叮嚀', icon: 'zap' }
-            ];
+hk=await hk.json();
+mo=await mo.json();
 
-            const days = [
-                { label: '8/28(五)', date: '08.28' },
-                { label: '8/29(六)', date: '08.29' },
-                { label: '8/30(日)', date: '08.30' }
-            ];
+return {
+hk:{temp:hk.main.temp,desc:hk.weather[0].main},
+mo:{temp:mo.main.temp,desc:mo.weather[0].main}
+}
+}
 
-            const itinerary = ref([
-                // DAY 1
-                { date: '08.28', cat: '航班', flightNo: 'HB703', from: 'TPE', to: 'HKG', depTime: '11:30', arrTime: '13:30' },
-                { date: '08.28', time: '13:30', cat: '流程', name: '香港機場入境', route: '辦理入境、領行李 ➔ 抵達大堂尋找 <b>MTR 客務中心</b> ➔ 儲值八達通。' },
-                { date: '08.28', time: '15:00', cat: '購物', name: '東薈城名店倉 (COACH)', route: '跟隨「往市區巴士」指標 ➔ 搭乘 <b>S1 巴士</b> (約 10 分) ➔ 「東涌站」巴士總站下車即達入口。' },
-                { date: '08.28', time: '16:45', cat: '住宿', name: '旭逸酒店 荃灣', route: '東涌市中心總站搭乘 <b>E32 巴士</b> ➔ 於「昌榮路」站下車 ➔ 沿青山公路往葵涌左轉入酒店。' },
-                { date: '08.28', time: '18:45', cat: '美食', name: '晚餐：竺扶大班燒味', route: '搭酒店接駁車至葵興站 ➔ 轉地鐵至<b>灣仔站 (A3 出口)</b> ➔ 步行 3 分鐘即達。', note: '推薦：厚切叉燒、脆皮燒肉。' },
-                { date: '08.28', time: '19:45', cat: '體驗', name: '叮叮車夜遊', route: '柯布連道 (43E) 上車 ➔ 銀行街 (31E) 下車。享受夜景。', note: '叮叮車是後門上車、前門下車刷卡！' },
-                { date: '08.28', time: '20:15', cat: '景點', name: '太平山夜景 (纜車)', route: '銀行街下車後步行 10 分鐘 ➔ <b>花園道纜車站</b> ➔ 搭乘山頂纜車。' },
-                { date: '08.28', time: '21:45', cat: '交通', name: '天星小輪跨海之旅', route: '山頂搭 <b>15 號巴士</b> ➔ 中環 7 號碼頭 ➔ 轉搭天星小輪往尖沙咀。' },
-                { date: '08.28', time: '22:30', cat: '美食', name: '佳佳甜品 & 樂酒場', route: '尖沙咀碼頭沿維港走 ➔ 步行至佐敦甜品 ➔ 回尖沙咀小酌。' },
+const {createApp,ref,onMounted}=Vue;
 
-                // DAY 2
-                { date: '08.29', time: '09:30', cat: '流程', name: '退房帶行李', route: '地鐵 葵興站 ➔ <b>太子站 (C2 出口)</b>。' },
-                { date: '08.29', time: '10:15', cat: '美食', name: '一點心 (One Dim Sum)', route: '先至太子上海街 695 號 A 鋪寄行李 ➔ 步行至通菜街 209 號吃早餐。', note: '必點：薄皮鮮蝦餃、炸鮮奶。' },
-                { date: '08.29', time: '11:45', cat: '購物', name: '上環/中環採買', route: '太子站 ➔ <b>上環站 (E2 出口)</b> ➔ 步行串聯兆成行與珍妮曲奇。' },
-                { date: '08.29', time: '13:30', cat: '美食', name: '蘭芳園奶茶', route: '由上環步行約 10 分鐘 ➔ 抵達中環結志街 2 號。' },
-                { date: '08.29', time: '14:15', cat: '交通', name: '返太子取行李', route: '地鐵中環站 ➔ 太子站。' },
-                { date: '08.29', time: '15:00', cat: '交通', name: '港澳快線赴澳', route: '上海街 695 號上車 ➔ 跨過港珠澳大橋 ➔ 澳門回力酒店站下車。' },
-                { date: '08.29', time: '17:30', cat: '美食', name: '禮記雪糕 → 大三巴', route: '酒店出來往新口岸區走 ➔ 目標水坑尾街 ➔ 禮記雪糕 ➔ 沿路走至大三巴拍照。', note: '禮記：三文治雪糕必吃！' },
-                { date: '08.29', time: '19:30', cat: '美食', name: '晚餐：葡菜餐廳', route: '大三巴下坡旁小巷 ➔ 經瘋堂斜巷 ➔ 找陳光記燒鵝。' },
-                { date: '08.29', time: '21:30', cat: '體驗', name: '路氹夜景 & 輕軌', route: '新濠影匯 8 字摩天輪 ➔ 永利皇宮觀光纜車 ➔ <b>路氹東站</b>搭輕軌到排角站逛官也街。' },
+createApp({
+setup(){
 
-                // DAY 3
-                { date: '08.30', time: '09:30', cat: '流程', name: '威尼斯人寄存行李', route: '搭計程車前往威尼斯人 (西翼大堂寄存，約 MOP 30-50)。' },
-                { date: '08.30', time: '10:15', cat: '美食', name: '世記咖啡 (官也街)', route: '威尼斯人西翼 ➔ 經<b>自動步行系統</b> ➔ 走 10 分鐘抵達官也街。', note: '推薦：厚蛋豬扒包、瓦煲奶茶。' },
-                { date: '08.30', time: '11:30', cat: '購物', name: '買手信/安德魯蛋塔', route: '步行逛官也街 ➔ 買蛋塔 ➔ 走回威尼斯人。' },
-                { date: '08.30', time: '13:00', cat: '購物', name: '威尼斯人 COACH', route: '3 樓大運河中心拍美照 ➔ 逛 COACH (DFS 免稅店)。' },
-                { date: '08.30', time: '15:30', cat: '體驗', name: '永利皇宮纜車', route: '威尼斯人對面永利皇宮 ➔ 免費搭環湖纜車看噴泉。' },
-                { date: '08.30', cat: '航班', flightNo: 'HB704', from: 'MFM', to: 'TPE', depTime: '20:45', arrTime: '22:30' },
-                { date: '08.30', time: '18:30', cat: '流程', name: '前往澳門機場', route: '回威尼斯人取行李 ➔ 搭乘<b>酒店免費接駁巴士</b>前往機場辦理登機。' }
-            ]);
+const weather=ref(null);
 
-            const proTips = [
-                { title: '行李寄存建議', items: ['Day 2 香港：太子站港澳快線合作候車室可寄行李。', 'Day 3 澳門：威尼斯人西翼寄存行李，能空手逛官也街。'] },
-                { title: '支付工具注意', items: ['香港：兆成行、珍妮曲奇、蘭芳園「只收現金」。', '準備好足夠的 HK$100 與 HK$500。', '澳門：巴士 MOP 6 不找零。'] },
-                { title: '交通細節', items: ['叮叮車：後門上車不用刷卡，前門下車刷卡。', '港澳快線：週末常客滿，務必提前預約 15:00 班次。'] }
-            ];
+const bag=[
+"護照","現金","八達通","充電器",
+"行動電源","藥品","雨傘"
+];
 
-            const filteredItinerary = computed(() => {
-                return itinerary.value.filter(item => item.date === currentDate.value);
-            });
+const plans=[
+{
+name:"大三巴",
+img:"https://images.unsplash.com/photo-1549893079-842e4e4c6d3f",
+desc:"看到人潮往上走就是",
+cost:"免費",
+time:"約1小時",
+lat:22.197,
+lng:113.541
+},
+{
+name:"禮記雪糕",
+img:"https://images.unsplash.com/photo-1563805042-7684c019e1cb",
+desc:"大三巴往下3分鐘",
+cost:"MOP20",
+time:"15分鐘",
+lat:22.195,
+lng:113.542
+}
+];
 
-            const catColor = (cat) => {
-                const colors = { 
-                    '美食': 'bg-orange-100 text-orange-600', 
-                    '購物': 'bg-pink-100 text-pink-600', 
-                    '交通': 'bg-emerald-100 text-emerald-600', 
-                    '景點': 'bg-purple-100 text-purple-600', 
-                    '流程': 'bg-slate-100 text-slate-600' 
-                };
-                return colors[cat] || 'bg-blue-100 text-blue-600';
-            };
+function nav(p){
+if(/iPhone/.test(navigator.userAgent)){
+window.location.href=`http://maps.apple.com/?ll=${p.lat},${p.lng}`;
+}else{
+window.location.href=`https://www.google.com/maps?q=${p.lat},${p.lng}`;
+}
+}
 
-            const goMap = (name) => {
-                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`, '_blank');
-            };
+onMounted(async ()=>{
+weather.value=await getWeather();
+});
 
-            onMounted(() => {
-                lucide.createIcons();
-            });
+return{weather,plans,bag,nav}
 
-            return {
-                activeTab, currentDate, members, tabs, days,
-                filteredItinerary, proTips, catColor, goMap
-            };
-        }
-    }).mount('#app');
+}
+}).mount("#app");
 </script>
+
+<!-- 離線 -->
+<script>
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js');
+}
+</script>
+
 </body>
 </html>
