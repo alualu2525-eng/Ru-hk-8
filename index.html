@@ -1,119 +1,329 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>港澳AI導航完整版</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 港澳吃喝團之小馬哥首航</title>
+    <!-- 使用穩定版本 CDN 確保 GitHub 託管時加載正常 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #0f172a; 
+            color: #f8fafc;
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+        /* 玻璃擬態樣式 */
+        .glass { 
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(12px); 
+            border-radius: 1.5rem; 
+            color: #1e293b; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-<style>
-body{margin:0;font-family:sans-serif;background:#0b1220;color:white;}
-.topbar{display:flex;justify-content:space-around;background:#111;padding:10px;}
-.tab{padding:8px;color:#aaa;cursor:pointer;}
-.active{color:white;border-bottom:2px solid #3b82f6;}
-.card{background:rgba(255,255,255,0.08);margin:12px;padding:16px;border-radius:16px;}
-button{width:100%;padding:10px;border-radius:10px;background:#2563eb;color:white;border:none;}
-</style>
+        /* 航空風格卡片 */
+        .flight-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid #fbbf24;
+        }
+
+        /* 導覽列選中狀態 */
+        .tab-active { 
+            color: #60a5fa !important; 
+            border-bottom: 3px solid #60a5fa;
+        }
+
+        [v-cloak] { display: none; }
+
+        /* 隱藏捲軸 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 應用程式背景圖層 */
+        .app-bg {
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), 
+                        url('https://images.unsplash.com/photo-1506158661145-a93240e55729?auto=format&fit=crop&q=80&w=1200') center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+    </style>
 </head>
-
 <body>
-<div id="app">
+<div id="app" v-cloak class="app-bg pb-28">
+    
+    <!-- 頁首標題 -->
+    <header class="pt-10 pb-6 px-6 text-center">
+        <h1 class="text-2xl font-black text-blue-400 italic tracking-tighter">
+            2026 港澳吃喝團之小馬哥首航
+        </h1>
+        <div class="flex flex-wrap justify-center gap-2 mt-3">
+            <span v-for="m in members" :key="m" class="bg-blue-500/20 text-blue-200 text-[10px] px-2 py-1 rounded-full border border-blue-400/30">
+                ● {{ m }}
+            </span>
+        </div>
+    </header>
 
-<h2 style="text-align:center">🧭 港澳AI導航完整版</h2>
+    <!-- 頂部切換導覽 -->
+    <nav class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10 flex justify-around py-3">
+        <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
+            :class="activeTab === tab.id ? 'tab-active' : 'text-gray-400'"
+            class="text-xs font-bold px-4 flex flex-col items-center gap-1 transition-all">
+            <i :data-lucide="tab.icon" class="w-5 h-5"></i>
+            <span>{{ tab.name }}</span>
+        </button>
+    </nav>
 
-<!-- 分頁 -->
-<div class="topbar">
-<div class="tab" :class="{active:tab==='plan'}" @click="tab='plan'">行程</div>
-<div class="tab" :class="{active:tab==='weather'}" @click="tab='weather'">天氣</div>
-<div class="tab" :class="{active:tab==='bag'}" @click="tab='bag'">行李</div>
-<div class="tab" :class="{active:tab==='info'}" @click="tab='info'">資訊</div>
-</div>
+    <main class="px-5 mt-6">
+        
+        <!-- 行程分頁 (Plan) -->
+        <div v-if="activeTab === 'plan'" class="space-y-6">
+            <!-- 日期選擇按鈕 -->
+            <div class="flex space-x-2 overflow-x-auto no-scrollbar pb-2">
+                <button v-for="d in days" :key="d.date" @click="currentDate = d.date"
+                    :class="currentDate === d.date ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-slate-800 text-slate-400'"
+                    class="flex-shrink-0 px-6 py-4 rounded-2xl flex flex-col items-center min-w-[100px] transition-all duration-300">
+                    <span class="text-[10px] opacity-70">{{ d.label }}</span>
+                    <span class="text-lg font-black">{{ d.date }}</span>
+                </button>
+            </div>
 
-<!-- 行程 -->
-<div v-if="tab==='plan'">
-<div class="card" v-for="p in plans">
-<h3>{{p.name}}</h3>
-<p>{{p.desc}}</p>
-<p>距離：{{distance(p)}} m</p>
-<button @click="nav(p)">📍導航</button>
-</div>
-</div>
+            <!-- 簡略行程概要 (Summary Timeline) -->
+            <section class="glass p-5 shadow-xl">
+                <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                    <i data-lucide="list-checks" class="w-5 h-5 text-blue-500"></i>
+                    <h2 class="font-black text-slate-800">今日簡要回顧</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div v-for="(item, idx) in filteredItems" :key="'sum-'+idx" class="flex items-center gap-2 border-r border-slate-100 last:border-0 pr-2">
+                        <span class="text-[9px] font-black text-blue-500 w-8 shrink-0">{{ item.depTime || item.time || '--:--' }}</span>
+                        <span class="text-[11px] font-bold text-slate-600 truncate">{{ item.title || item.fromCode }}</span>
+                    </div>
+                </div>
+            </section>
 
-<!-- 天氣 -->
-<div v-if="tab==='weather'" class="card">
-🌤 香港：{{weather.hk}}°C<br>
-🌤 澳門：{{weather.mo}}°C
-</div>
+            <!-- 天氣資訊卡 -->
+            <div class="glass p-4 flex items-center justify-between border-l-8 border-yellow-400">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="sun" class="text-yellow-500 w-8 h-8"></i>
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase">今日氣氛</p>
+                        <p class="text-sm font-black">{{ weather[currentDate].desc }} · {{ weather[currentDate].temp }}</p>
+                    </div>
+                </div>
+                <div class="text-[10px] text-blue-700 font-bold bg-blue-50 px-2 py-1 rounded text-center">
+                    {{ weather[currentDate].tip }}
+                </div>
+            </div>
 
-<!-- 行李 -->
-<div v-if="tab==='bag'" class="card">
-<div v-for="b in bag">
-<input type="checkbox"> {{b}}<br>
-</div>
-</div>
+            <!-- 完整行程詳情卡片 (恢復所有細節) -->
+            <div class="space-y-5">
+                <div v-for="(item, idx) in filteredItems" :key="idx">
+                    
+                    <!-- 航班樣式卡片 -->
+                    <div v-if="item.type === 'flight'" class="flight-card p-5 text-white shadow-xl">
+                        <div class="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
+                            <span class="text-[10px] font-black tracking-widest text-yellow-300">航班資訊</span>
+                            <span class="text-sm font-black">{{ item.flightNo }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-left">
+                                <p class="text-[10px] opacity-70 uppercase">{{ item.fromLoc }}</p>
+                                <p class="text-3xl font-black">{{ item.fromCode }}</p>
+                                <p class="text-xs font-bold text-blue-200 mt-1">{{ item.depTime }} 出發</p>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center px-4">
+                                <div class="w-full border-t border-dashed border-white/30 relative">
+                                    <i data-lucide="plane" class="w-4 h-4 absolute -top-2 left-1/2 -translate-x-1/2 text-yellow-400 rotate-90"></i>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] opacity-70 uppercase">{{ item.toLoc }}</p>
+                                <p class="text-3xl font-black">{{ item.toCode }}</p>
+                                <p class="text-xs font-bold text-blue-200 mt-1">{{ item.arrTime }} 抵達</p>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- 資訊 -->
-<div v-if="tab==='info'" class="card">
-📍 GitHub Pages 上線後可用<br>
-📍 PWABuilder 可轉APK<br>
-📍 iPhone可加入主畫面
-</div>
+                    <!-- 一般行程/美食卡片 (詳細路線恢復) -->
+                    <div v-else class="glass p-5 shadow-lg border-t-4" :class="item.type === 'food' ? 'border-orange-500' : 'border-blue-500'">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded" 
+                                :class="item.type === 'food' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'">
+                                {{ item.cat }}
+                            </span>
+                            <span v-if="item.time" class="text-sm font-black text-slate-400 italic">{{ item.time }}</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-black text-slate-800">{{ item.title }}</h3>
+                            <button v-if="item.map" @click="goMap(item.title)" class="p-2 bg-red-50 text-red-500 rounded-full active:scale-95 transition-transform">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </button>
+                        </div>
 
+                        <!-- 交通詳細引導 (這裡是原本被簡化的部分) -->
+                        <div v-if="item.route" class="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="flex items-center gap-1 mb-1">
+                                <i data-lucide="navigation" class="w-3 h-3 text-slate-400"></i>
+                                <span class="text-[10px] font-black text-slate-400">詳細交通導航</span>
+                            </div>
+                            <p class="text-xs text-slate-700 leading-relaxed font-medium" v-html="item.route"></p>
+                        </div>
+
+                        <!-- 備註提醒 -->
+                        <div v-if="item.note" class="mt-3 bg-yellow-50 p-2 rounded-lg border border-yellow-100 flex gap-2">
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5"></i>
+                            <p class="text-[11px] text-yellow-900 font-bold leading-tight">{{ item.note }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行李檢查清單 (Bag) -->
+        <div v-if="activeTab === 'bag'" class="space-y-4">
+            <div v-for="(items, cat) in packingList" :key="cat" class="glass p-5 shadow-lg">
+                <h4 class="font-black text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                    <i data-lucide="package" class="w-5 h-5 text-blue-500"></i> {{ cat }}
+                </h4>
+                <div class="space-y-3">
+                    <label v-for="i in items" :key="i" class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-slate-600 font-medium">{{ i }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 酒店與連結資訊 (Info) -->
+        <div v-if="activeTab === 'info'" class="space-y-4">
+            <div class="glass p-5 shadow-lg">
+                <h4 class="font-black text-slate-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="hotel" class="w-5 h-5 text-blue-500"></i> 下榻酒店詳情
+                </h4>
+                <div class="space-y-6 text-sm">
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <p class="font-black text-lg">旭逸酒店 ‧ 荃灣 (Hotel Ease)</p>
+                        <p class="text-slate-500 text-xs">香港葵涌圳邊街15-19號</p>
+                        <a href="tel:+85239588333" class="text-blue-600 font-bold mt-1 block flex items-center gap-1">
+                            <i data-lucide="phone" class="w-3 h-3"></i> +852 3958 8333
+                        </a>
+                    </div>
+                    <div class="border-l-4 border-emerald-500 pl-4">
+                        <p class="font-black text-lg">利澳酒店 (Rio Hotel Macau)</p>
+                        <p class="text-slate-500 text-xs">澳門新口岸高美士街33號</p>
+                        <a href="tel:+85328718718" class="text-blue-600 font-bold mt-1 block flex items-center gap-1">
+                            <i data-lucide="phone" class="w-3 h-3"></i> +853 2871 8718
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass p-5 shadow-lg">
+                <h4 class="font-black text-slate-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="link" class="w-5 h-5 text-blue-500"></i> 實用工具
+                </h4>
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="https://www.hkmoexpress.com/" target="_blank" class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border text-sm font-bold text-slate-700 hover:bg-blue-50 transition-colors">
+                        <span>港澳快線官方時刻表與預訂</span>
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </a>
+                    <a href="https://www.hotelease.com.hk/files/photo_album_photo/attachment/11835/HETW_Shuttle%20Bus%20Schedule_TC_V_eVersion.pdf" target="_blank" class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border text-sm font-bold text-slate-700 hover:bg-blue-50 transition-colors">
+                        <span>旭逸酒店免費接駁車表 (葵興/青衣)</span>
+                        <i data-lucide="bus" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 固定底部導覽列 -->
+    <nav class="fixed bottom-6 left-6 right-6 glass p-3 shadow-2xl flex justify-around items-center z-50">
+        <button v-for="t in tabs" :key="t.id" @click="activeTab = t.id"
+                :class="activeTab === t.id ? 'text-blue-600' : 'text-slate-400'"
+                class="flex flex-col items-center flex-1 transition-all">
+            <i :data-lucide="t.icon" class="w-6 h-6"></i>
+            <span class="text-[10px] font-black mt-1">{{ t.name }}</span>
+        </button>
+    </nav>
 </div>
 
 <script>
-const {createApp,ref,onMounted}=Vue;
+    const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
 
-createApp({
-setup(){
+    createApp({
+        setup() {
+            const activeTab = ref('plan');
+            const currentDate = ref('08.28');
+            const members = ['小馬哥', '小村', '陳RuRu', 'Ruby', '妹妹'];
+            
+            const tabs = [
+                { id: 'plan', name: '行程導覽', icon: 'map' },
+                { id: 'bag', name: '行李清單', icon: 'briefcase' },
+                { id: 'info', name: '緊急資訊', icon: 'info' }
+            ];
 
-const tab=ref('plan');
+            const days = [
+                { label: 'DAY 1', date: '08.28' },
+                { label: 'DAY 2', date: '08.29' },
+                { label: 'DAY 3', date: '08.30' }
+            ];
 
-const weather=ref({hk:32,mo:31});
+            const weather = {
+                '08.28': { desc: '晴時多雲', temp: '29°C', tip: '室內冷氣強，建議攜帶薄外套。' },
+                '08.29': { desc: '午後雷雨', temp: '28°C', tip: '澳門步行較多，記得穿好走路的鞋。' },
+                '08.30': { desc: '陽光普照', temp: '31°C', tip: '回程前注意防曬與手提行李重量。' }
+            };
 
-const bag=[
-"護照","現金","八達通","充電器","行動電源","雨傘"
-];
+            const packingList = {
+                '必備證件': ['護照正本', '台胞證 / 港簽列印本 (必備)', '機票/酒店確認電子檔', '八達通卡'],
+                '科技裝備': ['英規轉接頭 (香港三腳)', '行動電源', '漫遊網卡 (記得開通)', '充電線材'],
+                '個人用品': ['三日份換洗衣物', '最好走的運動鞋', '輕便摺疊傘', '個人藥品 / 口罩']
+            };
 
-const plans=[
-{name:"大三巴",lat:22.197,lng:113.541,desc:"往人潮上坡走"},
-{name:"禮記雪糕",lat:22.195,lng:113.542,desc:"下坡左轉3分鐘"}
-];
+            // 行程數據集 (完全恢復詳細路線)
+            const itinerary = [
+                // Day 1
+                { date: '08.28', type: 'flight', flightNo: '香港快運 HB703', fromCode: 'TPE', fromLoc: '台北 T1', toCode: 'HKG', toLoc: '香港 T1', depTime: '11:30', arrTime: '13:30' },
+                { date: '08.28', time: '14:30', type: 'trans', cat: '交通', title: '入境香港 & 交通卡', route: '過關領完行李後 ➔ 至接機大廳 <b>MTR 客務中心</b> 辦理八達通儲值或購卡。', map: '香港國際機場' },
+                { date: '08.28', time: '15:30', type: 'shop', cat: '購物', title: '東薈城名店倉 (Outlet)', route: '機場搭乘 <b>S1 巴士</b> (往東涌方向) ➔ 終點「東涌站」下車，步行即達。', note: '首日重點：COACH、Nike、Adidas、MK 專櫃。', map: '東薈城名店倉' },
+                { date: '08.28', time: '17:30', type: 'stay', cat: '住宿', title: '旭逸酒店 ‧ 荃灣 Check-in', route: '由東涌搭乘 <b>E32 巴士</b> ➔ 「昌榮路」站下車 ➔ 看到中石化加油站轉入圳邊街。', map: 'Hotel Ease Tsuen Wan' },
+                { date: '08.28', time: '19:00', type: 'food', cat: '美食', title: '竺扶大班燒味 (灣仔)', route: '搭酒店接駁車至葵興站 ➔ 轉地鐵至 <b>灣仔站 (A3 出口)</b> ➔ 步行約 3 分鐘。', note: '必點推薦：厚切叉燒、脆皮燒肉、油雞飯！', map: '竺扶大班燒味' },
 
-const loc=ref({lat:0,lng:0});
+                // Day 2
+                { date: '08.29', time: '10:00', type: 'food', cat: '美食', title: '一點心 (One Dim Sum)', route: '由地鐵葵興站 ➔ 搭至 <b>太子站 (C2 出口)</b> ➔ 步行約 2 分鐘。', note: '平價米其林一星：炸鮮奶捲、蝦餃、腸粉必點，請提早排隊。', map: '一點心' },
+                { date: '08.29', time: '15:00', type: 'trans', cat: '交通', title: '港澳快線 (往澳門)', route: '由太子站出發 ➔ 前往 <b>上海街 695 號</b> 候車處 ➔ 跨過港珠澳大橋 ➔ 於澳門「利澳酒店」站下車。', map: '上海街 695 號' },
+                { date: '08.29', time: '18:00', type: 'spot', cat: '景點', title: '大三巴牌坊 & 禮記雪糕', route: '由利澳酒店步行前往 ➔ 經過「高美士街」➔ 先吃禮記三色雪糕 ➔ 散步至大三巴牌坊夜拍。', map: '大三巴牌坊' },
+                { date: '08.29', time: '20:30', type: 'spot', cat: '景點', title: '永利皇宮纜車 & 金光大道', route: '搭計程車或巴士 ➔ 前往路氹城 ➔ 永利皇宮免費觀光纜車 ➔ 欣賞噴泉秀。', map: '永利皇宮觀光纜車' },
 
-function gps(){
-navigator.geolocation.watchPosition(p=>{
-loc.value={lat:p.coords.latitude,lng:p.coords.longitude}
-});
-}
+                // Day 3
+                { date: '08.30', time: '10:00', type: 'trans', cat: '交通', title: '威尼斯人行李寄存', route: '利澳酒店對面搭乘 <b>MT1 巴士</b> ➔ 至威尼斯人西翼 ➔ 辦理行李寄存 (方便下午直接去機場)。', map: '澳門威尼斯人' },
+                { date: '08.30', time: '11:30', type: 'food', cat: '美食', title: '官也街巡禮 (老店吃透透)', route: '由威尼斯人西翼大廳 ➔ 經 <b>自動步行系統</b> (手扶梯步道) ➔ 直達官也街區域。', note: '必吃清單：世記咖啡、莫義記大菜糕、安德魯蛋塔。', map: '官也街' },
+                { date: '08.30', type: 'flight', flightNo: '星宇航空 JX206', fromCode: 'MFM', fromLoc: '澳門', toCode: 'TPE', toLoc: '台北', depTime: '20:50', arrTime: '22:40' }
+            ];
 
-function distance(p){
-const R=6371000;
-const dLat=(p.lat-loc.value.lat)*Math.PI/180;
-const dLng=(p.lng-loc.value.lng)*Math.PI/180;
-const a=Math.sin(dLat/2)**2+
-Math.cos(loc.value.lat*Math.PI/180)*
-Math.cos(p.lat*Math.PI/180)*
-Math.sin(dLng/2)**2;
-return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
+            const filteredItems = computed(() => itinerary.filter(i => i.date === currentDate.value));
+            const goMap = (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank');
+            const initIcons = () => nextTick(() => { if (window.lucide) window.lucide.createIcons(); });
 
-function nav(p){
-if(/iPhone/.test(navigator.userAgent)){
-location.href=`http://maps.apple.com/?daddr=${p.lat},${p.lng}`;
-}else{
-location.href=`https://www.google.com/maps/dir/?destination=${p.lat},${p.lng}`;
-}
-}
+            onMounted(initIcons);
+            watch([activeTab, currentDate], initIcons);
 
-onMounted(()=>gps());
-
-return{tab,plans,bag,weather,distance,nav}
-}
-}).mount("#app");
+            return { activeTab, currentDate, members, tabs, days, weather, packingList, filteredItems, goMap };
+        }
+    }).mount('#app');
 </script>
-
 </body>
 </html>
