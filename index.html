@@ -3,84 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>港澳AI導航旅行App</title>
+<title>2026港澳吃喝團之小馬哥首航</title>
 
+<link rel="manifest" href="manifest.json">
+
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 
 <style>
-body{margin:0;font-family:sans-serif;background:#0b1220;color:white;}
-.card{background:rgba(255,255,255,0.08);margin:12px;padding:16px;border-radius:16px;}
-button{width:100%;padding:10px;border-radius:10px;background:#2563eb;color:white;border:none;}
+body {margin:0;font-family:sans-serif;}
+.bg{
+background:url('https://images.unsplash.com/photo-1506973035872-a4f23ef3d6f8') center/cover;
+min-height:100vh;
+}
+.card{
+background:rgba(255,255,255,0.95);
+border-radius:16px;
+padding:16px;
+margin-bottom:16px;
+}
+img{width:100%;border-radius:12px;}
+.btn{
+background:#000;color:#fff;padding:10px;border-radius:10px;margin-top:5px;width:100%;
+}
 </style>
 </head>
 
 <body>
-<div id="app">
+<div id="app" class="bg p-4">
 
-<h2 style="text-align:center">🧭 港澳AI導航App</h2>
+<h1 style="color:white;text-align:center;">
+2026港澳吃喝團之小馬哥首航
+</h1>
 
+<!-- 天氣 -->
 <div class="card">
-🌤 香港 {{weather.hk}}°C<br>
-🌤 澳門 {{weather.mo}}°C
+<h3>🌤 即時天氣</h3>
+<div v-if="weather">
+香港 {{weather.hk.temp}}°C｜{{weather.hk.desc}}<br>
+澳門 {{weather.mo.temp}}°C｜{{weather.mo.desc}}
+</div>
 </div>
 
+<!-- 行程 -->
 <div class="card" v-for="p in plans">
+<img :src="p.img">
 
-<h3>{{p.name}}</h3>
-<p>{{p.desc}}</p>
-<p>距離：{{distance(p)}} 公尺</p>
+<h2>{{p.name}}</h2>
 
-<button @click="nav(p)">📍一鍵導航</button>
+<p>📍 {{p.desc}}</p>
 
+<p>🚶‍♂️ {{p.route}}</p>
+
+<p>💰 {{p.cost}}</p>
+<p>⏱ {{p.time}}</p>
+
+<button class="btn" @click="nav(p)">一鍵導航</button>
+</div>
+
+<!-- 行李 -->
+<div class="card">
+<h3>🎒 行李清單</h3>
+<div v-for="b in bag">
+<input type="checkbox"> {{b}}<br>
+</div>
 </div>
 
 </div>
 
 <script>
+async function getWeather(){
+let hk=await fetch("https://api.openweathermap.org/data/2.5/weather?q=HongKong&appid=YOUR_KEY&units=metric");
+let mo=await fetch("https://api.openweathermap.org/data/2.5/weather?q=Macau&appid=YOUR_KEY&units=metric");
+
+hk=await hk.json();
+mo=await mo.json();
+
+return {
+hk:{temp:hk.main.temp,desc:hk.weather[0].main},
+mo:{temp:mo.main.temp,desc:mo.weather[0].main}
+}
+}
+
 const {createApp,ref,onMounted}=Vue;
 
 createApp({
 setup(){
 
-const weather=ref({hk:32,mo:31});
+const weather=ref(null);
 
-const plans=[
-{name:"大三巴",lat:22.197,lng:113.541,desc:"沿人潮往上走"},
-{name:"禮記雪糕",lat:22.195,lng:113.542,desc:"下坡左轉3分鐘"}
+const bag=[
+"護照","身分證","現金HKD/MOP","八達通",
+"充電器","行動電源","雨傘","藥品"
 ];
 
-const loc=ref({lat:0,lng:0});
-
-function gps(){
-navigator.geolocation.watchPosition(p=>{
-loc.value={lat:p.coords.latitude,lng:p.coords.longitude}
-});
+const plans=[
+{
+name:"香港機場 ➜ 東薈城",
+img:"https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba",
+desc:"跟著『巴士』標示走",
+route:"出機場 → 右轉 → 找S1巴士 → 約10分鐘到東涌",
+cost:"HKD 3.7",
+time:"約30分鐘",
+lat:22.315,
+lng:113.936
+},
+{
+name:"大三巴",
+img:"https://images.unsplash.com/photo-1549893079-842e4e4c6d3f",
+desc:"看到人潮往上走",
+route:"利澳酒店 → 往新葡京方向 → 跟人潮",
+cost:"免費",
+time:"1小時",
+lat:22.197,
+lng:113.541
+},
+{
+name:"禮記雪糕",
+img:"https://images.unsplash.com/photo-1563805042-7684c019e1cb",
+desc:"大三巴下坡左轉",
+route:"下坡 → 小巷左轉 → 排隊最多那家",
+cost:"MOP20",
+time:"15分鐘",
+lat:22.195,
+lng:113.542
 }
-
-function distance(p){
-const R=6371000;
-const dLat=(p.lat-loc.value.lat)*Math.PI/180;
-const dLng=(p.lng-loc.value.lng)*Math.PI/180;
-const a=Math.sin(dLat/2)**2+
-Math.cos(loc.value.lat*Math.PI/180)*
-Math.cos(p.lat*Math.PI/180)*
-Math.sin(dLng/2)**2;
-return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
+];
 
 function nav(p){
 if(/iPhone/.test(navigator.userAgent)){
-location.href=`http://maps.apple.com/?daddr=${p.lat},${p.lng}`;
+window.location.href=`http://maps.apple.com/?ll=${p.lat},${p.lng}`;
 }else{
-location.href=`https://www.google.com/maps/dir/?destination=${p.lat},${p.lng}`;
+window.location.href=`https://www.google.com/maps?q=${p.lat},${p.lng}`;
 }
 }
 
-onMounted(()=>gps());
+onMounted(async ()=>{
+weather.value=await getWeather();
+});
 
-return{plans,nav,distance,weather}
+return{weather,plans,bag,nav}
 }
 }).mount("#app");
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js');
+}
 </script>
 
 </body>
