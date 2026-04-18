@@ -17,14 +17,13 @@
         .tab-active { background: #2563eb !important; color: white !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .thumb-img { width: 70px; height: 70px; object-fit: cover; border-radius: 0.75rem; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .info-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; }
         [v-cloak] { display: none; }
     </style>
 </head>
 <body>
 <div id="app" v-cloak class="pb-24">
     
-    <!-- 標題 -->
+    <!-- Header -->
     <header class="header-bg pt-10 pb-6 px-6 text-center text-white">
         <h1 class="text-2xl font-black italic tracking-wider">2026 港澳吃喝首航團</h1>
         <div class="flex flex-wrap justify-center gap-2 mt-4">
@@ -34,7 +33,7 @@
         </div>
     </header>
 
-    <!-- 分頁導航 -->
+    <!-- Nav (對調順序：行程 -> 大師叮嚀 -> 清單 -> 資訊) -->
     <nav class="sticky top-0 z-50 bg-white border-b flex justify-around p-2 gap-1 shadow-sm">
         <button v-for="t in tabs" @click="activeTab = t.id"
                 :class="activeTab === t.id ? 'tab-active' : 'text-slate-500 bg-slate-50'"
@@ -46,9 +45,8 @@
 
     <main class="px-4 mt-6">
         
-        <!-- 行程分頁 -->
+        <!-- 行程分頁 (完全保留所有項目) -->
         <div v-if="activeTab === 'plan'" class="space-y-6">
-            <!-- 日期選擇 -->
             <div class="flex space-x-2 overflow-x-auto no-scrollbar">
                 <button v-for="d in days" @click="currentDate = d.date"
                     :class="currentDate === d.date ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-500'"
@@ -59,11 +57,10 @@
                 </button>
             </div>
 
-            <!-- 航班資訊 -->
             <div v-if="currentDate === '08.28'" class="boarding-pass">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-[8px] font-black uppercase opacity-70 tracking-widest text-white/80">Departure Flight</span>
-                    <span class="text-[10px] font-bold">大灣區航空 GBA HB703</span>
+                    <span class="text-[10px] font-bold">大灣區航空 HB703</span>
                 </div>
                 <div class="flex justify-between items-center px-2">
                     <div class="text-center">
@@ -104,7 +101,6 @@
                 </div>
             </div>
 
-            <!-- 行程清單 -->
             <div class="space-y-4">
                 <div v-for="(item, idx) in filteredItinerary" :key="idx" class="glass p-4 shadow-sm border-l-4" :class="getBorderColor(item.cat)">
                     <div class="flex justify-between items-start mb-2">
@@ -113,7 +109,6 @@
                             <i data-lucide="map-pin" class="w-3 h-3"></i><span class="text-[10px] font-bold">導航</span>
                         </button>
                     </div>
-
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <h3 class="text-base font-black text-slate-800 leading-tight mb-2">{{ item.name }}</h3>
@@ -140,42 +135,86 @@
             </div>
         </div>
 
-        <!-- 行李清單 -->
-        <div v-if="activeTab === 'bag'" class="glass p-6 shadow-sm">
-            <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2 flex items-center gap-2">
-                <i data-lucide="package" class="w-5 h-5"></i> 行前必備清單
-            </h3>
-            <div class="space-y-3">
-                <label v-for="i in packingList" :key="i" class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
-                    <input type="checkbox" class="w-6 h-6 rounded-md border-slate-300 text-blue-600">
-                    <span class="text-sm text-slate-700 font-bold">{{ i }}</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- 住宿與接駁資訊 -->
-        <div v-if="activeTab === 'info'" class="space-y-4">
-            <section class="glass p-5">
-                <h3 class="font-black text-lg mb-4 text-blue-800 flex items-center gap-2 border-b pb-2">
-                    <i data-lucide="home" class="w-5 h-5"></i> 住宿安排
+        <!-- 大師叮嚀分頁 (詳細內容) -->
+        <div v-if="activeTab === 'tips'" class="space-y-4">
+            <section class="glass p-6">
+                <h3 class="font-black text-lg mb-4 text-orange-600 border-b pb-2 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5"></i> 港澳生存地頭蛇攻略
                 </h3>
                 <div class="space-y-6">
                     <div>
-                        <p class="font-black text-slate-800">香港：旭逸酒店 · 荃灣 (Hotel Ease Tsuen Wan)</p>
+                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                            <i data-lucide="dollar-sign" class="w-4 h-4 text-orange-400"></i> 金錢支付與匯率
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
+                            <li>• <b>現金為王</b>：香港老牌茶餐廳（如蘭芳園、澳洲牛奶公司）多只收現金，建議準備充足 100/500 面額。</li>
+                            <li>• <b>不收千元鈔</b>：許多店家明確標示「不收千元大鈔」，換錢時請盡量換 500 以下。</li>
+                            <li>• <b>澳門支付</b>：澳門可直接用港幣，但店家多以 1:1 給付（不補匯差），小金額無妨，大額刷卡較划算。</li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                            <i data-lucide="utensils" class="w-4 h-4 text-red-400"></i> 飲食文化與潛規則
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
+                            <li>• <b>併桌(搭檯)文化</b>：尖峰時段必併桌，且服務生會直接指位，請迅速坐好點餐，吃完即走。</li>
+                            <li>• <b>洗筷子文化</b>：第一杯倒在塑膠碗裡的淡茶通常是洗餐具用的，別急著喝下去。</li>
+                            <li>• <b>衛生紙</b>：港澳餐廳通常不附面紙，或是要額外收費。包包裡一定要自備。</li>
+                        </ul>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                            <i data-lucide="smartphone" class="w-4 h-4 text-blue-400"></i> 通訊與交通小技巧
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed ml-2">
+                            <li>• <b>離線地圖</b>：地鐵深層收訊極差，建議將飯店與重要出口的 Google Map 截圖。</li>
+                            <li>• <b>叮叮車</b>：固定 $3，後門上車不用刷，前門下車刷卡。</li>
+                            <li>• <b>免費接駁巴士</b>：澳門各大賭場接駁車（發財車）非常發達，善用威尼斯人、倫敦人接駁車可省下大量車資。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 清單分頁 (分類細節強化) -->
+        <div v-if="activeTab === 'bag'" class="space-y-4">
+            <div v-for="(group, gIdx) in packingGroups" :key="gIdx" class="glass p-5 shadow-sm">
+                <h3 class="font-black text-sm mb-4 text-blue-800 flex items-center gap-2 border-b pb-2">
+                    <i :data-lucide="group.icon" class="w-4 h-4"></i> {{ group.title }}
+                </h3>
+                <div class="grid grid-cols-1 gap-2">
+                    <label v-for="i in group.items" :key="i" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 border border-transparent">
+                        <input type="checkbox" class="w-5 h-5 rounded-md border-slate-300 text-blue-600">
+                        <span class="text-xs text-slate-700 font-bold">{{ i }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 資訊分頁 (住宿 + 連結) -->
+        <div v-if="activeTab === 'info'" class="space-y-4">
+            <!-- 住宿 -->
+            <section class="glass p-6">
+                <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2">🏨 住宿資訊</h3>
+                <div class="space-y-6">
+                    <div>
+                        <p class="font-black text-slate-800">香港：旭逸飯店 · 荃灣 (Hotel Ease)</p>
                         <p class="text-[11px] text-slate-500 mt-1">地址：葵涌圳邊街15-19號</p>
                         <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
                             <p class="text-[10px] font-black text-yellow-700 mb-1 flex items-center gap-1">
-                                <i data-lucide="bus" class="w-3 h-3"></i> 免費接駁巴士資訊
+                                <i data-lucide="bus" class="w-3 h-3"></i> 酒店接駁巴士 (葵興站)
                             </p>
-                            <p class="text-[10px] text-yellow-800 leading-relaxed">
-                                <b>乘車點：</b>葵興地鐵站 B 出口（下電梯至地下平台/巴士站）。<br>
-                                <b>班次：</b>約 20-30 分鐘一班。<br>
-                                <b>注意：</b>末班車為 23:30。
+                            <p class="text-[10px] text-yellow-800 font-medium">
+                                停泊於 <b>7-11便利店旁</b>。<br>
+                                約 20-30 分鐘一班，末班 23:30。
                             </p>
+                            <a href="https://hkmoexpress.gobybus.hk/" target="_blank" class="text-[10px] text-blue-600 underline font-bold block mt-1">
+                                接駁車即時時刻查詢
+                            </a>
                         </div>
                         <div class="flex gap-2 mt-3">
                             <button @click="goMap('旭逸酒店 荃灣')" class="flex-1 bg-slate-900 text-white text-[10px] py-2 rounded-lg font-bold">📍 導航</button>
-                            <a href="tel:+85239588333" class="flex-1 bg-blue-100 text-blue-700 text-[10px] py-2 rounded-lg font-bold text-center">📞 電話</a>
+                            <a href="tel:+85239588333" class="flex-1 bg-blue-100 text-blue-700 text-[10px] py-2 rounded-lg font-bold text-center leading-loose">📞 撥打</a>
                         </div>
                     </div>
                     <div class="pt-4 border-t">
@@ -183,32 +222,25 @@
                         <p class="text-[11px] text-slate-500 mt-1">地址：澳門新口岸高美士街33號</p>
                         <div class="flex gap-2 mt-3">
                             <button @click="goMap('利澳酒店 澳門')" class="flex-1 bg-slate-900 text-white text-[10px] py-2 rounded-lg font-bold">📍 導航</button>
-                            <a href="tel:+85328718718" class="flex-1 bg-blue-100 text-blue-700 text-[10px] py-2 rounded-lg font-bold text-center">📞 電話</a>
+                            <a href="tel:+85328718718" class="flex-1 bg-blue-100 text-blue-700 text-[10px] py-2 rounded-lg font-bold text-center leading-loose">📞 撥打</a>
                         </div>
                     </div>
                 </div>
             </section>
-        </div>
 
-        <!-- 大師叮嚀 -->
-        <div v-if="activeTab === 'tips'" class="glass p-6">
-            <h3 class="font-black text-lg mb-4 text-yellow-600 border-b pb-2 flex items-center gap-2">
-                <i data-lucide="zap" class="w-5 h-5"></i> 行前大師叮嚀
-            </h3>
-            <ul class="space-y-4 text-sm text-slate-600 font-medium">
-                <li class="flex items-start gap-2">
-                    <i data-lucide="check-circle" class="w-4 h-4 text-green-500 mt-1 shrink-0"></i>
-                    <span><b>支付須知：</b>香港許多老店(如蘭芳園)只收現金。澳門巴士一律 MOP 6，不找零。</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <i data-lucide="check-circle" class="w-4 h-4 text-green-500 mt-1 shrink-0"></i>
-                    <span><b>網路漫遊：</b>地鐵內收訊較差，建議出站前先查好地圖或截圖。</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <i data-lucide="check-circle" class="w-4 h-4 text-green-500 mt-1 shrink-0"></i>
-                    <span><b>飲水問題：</b>港澳餐廳通常不提供免費水，建議超商預買大瓶水帶回飯店。</span>
-                </li>
-            </ul>
+            <!-- 連結 -->
+            <section class="glass p-6">
+                <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2">🔗 重要連結</h3>
+                <div class="space-y-3">
+                    <a href="https://www.hotelscombined.com.tw/" target="_blank" class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-blue-50">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="link" class="w-4 h-4 text-blue-500"></i>
+                            <span class="text-xs font-black">港澳快線 / HotelsCombined</span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                    </a>
+                </div>
+            </section>
         </div>
 
     </main>
@@ -222,24 +254,28 @@
             const activeTab = ref('plan');
             const currentDate = ref('08.28');
             const members = ['小馬哥', '小村', '陳RuRu', 'Ruby', '妹妹'];
+            
             const tabs = [
                 { id: 'plan', name: '行程', icon: 'map' },
-                { id: 'bag', name: '行李清單', icon: 'check-square' },
-                { id: 'info', name: '住宿資訊', icon: 'home' },
-                { id: 'tips', name: '大師叮嚀', icon: 'zap' }
+                { id: 'tips', name: '大師叮嚀', icon: 'zap' },
+                { id: 'bag', name: '清單', icon: 'check-square' },
+                { id: 'info', name: '資訊', icon: 'link' }
             ];
+
             const days = [
                 { label: 'DAY 1', date: '08.28', week: '五', weather: '31°C' },
                 { label: 'DAY 2', date: '08.29', week: '六', weather: '30°C' },
                 { label: 'DAY 3', date: '08.30', week: '日', weather: '32°C' }
             ];
 
-            const packingList = [
-                '護照正本 (有效期6個月)', '台胞證 / 港簽列印本', '港幣現金 (換好2000以上)', '八達通卡', '港澳快線車票 QR', '漫遊網卡/eSIM', '英規三腳轉接頭', '10000mAh 行動電源', '摺疊雨傘', '好走的步行鞋', '換洗衣物三套', '個人藥品'
+            const packingGroups = [
+                { title: '身分證件 (必帶)', icon: 'briefcase', items: ['護照正本 (效期6個月)', '台胞證 或 港簽列印本', '身分證正本 (機場備查)', '保險單影本', '行程與車票QR Code截圖'] },
+                { title: '金錢與通訊', icon: 'smartphone', items: ['港幣現金 (2500元以上)', '信用卡 (JCB/VISA各一)', '八達通卡', '漫遊網卡/eSIM (已安裝)', '行動電源 (10000mAh+)', '充電頭與英規轉接頭', '充電線 (Type-C/Lightning)'] },
+                { title: '個人衛生與藥品', icon: 'pill', items: ['個人日常藥品 (感冒/腸胃)', '隨身面紙/濕紙巾 (港澳必備)', '摺疊雨傘/雨衣', '太陽眼鏡', '醫療口罩備用', '薄外套 (室內冷氣極強)'] },
+                { title: '衣物與配件', icon: 'shirt', items: ['換洗衣物三套', '好走的步行球鞋 (勿帶新鞋)', '涼拖鞋備用', '行李束帶', '空的大提袋 (買伴手禮用)'] }
             ];
 
             const itinerary = [
-                // DAY 1
                 { date: '08.28', time: '14:30', cat: '購物', name: '東薈城名店倉 (Outlet)', img: 'https://images.unsplash.com/photo-1605902711622-cfb43c443ffb?w=200', imgName: 'Coach/Nike',
                   route: '機場搭 <b>S1 巴士</b> ➔ 終點站「東涌站」下車，右手邊即是入口。', 
                   alt: '🚕 <b>計程車：</b>直達飯店約 $180 (省體力方案)。', cost: '$3.7' },
@@ -257,8 +293,6 @@
                 { date: '08.28', time: '23:30', cat: '美食', name: '佳佳甜品 ➔ 樂酒場', img: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=200', imgName: '芝麻糊/居酒屋',
                   route: '尖東地鐵搭一站到 <b>佐敦站 (A 出口)</b> ➔ 吃甜品 ➔ 隔壁樂酒場續攤。', 
                   alt: '🚕 <b>回程：</b>深夜建議叫 Uber/計程車回飯店約 $120。', cost: '$150+' },
-
-                // DAY 2
                 { date: '08.29', time: '10:00', cat: '流程', name: '退房 ➔ 太子站寄存行李', 
                   route: '飯店退房 ➔ 搭地鐵/巴士至 <b>太子站 (C2 出口)</b> ➔ 往上海街 695 號門市寄放行李。', cost: '$30/件' },
                 { date: '08.29', time: '11:00', cat: '美食', name: '一點心 (One Dim Sum)', img: 'https://images.unsplash.com/photo-1563245339-612e17f0d0c1?w=200', imgName: '平價米其林',
@@ -271,8 +305,6 @@
                 { date: '08.29', time: '20:30', cat: '景點', name: '永利皇宮纜車 ➔ 杏香園', img: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=200', imgName: '馬蹄沙',
                   route: '搭輕軌至路氹東站 ➔ 坐免費纜車 ➔ 結束後搭車至 <b>杏香園甜品</b>。', 
                   alt: '🚶 杏香園後可散步回飯店 (15分)。', cost: '$100' },
-
-                // DAY 3
                 { date: '08.30', time: '10:00', cat: '流程', name: '退房 ➔ 威尼斯人西翼', 
                   route: '利澳退房 ➔ 搭 <b>MT1</b> 或 <b>計程車</b> 直達威尼斯人西翼大堂寄行李。', cost: '$30/件' },
                 { date: '08.30', time: '11:30', cat: '美食', name: '官也街 (世紀咖啡/蛋塔)', img: 'https://images.unsplash.com/photo-1598214886806-c87b84b7078b?w=200', imgName: '豬扒包/蛋塔',
@@ -295,7 +327,7 @@
             onMounted(initIcons);
             watch([activeTab, currentDate], initIcons);
 
-            return { activeTab, currentDate, members, tabs, days, packingList, filteredItinerary, getBorderColor, goMap };
+            return { activeTab, currentDate, members, tabs, days, packingGroups, filteredItinerary, getBorderColor, goMap };
         }
     }).mount('#app');
 </script>
