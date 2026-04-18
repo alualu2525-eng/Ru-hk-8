@@ -18,9 +18,8 @@
             overflow-x: hidden;
         }
 
-        /* 香港夜景背景 */
         .app-bg {
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)), 
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95)), 
                         url('https://images.unsplash.com/photo-1506158661145-a93240e55729?auto=format&fit=crop&q=80&w=1200') center center fixed;
             background-size: cover;
             min-height: 100vh;
@@ -44,6 +43,17 @@
         .tab-active { color: #60a5fa !important; border-bottom: 3px solid #60a5fa; }
         [v-cloak] { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -12px;
+            top: 24px;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border: 3px solid #0f172a;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -60,32 +70,26 @@
         </div>
     </header>
 
-    <nav class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-white/10 flex justify-around py-3">
-        <button v-for="tab in tabs" @click="activeTab = tab.id"
-            :class="activeTab === tab.id ? 'tab-active' : 'text-gray-400'"
-            class="text-xs font-bold px-4 flex flex-col items-center gap-1">
-            <i :data-lucide="tab.icon" class="w-5 h-5"></i>
-            <span>{{ tab.name }}</span>
-        </button>
-    </nav>
-
-    <main class="px-5 mt-6">
+    <main class="px-5 mt-4">
         
         <div v-if="activeTab === 'plan'" class="space-y-6">
+            <!-- 日期選擇器 -->
             <div class="flex space-x-3 overflow-x-auto no-scrollbar pb-2">
                 <button v-for="d in days" @click="currentDate = d.date"
                     :class="currentDate === d.date ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-slate-800 text-slate-400'"
-                    class="flex-shrink-0 px-5 py-3 rounded-2xl flex flex-col items-center min-w-[110px] transition-all">
+                    class="flex-shrink-0 px-5 py-3 rounded-2xl flex flex-col items-center min-w-[125px] transition-all">
                     <span class="text-[10px] opacity-70">{{ d.label }}</span>
-                    <span class="text-lg font-black">{{ d.date }}</span>
-                    <span class="text-[10px] mt-1 font-bold text-yellow-400">🌤 {{ d.weather }}</span>
+                    <span class="text-lg font-black">{{ d.date }} ({{ d.week }})</span>
+                    <span class="text-[10px] mt-1 font-bold text-yellow-400">{{ d.weather }}</span>
                 </button>
             </div>
 
-            <div class="space-y-6">
-                <div v-for="(item, idx) in filteredItinerary" :key="idx">
+            <div class="space-y-6 relative border-l-2 border-slate-700/50 ml-2 pl-6">
+                <div v-for="(item, idx) in filteredItinerary" :key="idx" class="relative">
+                    <div class="timeline-dot" v-if="item.cat !== '航班'"></div>
                     
-                    <div v-if="item.cat === '航班'" class="flight-card p-6 shadow-xl">
+                    <!-- 航班卡片 -->
+                    <div v-if="item.cat === '航班'" class="flight-card p-6 shadow-xl mb-6 -ml-6">
                         <div class="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
                             <span class="text-[10px] font-black text-yellow-300 uppercase tracking-widest">Boarding Pass</span>
                             <span class="text-sm font-black">{{ item.flightNo }}</span>
@@ -109,26 +113,32 @@
                         </div>
                     </div>
 
-                    <div v-else class="glass p-5 shadow-lg relative border-l-8" :class="getBorderColor(item.cat)">
-                        <div class="flex justify-between items-start mb-3">
+                    <!-- 行程卡片 -->
+                    <div v-else class="glass p-5 shadow-lg border-l-8 transition-all active:scale-[0.98]" :class="getBorderColor(item.cat)">
+                        <div class="flex justify-between items-start mb-2">
                             <span class="text-[10px] font-black px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">{{ item.cat }}</span>
                             <span class="text-xs font-black text-blue-600 italic">{{ item.time }}</span>
                         </div>
                         
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xl font-black text-slate-800">{{ item.name }}</h3>
+                            <h3 class="text-lg font-black text-slate-800">{{ item.name }}</h3>
                             <button @click="goMap(item.name)" class="flex items-center gap-1 bg-red-50 text-red-500 px-3 py-1 rounded-full text-[10px] font-black active:scale-95 border border-red-100">
-                                <i data-lucide="map-pin" class="w-3 h-3"></i> 📍導航
+                                <i data-lucide="map-pin" class="w-3 h-3"></i> 導航
                             </button>
                         </div>
 
-                        <div v-if="item.shopTime" class="mb-3 text-[10px] flex items-center text-slate-500 font-bold">
-                            <i data-lucide="clock" class="w-3 h-3 mr-1"></i> 營業時間：{{ item.shopTime }}
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <div v-if="item.cost" class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-bold">
+                                💰 預估：{{ item.cost }}
+                            </div>
+                            <div v-if="item.duration" class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">
+                                ⏱ 耗時：{{ item.duration }}
+                            </div>
                         </div>
 
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                             <h4 class="text-[11px] font-black text-blue-800 mb-1 flex items-center">
-                                <i data-lucide="move-right" class="w-3 h-3 mr-1"></i> 交通/路線指引
+                                <i data-lucide="move-right" class="w-3 h-3 mr-1"></i> 交通/指引
                             </h4>
                             <p class="text-[12px] text-slate-700 leading-relaxed font-medium" v-html="item.route"></p>
                         </div>
@@ -142,25 +152,26 @@
             </div>
         </div>
 
+        <!-- 資訊、行李與叮嚀分頁保持簡約設計 -->
         <div v-if="activeTab === 'info'" class="space-y-4">
             <div class="glass p-6">
                 <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2">🏨 住宿資訊</h3>
                 <div class="space-y-6">
                     <div>
-                        <p class="font-black text-slate-800">香港：旭逸飯店 · 荃灣</p>
+                        <p class="font-black text-slate-800">香港：旭逸飯店 · 荃灣 (Hotel Ease Tsuen Wan)</p>
                         <p class="text-xs text-slate-500 mt-1">葵涌圳邊街15-19號</p>
                         <div class="flex gap-2 mt-2">
-                            <button @click="goMap('旭逸酒店 荃灣')" class="bg-slate-900 text-white text-[10px] px-3 py-2 rounded-lg font-bold">📍 導航至飯店</button>
+                            <button @click="goMap('旭逸酒店 荃灣')" class="bg-slate-900 text-white text-[10px] px-3 py-2 rounded-lg font-bold">📍 導航</button>
                             <a href="tel:+85239588333" class="bg-blue-100 text-blue-700 text-[10px] px-3 py-2 rounded-lg font-bold flex items-center gap-1">
                                 <i data-lucide="phone" class="w-3 h-3"></i> +852-39588333
                             </a>
                         </div>
                     </div>
-                    <div>
+                    <div class="pt-4 border-t border-dashed">
                         <p class="font-black text-slate-800">澳門：利澳酒店 (Rio Hotel)</p>
                         <p class="text-xs text-slate-500 mt-1">澳門新口岸高美士街33號</p>
                         <div class="flex gap-2 mt-2">
-                            <button @click="goMap('利澳酒店 澳門')" class="bg-slate-900 text-white text-[10px] px-3 py-2 rounded-lg font-bold">📍 導航至飯店</button>
+                            <button @click="goMap('利澳酒店 澳門')" class="bg-slate-900 text-white text-[10px] px-3 py-2 rounded-lg font-bold">📍 導航</button>
                             <a href="tel:+85328718718" class="bg-blue-100 text-blue-700 text-[10px] px-3 py-2 rounded-lg font-bold flex items-center gap-1">
                                 <i data-lucide="phone" class="w-3 h-3"></i> +853-28718718
                             </a>
@@ -168,29 +179,16 @@
                     </div>
                 </div>
             </div>
-            <div class="glass p-6">
-                <h3 class="font-black text-lg mb-4 text-blue-800 border-b pb-2">🚌 快速連結</h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <a href="https://www.hotelease.com.hk/files/photo_album_photo/attachment/11835/HETW_Shuttle%20Bus%20Schedule_TC_V_eVersion.pdf" class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-                        <i data-lucide="bus" class="w-6 h-6 mx-auto mb-2 text-blue-600"></i>
-                        <span class="text-xs font-black text-blue-800">旭逸接駁車表</span>
-                    </a>
-                    <a href="https://www.hkmoexpress.com/#/pages/index/index" class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100">
-                        <i data-lucide="ship" class="w-6 h-6 mx-auto mb-2 text-emerald-600"></i>
-                        <span class="text-xs font-black text-emerald-800">港澳快線訂票</span>
-                    </a>
-                </div>
-            </div>
         </div>
 
         <div v-if="activeTab === 'bag'" class="space-y-4">
             <div v-for="(items, cat) in packingList" :key="cat" class="glass p-6">
-                <h4 class="font-black text-slate-800 mb-4 flex items-center gap-2 border-b pb-2 uppercase tracking-tighter text-sm">
+                <h4 class="font-black text-slate-800 mb-4 flex items-center gap-2 border-b pb-2 text-sm">
                     <i data-lucide="package" class="w-4 h-4 text-blue-500"></i> {{ cat }}
                 </h4>
                 <div class="grid grid-cols-1 gap-3">
-                    <label v-for="i in items" :key="i" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                        <input type="checkbox" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <label v-for="i in items" :key="i" class="flex items-center gap-3 p-2 rounded-lg">
+                        <input type="checkbox" class="w-5 h-5 rounded border-slate-300 text-blue-600">
                         <span class="text-sm text-slate-600 font-bold">{{ i }}</span>
                     </label>
                 </div>
@@ -203,9 +201,9 @@
                     <i data-lucide="alert-circle" class="w-5 h-5 mr-2 text-yellow-500"></i>
                     {{ tip.title }}
                 </h4>
-                <ul class="space-y-4">
+                <ul class="space-y-3">
                     <li v-for="item in tip.items" class="text-xs text-slate-600 leading-relaxed flex items-start">
-                        <i data-lucide="dot" class="w-4 h-4 text-blue-500 mr-1 flex-shrink-0"></i>
+                        <i data-lucide="dot" class="w-4 h-4 text-blue-500 mr-1 shrink-0"></i>
                         <span v-html="item"></span>
                     </li>
                 </ul>
@@ -214,6 +212,7 @@
 
     </main>
 
+    <!-- 底部導航 -->
     <nav class="fixed bottom-6 left-5 right-5 glass p-3 shadow-2xl flex justify-around items-center z-50 border border-white/20">
         <button v-for="t in tabs" @click="activeTab = t.id"
                 :class="activeTab === t.id ? 'text-blue-600 scale-110' : 'text-slate-400'"
@@ -234,75 +233,68 @@
             const members = ['小馬哥', '小村', '陳RuRu', 'Ruby', '妹妹'];
             const tabs = [
                 { id: 'plan', name: '行程', icon: 'map' },
-                { id: 'info', name: '旅遊資訊', icon: 'info' },
-                { id: 'bag', name: '行李清單', icon: 'briefcase' },
-                { id: 'tips', name: '大師叮嚀', icon: 'zap' }
+                { id: 'info', name: '資訊', icon: 'info' },
+                { id: 'bag', name: '清單', icon: 'briefcase' },
+                { id: 'tips', name: '叮嚀', icon: 'zap' }
             ];
+            
             const days = [
-                { label: 'DAY 1', date: '08.28', weather: '28°C-31°C' },
-                { label: 'DAY 2', date: '08.29', weather: '27°C-30°C' },
-                { label: 'DAY 3', date: '08.30', weather: '28°C-32°C' }
+                { label: 'DAY 1', date: '08.28', week: '五', weather: '🌤 28-31°C' },
+                { label: 'DAY 2', date: '08.29', week: '六', weather: '⛅ 27-30°C' },
+                { label: 'DAY 3', date: '08.30', week: '日', weather: '☀️ 28-32°C' }
+            ];
+
+            const itinerary = [
+                // DAY 1 (08.28)
+                { date: '08.28', cat: '航班', flightNo: '香港快運 HB703', fromCode: 'TPE', fromLoc: '台北 T1', toCode: 'HKG', toLoc: '香港 T1', depTime: '11:30', arrTime: '13:30' },
+                { date: '08.28', time: '15:30', cat: '購物', name: '東薈城 Outlet', cost: '$11.3 (巴士)', duration: '90min', route: '機場搭 <b>S1 巴士</b> ➔ 終點「東涌站」。結束後搭 <b>E32 巴士</b> 至「昌榮路」站回飯店放行李。' },
+                { date: '08.28', time: '18:30', cat: '美食', name: '竺扶大班燒味', cost: '$100-150', duration: '60min', route: '酒店接駁車至葵興 ➔ 地鐵至 <b>灣仔站 (A3 出口)</b> ➔ 走 3 分鐘。', note: '必吃厚切叉燒，這餐墊墊胃，後面還有很多美食！' },
+                { date: '08.28', time: '19:45', cat: '體驗', name: '叮叮車 & 半山扶梯', cost: '$3', duration: '30min', route: '門口搭乘 <b>東行叮叮車</b> ➔ 「租庇利街」下車 ➔ 步行至 <b>中環半山扶梯</b> 體驗世界最長戶外電梯。', note: '叮叮車後門上車，前門下車刷卡。' },
+                { date: '08.28', time: '20:30', cat: '景點', name: '山頂纜車夜景', cost: '$88 (來回)', duration: '90min', route: '扶梯下來後步行至「中環花園道纜車站」➔ 搭纜車上 <b>太平山頂</b> 飽覽百萬夜景。', note: '記得帶薄外套，山上風大。' },
+                { date: '08.28', time: '22:00', cat: '交通', name: '15 號巴士下山', cost: '$12.1', duration: '40min', route: '山頂巴士總站搭乘 <b>15 號巴士</b> ➔ 坐上層左側看風景 ➔ 至「中環 5 號碼頭」下車。' },
+                { date: '08.28', time: '22:45', cat: '體驗', name: '天星小輪 & 星光大道', cost: '$5', duration: '30min', route: '中環碼頭搭乘 <b>天星小輪</b> 跨越維港 ➔ 抵達尖沙咀 ➔ 漫步星光大道拍李小龍像。', note: '這是香港最浪漫的交通方式，費用極低！' },
+                { date: '08.28', time: '23:30', cat: '美食', name: '佳佳甜品', cost: '$40', duration: '40min', route: '尖沙咀步行或地鐵至 <b>佐敦站 (A 出口)</b> ➔ 寧波街 29 號。', note: '米其林推薦：芝麻糊、補腦合桃露。' },
+                { date: '08.28', time: '00:30', cat: '交通', name: '返回旭逸酒店', cost: '$15 (地鐵)', route: '佐敦站搭地鐵回 <b>葵興站</b> ➔ 轉計程車或步行 15 分鐘回飯店。', note: '若太累可直接在佐敦叫 Uber，約 $100-150。' },
+
+                // DAY 2 (08.29)
+                { date: '08.29', time: '10:00', cat: '美食', name: '一點心 (One Dim Sum)', cost: '$100', duration: '90min', route: '地鐵至 <b>太子站 (C2 出口)</b> ➔ 上海街 695 號候車處寄存行李。', note: '這家比添好運更好吃，一定要點炸鮮奶。' },
+                { date: '08.29', time: '12:00', cat: '交通', name: '港澳快線 (跨海)', cost: '$180', duration: '120min', route: '上海街 695 號上車 ➔ 港珠澳大橋 ➔ 抵達澳門 <b>利澳酒店/回力站</b> 下車。' },
+                { date: '08.29', time: '15:30', cat: '流程', name: '利澳 Check-in', route: '下車處過馬路即達。休息 30 分鐘再出發。' },
+                { date: '08.29', time: '16:30', cat: '景點', name: '大三巴與老街之旅', cost: '$6 (巴士)', duration: '180min', route: '巴士 3/10 號至「新馬路」➔ 大三巴 ➔ 最香餅家 ➔ 禮記雪糕。', note: '<b>最香餅家</b> 是唯一炭燒，現場排隊約 30 分鐘。' },
+                { date: '08.29', time: '19:30', cat: '美食', name: '陳光記燒鵝', cost: '$120', route: '禮記步行 12 分鐘 ➔ 羅保博士街。', note: '黑椒鴨/燒鵝是招牌。' },
+                { date: '08.29', time: '21:00', cat: '體驗', name: '路氹城 & 永利纜車', cost: '$0-100', route: '搭巴士至新濠影匯 ➔ 8 字摩天輪 ➔ 搭輕軌至路氹東 ➔ <b>永利皇宮免費纜車</b> 看噴泉。' },
+                { date: '08.29', time: '23:00', cat: '美食', name: '杏香園甜品', cost: '$50', route: '澳門清平直街 13 號。', note: '蛋白杏仁茶非常濃厚。' },
+                { date: '08.29', time: '00:00', cat: '交通', name: '返回利澳酒店', cost: '$6 (巴士)', route: '甜品店附近搭乘 <b>N1B (通宵巴士)</b> 或 <b>3 號/10 號</b> ➔ 「治安警察局」站下車 ➔ 步行 3 分鐘回利澳。', note: '澳門晚上計程車難攔，建議用電召 App 或搭巴士。' },
+
+                // DAY 3 (08.30)
+                { date: '08.30', cat: '航班', flightNo: '星宇航空 JX206', fromCode: 'MFM', fromLoc: '澳門', toCode: 'TPE', toLoc: '台北', depTime: '20:50', arrTime: '22:40' },
+                { date: '08.30', time: '11:00', cat: '美食', name: '官也街巡禮', cost: '$100', duration: '120min', route: '威尼斯人西翼 ➔ 自動步行系統 ➔ 直達官也街。', note: '必買：世記豬扒包、安德魯蛋塔。' },
+                { date: '08.30', time: '14:00', cat: '購物', name: '威尼斯人商場', route: '冷氣步道走回威尼斯人 ➔ 大運河購物中心 ➔ 取行李。' },
+                { date: '08.30', time: '18:30', cat: '交通', name: '前往機場', cost: '$0', route: '威尼斯人西翼搭乘 <b>免費機場接駁巴士</b> ➔ 5 分鐘抵達。' }
             ];
 
             const packingList = {
-                '必備文件 (不可漏!)': ['護照正本', '台胞證 (或港簽列印本)', '八達通卡', '港澳快線車票 QR Code', '旅遊保險保單', '換好港幣現金 (建議每人 2000HKD)'],
-                '科技通訊': ['英規轉接頭 (至少2個)', '漫遊網卡/eSIM (先安裝好)', '10000mAh+ 行動電源', '所有充電線 (手機/手錶/行動電源)'],
-                '個人護理': ['三日份換洗衣物', '防曬乳', '摺疊雨傘', '好走的步行鞋 (每天1.5萬步起跳)', '個人常用藥品 (止痛/胃藥)']
-            };
-
-            const itinerary = [
-                // DAY 1
-                { date: '08.28', cat: '航班', flightNo: '香港快運 HB703', fromCode: 'TPE', fromLoc: '台北 T1', toCode: 'HKG', toLoc: '香港 T1', depTime: '11:30', arrTime: '13:30' },
-                { date: '08.28', time: '14:30', cat: '流程', name: '入境與儲值', route: '過關領行李 ➔ 往「機場接機大堂」➔ 找 <b>MTR 客務中心</b> (醒目的藍色櫃檯) ➔ 辦理八達通儲值。' },
-                { date: '08.28', time: '15:30', cat: '購物', name: '東薈城名店倉 (Outlet)', shopTime: '10:00-22:00', route: '機場搭乘 <b>S1 巴士</b> ➔ 終點站「東涌站」下車，右手邊即是入口。', note: 'COACH 在 2 樓，Nike 在地下樓。' },
-                { date: '08.28', time: '17:30', cat: '住宿', name: '旭逸酒店 · 荃灣', route: '東涌巴士總站搭乘 <b>E32 巴士</b> (車費 $11.3) ➔ 於「昌榮路」站下車 ➔ 看到左前方「圳邊街」左轉即達飯店。', note: '車程約 45 分鐘，建議在車上休息。' },
-                { date: '08.28', time: '19:00', cat: '美食', name: '竺扶大班燒味', shopTime: '08:00-21:00', route: '搭酒店接駁車至葵興站 ➔ 地鐵至 <b>灣仔站 (A3 出口)</b> ➔ 過馬路對面看到莊士敦道右轉走 3 分鐘。', note: '<b>費用：</b>人均約 $100。必點厚切叉燒、脆皮燒肉。' },
-                { date: '08.28', time: '21:00', cat: '美食', name: '佳佳甜品', shopTime: '12:00-03:30', route: '灣仔搭地鐵至 <b>佐敦站 (A 出口)</b> ➔ 右轉入寧波街走 5 分鐘。', note: '米其林推薦：芝麻糊、湯丸。' },
-
-                // DAY 2
-                { date: '08.29', time: '10:00', cat: '美食', name: '一點心 (One Dim Sum)', shopTime: '10:00-00:00', route: '酒店接駁車至葵興站 ➔ 地鐵至 <b>太子站 (C2 出口)</b> ➔ 出站右轉走 2 分鐘。', note: '先至上海街 695 號候車處寄存行李。' },
-                { date: '08.29', time: '12:00', cat: '交通', name: '港澳快線 (跨海巴士)', route: '太子上海街 695 號候車 ➔ 港珠澳大橋 ➔ 抵達澳門 <b>利澳酒店/回力站</b> 下車。', note: '週末客滿機率高，務必提前官網訂 15:00 班次。' },
-                { date: '08.29', time: '15:30', cat: '流程', name: '利澳酒店 Check-in', route: '下車後過馬路即達。', shopTime: '24HR' },
-                { date: '08.29', time: '16:30', cat: '景點', name: '大三巴/禮記雪糕/最香餅家路線', route: '飯店門口搭 <b>3 號或 10 號巴士</b> ➔ 「新馬路」站下車 ➔ 先直走大三巴 ➔ 走回「果欄街」最香餅家 ➔ 步行 10 分鐘到禮記雪糕。', note: '<b>路線：</b>新馬路站 ➔ 大三巴 (拍照) ➔ 步行往果欄街買最香餅家 (排隊) ➔ 往荷蘭園方向走去禮記。' },
-                { date: '08.29', time: '18:30', cat: '美食', name: '陳光記燒鵝 (推薦)', shopTime: '10:00-21:00', route: '從禮記步行往南走 12 分鐘至羅保博士街。', note: '黑胡椒燒鵝是靈魂。' },
-                { date: '08.29', time: '20:30', cat: '景點', name: '路氹城景點 (輕軌體驗)', route: '陳光記附近搭巴士至「連貫公路/新濠影匯」➔ 玩 <b>8 字摩天輪</b> ➔ 步行至「路氹西」搭輕軌 ➔ 至「路氹東站」➔ 下車走入 <b>永利皇宮纜車</b>。', note: '輕軌能俯瞰整個賭場區，非常漂亮。' },
-                { date: '08.29', time: '22:30', cat: '美食', name: '杏香園甜品', shopTime: '14:30-01:00', route: '從永利皇宮搭乘計程車直達。', note: '澳門老牌甜品，推薦馬蹄沙。' },
-
-                // DAY 3
-                { date: '08.30', cat: '航班', flightNo: '星宇航空 JX206', fromCode: 'MFM', fromLoc: '澳門', toCode: 'TPE', toLoc: '台北', depTime: '20:50', arrTime: '22:40' },
-                { date: '08.30', time: '10:00', cat: '流程', name: '退房與前往路氹', route: '利澳酒店退房 ➔ <b>方案 A：</b>門口搭 <b>MT1 巴士</b> 直達威尼斯人 (約 $6)。 <b>方案 B：</b>搭計程車 (約 $100)。', note: '行李寄存在威尼斯人西翼大廳 (每件約 MOP 30)。' },
-                { date: '08.30', time: '11:00', cat: '美食', name: '官也街巡禮 (世紀咖啡)', shopTime: '10:00-19:00', route: '威尼斯人西翼出口 ➔ 經 <b>自動步行系統</b> (室內冷氣步道) ➔ 步行 10 分鐘直達。', note: '<b>必買：</b>世記豬扒包、安德魯蛋塔。' },
-                { date: '08.30', time: '14:00', cat: '購物', name: '威尼斯人商場/COACH', shopTime: '10:00-23:00', route: '步行系統走回威尼斯人 ➔ 直奔 3 樓大運河中心購物。' },
-                { date: '08.30', time: '18:30', cat: '交通', name: '前往澳門機場', route: '回西翼大廳取行李 ➔ 走到飯店門口搭乘 <b>「機場專線」免費接駁巴士</b> ➔ 車程 5 分鐘抵達。' }
-            ];
-
-            const getBorderColor = (cat) => {
-                const colors = { '美食': 'border-orange-400', '購物': 'border-pink-400', '交通': 'border-emerald-400', '景點': 'border-purple-400', '流程': 'border-slate-400' };
-                return colors[cat] || 'border-blue-400';
+                '必備文件': ['護照', '台胞證/港簽', '八達通', '港澳快線 QR Code'],
+                '科技通訊': ['英規轉接頭', 'eSIM/漫遊', '行動電源'],
+                '個人護理': ['步行鞋 (每天1.5萬步)', '防曬', '常用藥物']
             };
 
             const proTips = [
-                { title: '支付與金錢', items: ['<b>現金為王：</b>蘭芳園、兆成行、餅家「只收現金」。', '<b>巴士錢：</b>澳門巴士一律 MOP 6，不找零，建議準備好零錢或八達通。', '<b>匯率：</b>在澳門可以用港幣，但通常是 1:1 不補水。'] },
-                { title: '交通秘訣', items: ['<b>叮叮車：</b>香港島特色。後門上車不用刷卡，前門下車刷卡 (固定車費 $3)。', '<b>自動步行系統：</b>連接威尼斯人與官也街，全程電動步道+冷氣，絕對不要去走大馬路。', '<b>港澳快線：</b>上車點在太子上海街，那邊有專屬候車室，可以寄存行李。'] },
-                { title: '網路與地圖', items: ['地圖導航在香港地鐵裡常飄移，出站後再看方向。', '<b>Google Map 座標：</b>點擊行程卡片上的 📍 即可直達地標。'] }
+                { title: '交通秘訣', items: ['<b>叮叮車：</b>由後門上，下車時前門刷卡，$3 坐到哪都行。', '<b>15 號巴士：</b>從山頂下車一定要坐上層，就像坐免費過山車看夜景。', '<b>自動步道：</b>威尼斯人去官也街一定要走步道，曬不到太陽。'] },
+                { title: '支付叮嚀', items: ['澳門巴士不找零，沒八達通就投 MOP 6。', '香港小店常貼「只收現金」，別只依賴信用卡。'] }
             ];
 
-            const filteredItinerary = computed(() => {
-                const list = itinerary.filter(i => i.date === currentDate.value);
-                // 排序確保航班在首尾正確位置
-                if (currentDate.value === '08.30') {
-                    const flight = list.find(f => f.cat === '航班');
-                    const others = list.filter(f => f.cat !== '航班');
-                    return [flight, ...others]; // 星宇航空排最上面
-                }
-                return list;
-            });
-
+            const filteredItinerary = computed(() => itinerary.filter(i => i.date === currentDate.value));
             const goMap = (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank');
             const initIcons = () => nextTick(() => { if (window.lucide) window.lucide.createIcons(); });
 
             onMounted(initIcons);
             watch([activeTab, currentDate], initIcons);
+
+            const getBorderColor = (cat) => {
+                const colors = { '美食': 'border-orange-400', '購物': 'border-pink-400', '交通': 'border-emerald-400', '景點': 'border-purple-400', '體驗': 'border-blue-400' };
+                return colors[cat] || 'border-slate-400';
+            };
 
             return { activeTab, currentDate, members, tabs, days, packingList, filteredItinerary, proTips, goMap, getBorderColor };
         }
