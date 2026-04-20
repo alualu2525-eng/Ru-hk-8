@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026港澳吃喝團之小馬哥首航</title>
+    <title>2026港澳吃喝團</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
@@ -11,132 +11,153 @@
         :root { --neon-cyan: #06b6d4; --neon-pink: #ec4899; --neon-yellow: #eab308; }
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
         .bg-header {
-            background: linear-gradient(rgba(0,0,0,0.5), #020617), url('https://images.unsplash.com/photo-1506354666786-959d6d497f1a?q=80&w=1200');
+            background: linear-gradient(rgba(2, 6, 23, 0.8), #020617), url('https://images.unsplash.com/photo-1506354666786-959d6d497f1a?q=80&w=1200');
             background-size: cover; background-position: center;
         }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-        .active-tab { color: var(--neon-cyan); border-top: 3px solid var(--neon-cyan); }
+        .active-tab-btn { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan); }
+        .active-day-btn { border-bottom: 3px solid var(--neon-pink); color: var(--neon-pink); }
         .mini-pass { background: #fff; color: #000; border-radius: 12px; font-size: 0.7rem; position: relative; overflow: hidden; }
         .mini-pass::after { content: ""; position: absolute; right: 28%; top: 0; bottom: 0; border-left: 1px dashed #ccc; }
         .step-img { width: 100%; height: 160px; object-fit: cover; border-radius: 16px; margin-bottom: 12px; }
         .path-box { border-left: 3px solid var(--neon-pink); padding-left: 10px; background: rgba(236, 72, 153, 0.05); }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
 </head>
 <body>
-    <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col bg-slate-950">
+    <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col bg-slate-950 shadow-2xl">
         
-        <header class="bg-header pt-16 pb-8 text-center px-4">
+        <!-- 1. Header: 標題與成員名單 -->
+        <header class="bg-header pt-12 pb-6 text-center px-4 sticky top-0 z-50">
             <h1 class="text-3xl font-black text-white drop-shadow-lg leading-tight">
                 2026 港澳吃喝團<br><span class="text-cyan-400 text-2xl">小馬哥首航導航手冊</span>
             </h1>
-            <p class="text-[10px] text-cyan-200 tracking-[0.4em] mt-4 font-bold uppercase">No Simplification • Ultra Detail</p>
+            <!-- 成員名單 -->
+            <p class="text-sm text-cyan-200/80 mt-3 font-bold tracking-widest">
+                小馬哥 • 小村 • 陳RuRu • Ruby • 妹妹
+            </p>
+
+            <!-- 2. 分頁選單 (移至標題下方) -->
+            <nav class="flex justify-between items-center mt-6 p-1 bg-white/5 rounded-2xl border border-white/10">
+                <button @click="activeTab = 'itinerary'" :class="activeTab === 'itinerary' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">📅 行程表</button>
+                <button @click="activeTab = 'info'" :class="activeTab === 'info' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">🎫 資訊</button>
+                <button @click="activeTab = 'packing'" :class="activeTab === 'packing' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">🎒 清單</button>
+                <button @click="activeTab = 'tips'" :class="activeTab === 'tips' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">📢 叮嚀</button>
+            </nav>
         </header>
 
-        <main class="flex-grow px-4 pb-28 pt-6">
+        <!-- Main Content Area -->
+        <main class="flex-grow px-4 pb-10 pt-4">
             
-            <div v-if="activeTab === 'itinerary'" class="space-y-12">
-                <div v-for="(day, dIdx) in itinerary" :key="dIdx">
-                    <div class="sticky top-0 z-20 bg-slate-950/90 backdrop-blur py-3 px-4 rounded-2xl border border-white/10 mb-6">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-2xl font-black" :class="dIdx === 0 ? 'text-cyan-400' : (dIdx === 1 ? 'text-pink-500' : 'text-yellow-400')">
-                                {{ day.date }} {{ day.week }}
-                            </h2>
-                            <div class="text-right">
-                                <span class="text-sm text-yellow-400 font-bold block">☀️ {{ day.weather }}</span>
-                                <span class="text-[10px] text-gray-400">{{ day.temp }}</span>
-                            </div>
+            <!-- 分頁 1: 行程表 (含三日切換) -->
+            <div v-if="activeTab === 'itinerary'" class="space-y-6">
+                <!-- 三日切換按鈕 -->
+                <div class="flex border-b border-white/10 mb-4">
+                    <button @click="activeDay = 0" :class="activeDay === 0 ? 'active-day-btn' : 'text-gray-500'" class="flex-1 py-3 text-sm font-bold transition-all">Day 1</button>
+                    <button @click="activeDay = 1" :class="activeDay === 1 ? 'active-day-btn' : 'text-gray-500'" class="flex-1 py-3 text-sm font-bold transition-all">Day 2</button>
+                    <button @click="activeDay = 2" :class="activeDay === 2 ? 'active-day-btn' : 'text-gray-500'" class="flex-1 py-3 text-sm font-bold transition-all">Day 3</button>
+                </div>
+
+                <!-- 當日行程顯示 -->
+                <div v-for="(day, dIdx) in itinerary" :key="dIdx" v-show="activeDay === dIdx">
+                    <div class="mb-6 flex justify-between items-end">
+                        <div>
+                            <h2 class="text-3xl font-black text-white">{{ day.date }}</h2>
+                            <p class="text-pink-500 font-bold tracking-widest">{{ day.week }} | {{ day.location }}</p>
+                        </div>
+                        <div class="text-right glass px-3 py-1 rounded-lg">
+                            <span class="text-xs text-yellow-400 font-bold block">☀️ {{ day.weather }}</span>
+                            <span class="text-[10px] text-gray-400">{{ day.temp }}</span>
                         </div>
                     </div>
 
-                    <div class="space-y-10 relative border-l-2 border-white/5 ml-4">
+                    <div class="space-y-10 relative border-l-2 border-pink-500/20 ml-4">
                         <div v-for="step in day.steps" class="relative pl-10 mb-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-4 border-slate-950" 
-                                 :class="dIdx === 0 ? 'bg-cyan-400 shadow-[0_0_8px_cyan]' : (dIdx === 1 ? 'bg-pink-500 shadow-[0_0_8px_pink]' : 'bg-yellow-400 shadow-[0_0_8px_yellow]')"></div>
+                            <!-- 時間標記 -->
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-4 border-slate-950 bg-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]"></div>
                             
-                            <div class="text-[11px] font-bold text-gray-500 mb-2">⏱️ {{ step.time }} <span v-if="step.cost" class="ml-2 text-emerald-400">💰 {{ step.cost }}</span></div>
+                            <div class="text-[11px] font-bold text-gray-500 mb-2">⏱️ {{ step.time }} <span v-if="step.cost" class="ml-2 text-emerald-400 font-black">💰 {{ step.cost }}</span></div>
 
-                            <div class="glass p-5 rounded-3xl overflow-hidden">
+                            <div class="glass p-5 rounded-3xl">
                                 <img v-if="step.img" :src="step.img" class="step-img">
                                 <h3 class="text-lg font-black text-white mb-3 flex items-center gap-2">
                                     <span>{{ step.emoji }}</span> {{ step.location }}
                                 </h3>
                                 
                                 <div class="space-y-4 text-xs leading-relaxed text-gray-300">
-                                    <div v-if="step.transport" class="p-3 bg-white/5 rounded-xl">
-                                        <p class="text-cyan-400 font-bold mb-1">🚇 交通銜接細節</p>
+                                    <div v-if="step.transport" class="p-3 bg-cyan-400/5 rounded-xl border border-cyan-400/10">
+                                        <p class="text-cyan-400 font-bold mb-1">🚇 交通銜接</p>
                                         <p v-html="step.transport"></p>
                                     </div>
-                                    <div class="path-box p-3 rounded-xl">
-                                        <p class="text-pink-400 font-bold mb-1">🚶 超詳盡路徑 (轉彎指引)</p>
+                                    <div class="path-box p-3 rounded-xl border border-pink-500/10">
+                                        <p class="text-pink-400 font-bold mb-1">🚶 步行/細節導航</p>
                                         <p v-html="step.routeDetail"></p>
                                     </div>
-                                    <div v-if="step.recommend" class="p-3 bg-yellow-400/10 rounded-xl text-yellow-100 border border-yellow-400/20">
-                                        <p class="text-yellow-400 font-bold mb-1">✨ 大師級推薦</p>
+                                    <div v-if="step.recommend" class="p-3 bg-yellow-400/5 rounded-xl text-yellow-100 border border-yellow-400/10">
+                                        <p class="text-yellow-400 font-bold mb-1">✨ 大師筆記</p>
                                         {{ step.recommend }}
                                     </div>
                                 </div>
-                                <button @click="openMap(step.location)" class="w-full mt-5 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold border border-white/10">📍 開啟導航</button>
+                                <button @click="openMap(step.location)" class="w-full mt-5 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black border border-white/10 tracking-widest uppercase">📍 Google Map 導航</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div v-if="activeTab === 'info'" class="space-y-8 animate-fadeIn">
+            <!-- 分頁 2: 資訊 -->
+            <div v-if="activeTab === 'info'" class="space-y-8">
                 <section>
-                    <h3 class="text-xs font-black mb-4 text-cyan-400 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span> 航班詳細資訊
-                    </h3>
+                    <h3 class="text-xs font-black mb-4 text-cyan-400 tracking-widest uppercase">Flight Details 航班</h3>
                     <div class="space-y-4">
                         <div v-for="f in flights" :key="f.no" class="mini-pass p-4">
                             <div class="flex justify-between border-b border-gray-100 pb-2 mb-3">
-                                <span class="font-black text-gray-400">{{ f.airline }}</span>
+                                <span class="font-black text-gray-400 uppercase tracking-tighter text-[8px]">{{ f.airline }}</span>
                                 <span class="font-black" :class="f.color">{{ f.no }}</span>
                             </div>
                             <div class="flex justify-between items-center text-center">
-                                <div><p class="text-xl font-black">{{ f.from }}</p><p class="text-[8px] text-gray-400">{{ f.fromCity }}</p></div>
+                                <div><p class="text-xl font-black">{{ f.from }}</p><p class="text-[8px] text-gray-400 uppercase">{{ f.fromCity }}</p></div>
                                 <div class="flex-1 px-4 text-center">
-                                    <div class="text-[9px] font-bold mb-1">{{ f.time }}</div>
+                                    <div class="text-[9px] font-bold mb-1 text-blue-900">{{ f.time }}</div>
                                     <div class="h-[1px] bg-gray-200 w-full relative"><div class="absolute -top-1.5 left-1/2 -translate-x-1/2">✈️</div></div>
                                 </div>
-                                <div><p class="text-xl font-black">{{ f.to }}</p><p class="text-[8px] text-gray-400">{{ f.toCity }}</p></div>
+                                <div><p class="text-xl font-black">{{ f.to }}</p><p class="text-[8px] text-gray-400 uppercase">{{ f.toCity }}</p></div>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <section>
-                    <h3 class="text-xs font-black mb-4 text-pink-400 tracking-widest uppercase flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 bg-pink-400 rounded-full"></span> 下榻飯店地址
-                    </h3>
+                    <h3 class="text-xs font-black mb-4 text-pink-400 tracking-widest uppercase">Hotels 住宿</h3>
                     <div class="space-y-4">
-                        <div v-for="h in hotels" :key="h.name" class="glass p-5 rounded-2xl border-t-4" :class="h.border">
-                            <p class="text-[10px] font-bold opacity-60 mb-1">{{ h.day }}</p>
+                        <div v-for="h in hotels" :key="h.name" class="glass p-5 rounded-2xl border-t-4 shadow-xl" :class="h.border">
+                            <p class="text-[10px] font-bold opacity-60 mb-1 tracking-widest uppercase">{{ h.day }}</p>
                             <h4 class="text-xl font-black text-white">{{ h.name }}</h4>
                             <p class="text-xs text-gray-400 mt-2">📍 {{ h.addr }}</p>
-                            <div class="mt-3 p-2 bg-white/5 rounded text-[10px] text-gray-300" v-html="h.note"></div>
+                            <div class="mt-4 p-3 bg-white/5 rounded-xl text-[11px] text-gray-300 leading-normal" v-html="h.note"></div>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <div v-if="activeTab === 'packing'" class="space-y-6 animate-fadeIn">
-                <h3 class="text-xs font-black mb-4 text-cyan-400 tracking-widest uppercase">Packing List</h3>
+            <!-- 分頁 3: 清單 -->
+            <div v-if="activeTab === 'packing'" class="space-y-6">
                 <div v-for="cat in packing" :key="cat.name" class="glass p-6 rounded-3xl">
                     <h4 class="font-black text-white mb-4 flex items-center gap-3 text-lg"><span>{{ cat.icon }}</span> {{ cat.name }}</h4>
                     <div class="space-y-3">
-                        <label v-for="item in cat.items" class="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/5">
-                            <input type="checkbox" class="w-5 h-5 rounded-lg border-white/20 bg-transparent text-cyan-500">
-                            <span class="text-sm text-gray-300 font-medium">{{ item }}</span>
+                        <label v-for="item in cat.items" class="flex items-center gap-4 p-3 bg-white/10 rounded-xl border border-white/5 active:bg-white/20">
+                            <input type="checkbox" class="w-6 h-6 rounded-lg border-white/20 bg-transparent text-cyan-500 focus:ring-0">
+                            <span class="text-sm text-gray-200 font-bold">{{ item }}</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div v-if="activeTab === 'tips'" class="space-y-6 animate-fadeIn">
-                <h3 class="text-xs font-black mb-4 text-yellow-400 tracking-widest uppercase">Master Tips</h3>
+            <!-- 分頁 4: 叮嚀 -->
+            <div v-if="activeTab === 'tips'" class="space-y-6">
                 <div v-for="(tip, idx) in tips" :key="idx" class="glass p-6 rounded-3xl relative overflow-hidden">
-                    <div class="absolute -right-4 -bottom-4 opacity-5 text-8xl font-black italic">{{ idx + 1 }}</div>
+                    <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl font-black italic text-pink-500">{{ idx + 1 }}</div>
                     <div class="relative z-10">
                         <h4 class="font-black text-lg text-white mb-2 flex items-center gap-2">
                             <span class="text-yellow-400">💡</span> {{ tip.title }}
@@ -147,21 +168,6 @@
             </div>
 
         </main>
-
-        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-[35px] h-20 flex justify-around items-center px-6 z-[100] border-t border-white/10 shadow-2xl">
-            <button @click="activeTab = 'itinerary'" class="flex flex-col items-center gap-1 transition-all" :class="activeTab === 'itinerary' ? 'text-cyan-400' : 'text-gray-500'">
-                <span class="text-2xl">📅</span><span class="text-[10px] font-bold">行程表</span>
-            </button>
-            <button @click="activeTab = 'info'" class="flex flex-col items-center gap-1 transition-all" :class="activeTab === 'info' ? 'text-cyan-400' : 'text-gray-500'">
-                <span class="text-2xl">🎫</span><span class="text-[10px] font-bold">資訊</span>
-            </button>
-            <button @click="activeTab = 'packing'" class="flex flex-col items-center gap-1 transition-all" :class="activeTab === 'packing' ? 'text-cyan-400' : 'text-gray-500'">
-                <span class="text-2xl">🎒</span><span class="text-[10px] font-bold">清單</span>
-            </button>
-            <button @click="activeTab = 'tips'" class="flex flex-col items-center gap-1 transition-all" :class="activeTab === 'tips' ? 'text-cyan-400' : 'text-gray-500'">
-                <span class="text-2xl">📢</span><span class="text-[10px] font-bold">叮嚀</span>
-            </button>
-        </nav>
     </div>
 
     <script>
@@ -170,43 +176,54 @@
             data() {
                 return {
                     activeTab: 'itinerary',
+                    activeDay: 0,
                     flights: [
-                        { airline: '香港航空', no: 'HB703', from: 'TPE', fromCity: 'TAIPEI', to: 'HKG', toCity: 'HONG KONG', time: '08.28 11:30', color: 'text-blue-600' },
-                        { airline: '星宇航空', no: 'JX206', from: 'MFM', fromCity: 'MACAU', to: 'TPE', toCity: 'TAIPEI', time: '08.30 20:50', color: 'text-orange-600' }
+                        { airline: 'Hong Kong Airlines', no: 'HB703', from: 'TPE', fromCity: 'TAIPEI', to: 'HKG', toCity: 'HONG KONG', time: '08.28 11:30', color: 'text-blue-600' },
+                        { airline: 'STARLUX', no: 'JX206', from: 'MFM', fromCity: 'MACAU', to: 'TPE', toCity: 'TAIPEI', time: '08.30 20:50', color: 'text-orange-600' }
                     ],
                     hotels: [
-                        { day: 'DAY 1 - HONG KONG', name: '旭逸酒店 荃灣', addr: '葵涌圳邊街15-19號', border: 'border-pink-500', note: '<b>交通：</b>葵興站 C 出口有免費接駁車(7-11旁)，每15-30分鐘一班。' },
-                        { day: 'DAY 2 - MACAU', name: '利澳酒店 Rio Hotel', addr: '澳門新口岸高美士街33號', border: 'border-yellow-500', note: '<b>交通：</b>近外港碼頭，搭計程車或巴士至高美士街下車。' }
+                        { day: 'Day 1 - Hong Kong', name: '旭逸酒店 荃灣', addr: '香港葵涌圳邊街15-19號', border: 'border-cyan-400', note: '<b>交通攻略：</b>從地鐵「葵興站」C 出口出站，步行至 7-11 旁有飯店免費接駁巴士，約 20 分鐘一班。' },
+                        { day: 'Day 2 - Macau', name: '利澳酒店 Rio Hotel', addr: '澳門新口岸高美士街33號', border: 'border-pink-500', note: '<b>交通攻略：</b>抵達外港碼頭後，可搭乘飯店免費接駁車；或搭乘 10、10B 號巴士至「高美士/馬里奧」站下車即達。' }
                     ],
                     itinerary: [
                         {
-                            date: '08/28', week: '五', weather: '晴時多雲', temp: '28°C-33°C',
+                            date: '08/28', week: 'Friday', location: '香港啟航', weather: '晴時多雲', temp: '28°C-33°C',
                             steps: [
-                                { time: '14:30', location: '機場 ➔ 東薈城', emoji: '🚌', cost: 'HK$3.7', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800', 
-                                  transport: '於機場地面運輸中心搭乘 **S1 巴士**。', routeDetail: '巴士停在東薈城門口。進入商場後行李可寄放在 B2/B3 儲物櫃。' },
+                                { time: '13:00', location: '抵達香港機場', emoji: '🛬', transport: '完成入境手續與行李領取。', routeDetail: '機場 B 出口方向，前往「地面運輸中心」。', recommend: '先檢查八達通餘額是否足夠。' },
+                                { time: '14:30', location: '機場 ➔ 東薈城 Citygate', emoji: '🚌', cost: 'HK$3.7', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800', 
+                                  transport: '搭乘 **S1 巴士**（機場循環線）。', routeDetail: '巴士停在東薈城門口。進入商場後行李可寄放在 B2/B3 儲物櫃。' },
                                 { time: '18:30', location: '竺扶大班燒味 (灣仔店)', emoji: '🍱', cost: 'HK$15.0', img: 'https://images.unsplash.com/photo-1512132411229-c30391241dd8?q=80&w=800',
                                   transport: '地鐵「灣仔站」**A3 出口**。', routeDetail: '出站後橫過莊士敦道，沿著**莊士敦道**向左步行約 3 分鐘，看到**三角街**路標即抵達。' },
                                 { time: '22:00', location: '佳佳甜品 ➔ 樂酒場', emoji: '🍧', img: 'https://images.unsplash.com/photo-1634125866752-60144c802bc6?q=80&w=800',
-                                  transport: '尖沙咀碼頭步行。', routeDetail: '從佳佳甜品門口出來，**右轉**沿寧波街走，至**白加士街**左轉，步行 2 分鐘即可見樂酒場。' }
+                                  transport: '從佐敦步行。', routeDetail: '從佳佳甜品門口出來，**右轉**沿寧波街走，至**白加士街**左轉，步行 2 分鐘即可見樂酒場。' }
                             ]
                         },
                         {
-                            date: '08/29', week: '六', weather: '短暫陣雨', temp: '27°C-31°C',
+                            date: '08/29', week: 'Saturday', location: '港澳跨境', weather: '短暫陣雨', temp: '27°C-31°C',
                             steps: [
                                 { time: '10:00', location: '一點心 (One Dim Sum)', emoji: '🥟', img: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800',
-                                  transport: '地鐵「太子站」**C2 出口**。', routeDetail: '行李寄放上海街 695 號，沿上海街直行，**右轉**運動場道，再**右轉**通菜街。' },
-                                { time: '18:30', location: '澳門：大三巴 & 杏香園', emoji: '🏛️', img: 'https://images.unsplash.com/photo-1589147572342-990e660852e9?q=80&w=800',
-                                  transport: '巴士 MT4 或 3 號。', routeDetail: '大三巴後走往**清平直街**，杏香園就在巷弄內，主打腐竹糖水。' }
+                                  transport: '地鐵「太子站」**C2 出口**。', routeDetail: '行李寄放上海街 695 號，沿上海街直行，**右轉**運動場道，再**右轉**通菜街。', recommend: '必點薄皮鮮蝦腸粉。' },
+                                { time: '15:00', location: '上環碼頭 ➔ 澳門', emoji: '⛴️', cost: 'HK$175+', transport: '搭乘噴射飛航或金光飛航。', routeDetail: '請預早 30 分鐘抵達信德中心辦理出境手續。' },
+                                { time: '18:30', location: '大三巴 & 杏香園', emoji: '🏛️', img: 'https://images.unsplash.com/photo-1589147572342-990e660852e9?q=80&w=800',
+                                  transport: '碼頭搭乘巴士 MT4 或 3 號。', routeDetail: '參觀完大三巴後走往**清平直街**，杏香園就在巷弄內，主打腐竹白果糖水。' }
+                            ]
+                        },
+                        {
+                            date: '08/30', week: 'Sunday', location: '澳門巡禮', weather: '多雲局部雨', temp: '27°C-30°C',
+                            steps: [
+                                { time: '11:00', location: '路環市區 (安德魯蛋塔)', emoji: '🍮', transport: '搭乘巴士至「路環市區站」。', routeDetail: '下車後沿恩尼斯總統前地步行 1 分鐘，蛋塔就在轉角。' },
+                                { time: '14:00', location: '官也街吃喝', emoji: '🍪', transport: '計程車或巴士。', routeDetail: '這是步行街，可以一路吃到尾。莫義記榴槤雪糕是重點。' },
+                                { time: '18:30', location: '澳門機場', emoji: '🛫', transport: '搭乘 JX206 返台。', routeDetail: '提早 2 小時抵達機場。' }
                             ]
                         }
                     ],
                     packing: [
-                        { name: '證件文件', icon: '📄', items: ['護照原件', '港簽紙本/台胞證', '身分證', '港幣/澳門幣現金'] },
-                        { name: '電子設備', icon: '🔌', items: ['英規轉接頭 (必帶)', '行動電源', 'eSim/網卡', '充電線*2'] }
+                        { name: '證件必備', icon: '📄', items: ['護照 (正本)', '港簽紙本 / 台胞證', '身分證', '港幣/澳門幣現金 (預留零錢)'] },
+                        { name: '電子與生活', icon: '🔌', items: ['英規轉接頭', '行動電源', 'eSim/漫遊設定', '舒適好走的鞋', '雨傘/輕便雨衣'] }
                     ],
                     tips: [
-                        { title: '交通守則', content: '叮叮車：**後門上車、前門下車刷卡**。八達通餘額不足可到 7-11 儲值。' },
-                        { title: '行李寄放', content: '東薈城 B2 儲物櫃常滿，建議 11:00 前抵達或改寄飯店。' }
+                        { title: '交通秘訣', content: '<b>香港：</b>搭叮叮車「後門上車、前門下車刷卡」。<br><b>澳門：</b>巴士均一價 6 蚊，不找零，建議使用澳門通或零錢。' },
+                        { title: '行李寄放', content: '飯店退房後均可寄放行李，若要在市中心寄放，可下載 **LuggAgent** 或尋找地鐵站儲物櫃。' }
                     ]
                 }
             },
