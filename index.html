@@ -1,4 +1,3 @@
-:2026 港澳吃喝團之小馬哥首航:index.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -8,14 +7,19 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <!-- Lucide Icons for aesthetic UI -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         body { font-family: 'Noto+Sans+TC', sans-serif; background-color: #05070a; color: #f0f0f0; }
         .neon-bg { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506354666786-959d6d497f1a?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; }
-        .boarding-pass { background: #fff; color: #000; border-radius: 15px; position: relative; overflow: hidden; }
+        
+        /* 登機證樣式優化 */
+        .boarding-pass { background: #fff; color: #000; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .boarding-pass::after { content: ""; position: absolute; left: 0; right: 0; bottom: 30%; border-bottom: 2px dashed #ccc; }
+        .pass-cutout-l, .pass-cutout-r { position: absolute; width: 20px; height: 20px; background: #05070a; border-radius: 50%; bottom: calc(30% - 10px); }
+        .pass-cutout-l { left: -10px; }
+        .pass-cutout-r { right: -10px; }
+
         .tab-active { border-bottom: 4px solid #ff00ff; color: #ff00ff; font-weight: 900; }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; }
         .nav-path { border-left: 2px solid #00f2ff; margin-left: 10px; padding-left: 15px; }
@@ -24,13 +28,11 @@
 </head>
 <body>
     <div id="app" class="max-w-md mx-auto min-h-screen">
-        <!-- 1. 頂部標題與成員 -->
         <header class="neon-bg h-48 flex flex-col justify-center items-center text-center p-6 border-b border-pink-500/30">
             <h1 class="text-2xl font-black text-white tracking-tighter animate__animated animate__pulse animate__infinite">2026 港澳吃喝團<br>之小馬哥首航</h1>
-            <p class="text-pink-400 text-xs mt-3 font-bold bg-black/50 px-4 py-1 rounded-full">小馬哥 | 小村 | 陳RuRu | Ruby | 妹妹</p>
+            <p class="text-pink-400 text-xs mt-3 font-bold bg-black/50 px-4 py-1 rounded-full border border-pink-500/20">小馬哥 | 小村 | 陳RuRu | Ruby | 妹妹</p>
         </header>
 
-        <!-- 2. 置頂導航分頁 -->
         <nav class="sticky top-0 z-50 bg-[#05070a]/95 backdrop-blur-md flex justify-around py-3 border-b border-gray-800 text-xs font-bold tracking-widest">
             <button v-for="t in tabs" @click="currentTab = t.id" :class="{'tab-active': currentTab === t.id}" class="pb-1 transition-all">
                 {{ t.name }}
@@ -38,9 +40,7 @@
         </nav>
 
         <main class="p-4 mb-20">
-            <!-- 行程分頁 -->
             <div v-if="currentTab === 'itinerary'">
-                <!-- 天數切換 -->
                 <div class="flex gap-2 mb-6 overflow-x-auto scroll-hide pb-2">
                     <button v-for="d in days" @click="activeDay = d.id" 
                         class="flex-1 min-w-[140px] p-4 rounded-xl text-[11px] leading-tight transition-all text-left relative overflow-hidden"
@@ -50,7 +50,46 @@
                     </button>
                 </div>
 
-                <!-- 行程列表 -->
+                <div v-if="activeDay === 'day1'" class="boarding-pass p-6 mb-8 animate__animated animate__fadeInDown">
+                    <div class="pass-cutout-l"></div><div class="pass-cutout-r"></div>
+                    <div class="flex justify-between items-center border-b pb-4 mb-4">
+                        <div><p class="text-[10px] uppercase text-gray-400 font-bold">Flight 去程</p><p class="text-xl font-black text-blue-600">CX461</p></div>
+                        <div class="text-gray-300">✈️</div>
+                        <div class="text-right"><p class="text-[10px] uppercase text-gray-400 font-bold">Date</p><p class="text-xl font-black">AUG 28</p></div>
+                    </div>
+                    <div class="flex justify-between items-center mb-10">
+                        <div><p class="text-3xl font-black">TPE</p><p class="text-[10px] text-gray-500">Taipei</p></div>
+                        <div class="flex-1 border-t-2 border-gray-100 mx-4 relative">
+                            <span class="absolute top-[-10px] left-1/2 -translate-x-1/2 bg-white px-2">✈️</span>
+                        </div>
+                        <div class="text-right"><p class="text-3xl font-black">HKG</p><p class="text-[10px] text-gray-500">Hong Kong</p></div>
+                    </div>
+                    <div class="flex justify-between items-end mt-4">
+                        <div><p class="text-[10px] text-gray-400 font-bold">Passenger</p><p class="text-sm font-bold">小馬哥首航團 (5位)</p></div>
+                        <div class="text-right text-[10px] font-mono tracking-tighter text-gray-400">BOARDING: 11:20</div>
+                    </div>
+                </div>
+
+                <div v-if="activeDay === 'day3'" class="boarding-pass p-6 mb-8 animate__animated animate__fadeInDown">
+                    <div class="pass-cutout-l"></div><div class="pass-cutout-r"></div>
+                    <div class="flex justify-between items-center border-b pb-4 mb-4">
+                        <div><p class="text-[10px] uppercase text-gray-400 font-bold">Flight 回程</p><p class="text-xl font-black text-pink-600">CX472</p></div>
+                        <div class="text-gray-300">✈️</div>
+                        <div class="text-right"><p class="text-[10px] uppercase text-gray-400 font-bold">Date</p><p class="text-xl font-black">AUG 30</p></div>
+                    </div>
+                    <div class="flex justify-between items-center mb-10">
+                        <div><p class="text-3xl font-black">HKG</p><p class="text-[10px] text-gray-500">Hong Kong</p></div>
+                        <div class="flex-1 border-t-2 border-gray-100 mx-4 relative">
+                            <span class="absolute top-[-10px] left-1/2 -translate-x-1/2 bg-white px-2">✈️</span>
+                        </div>
+                        <div class="text-right"><p class="text-3xl font-black">TPE</p><p class="text-[10px] text-gray-500">Taipei</p></div>
+                    </div>
+                    <div class="flex justify-between items-end mt-4">
+                        <div><p class="text-[10px] text-gray-400 font-bold">Passenger</p><p class="text-sm font-bold">小馬哥首航團 (5位)</p></div>
+                        <div class="text-right text-[10px] font-mono tracking-tighter text-gray-400">BOARDING: 18:00</div>
+                    </div>
+                </div>
+
                 <div v-for="(item, idx) in currentDayItems" :key="idx" class="glass-card mb-8 p-5 animate__animated animate__fadeInUp">
                     <div class="flex justify-between items-start gap-4">
                         <div class="flex-1">
@@ -82,32 +121,8 @@
                 </div>
             </div>
 
-            <!-- 資訊分頁：登機證風格 -->
             <div v-if="currentTab === 'info'" class="space-y-6">
-                <h2 class="text-center text-pink-500 font-black tracking-widest uppercase">Flight Boarding Pass</h2>
-                
-                <!-- 登機證 1 -->
-                <div class="boarding-pass p-6 shadow-2xl animate__animated animate__flipInX">
-                    <div class="flex justify-between items-center border-b pb-4 mb-4">
-                        <div><p class="text-[10px] uppercase text-gray-400 font-bold">Flight</p><p class="text-xl font-black">CX461</p></div>
-                        <div class="text-cyan-500 font-black">✈️</div>
-                        <div class="text-right"><p class="text-[10px] uppercase text-gray-400 font-bold">Date</p><p class="text-xl font-black">AUG 28</p></div>
-                    </div>
-                    <div class="flex justify-between items-center mb-10">
-                        <div><p class="text-3xl font-black">TPE</p><p class="text-[10px] text-gray-500">Taipei</p></div>
-                        <div class="flex-1 border-t-2 border-gray-200 mx-4 relative">
-                            <span class="absolute top-[-10px] left-1/2 -translate-x-1/2 bg-white px-2">✈️</span>
-                        </div>
-                        <div class="text-right"><p class="text-3xl font-black">HKG</p><p class="text-[10px] text-gray-500">Hong Kong</p></div>
-                    </div>
-                    <div class="flex justify-between items-end mt-4">
-                        <div><p class="text-[10px] text-gray-400 font-bold">Passenger</p><p class="text-sm font-bold">小馬哥首航團 (5位)</p></div>
-                        <div class="text-right text-[10px] font-mono tracking-tighter">||| | || |||| | ||| | |||</div>
-                    </div>
-                </div>
-
-                <!-- 住宿與接駁連結 -->
-                <div class="glass-card p-5 mt-6">
+                <div class="glass-card p-5">
                     <h3 class="text-cyan-400 font-black mb-4 flex items-center gap-2">🏨 住宿與重要連結</h3>
                     <div class="space-y-3">
                         <a href="https://www.hotelease.com.tw/zh-hant/TsuenWan" target="_blank" class="block p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10">
@@ -120,13 +135,12 @@
                         </a>
                         <a href="https://hkmoexpress.gobybus.hk/" target="_blank" class="block p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10">
                             <p class="font-bold font-black text-pink-500">🚍 港澳快線時刻表與訂票</p>
-                            <p class="text-xs text-gray-400 mt-1 italic italic">重要：香港太子 ➔ 澳門回力</p>
+                            <p class="text-xs text-gray-400 mt-1 italic">重要：香港太子 ➔ 澳門回力</p>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- 行李清單分頁 -->
             <div v-if="currentTab === 'list'" class="space-y-4">
                 <div v-for="cat in checklist" :key="cat.name" class="glass-card p-5">
                     <h3 class="text-pink-500 font-black border-b border-white/10 pb-2 mb-4 flex items-center gap-2">
@@ -141,7 +155,6 @@
                 </div>
             </div>
 
-            <!-- 攻略叮嚀分頁 -->
             <div v-if="currentTab === 'note'" class="space-y-4">
                 <div v-for="g in guides" :key="g.title" class="glass-card p-5">
                     <h3 class="text-cyan-400 font-black border-b border-white/10 pb-2 mb-4">⭐ {{ g.title }}</h3>
@@ -181,7 +194,7 @@
                             steps: ['📍 抵達後提取行李，跟隨「往市區巴士」指標前往機場地面運輸中心。'], cost: '-', open: '24小時'
                         },
                         {
-                            time: '14:30 - 15:00', title: '機場 ➔ 東薈城 (Citygate Outlets)', img: 'https://lh3.googleusercontent.com/p/AF1QipNhK_8X0E_U9_vD9z-r9V6lO0B6gX6p-j9W8O8S=s1360-w1360-h1020',
+                            time: '14:30 - 15:00', title: '機場 ➔ 東薈城 (Citygate Outlets)', img: 'https://images.unsplash.com/photo-1549492423-400259a2e574?w=300',
                             steps: [
                                 '🚌 <strong>交通：</strong> 航站樓外巴士站搭乘 <strong>S1 巴士</strong>（循環線）。',
                                 '📍 <strong>地點：</strong> 「機場(地面運輸中心)」上車 ➔ 「東薈城」下車。',
@@ -223,7 +236,7 @@
                     ],
                     day2: [
                         {
-                            time: '10:00', title: '退房 ➔ 港澳快線太子站 (行李寄存)', img: 'https://lh3.googleusercontent.com/p/AF1QipO3p83O9qB5M4Z5S1R3W8Q9Z5R3W8Q9Z5R3W8Q9=s1360-w1360-h1020',
+                            time: '10:00', title: '退房 ➔ 港澳快線太子站 (行李寄存)', img: 'https://images.unsplash.com/photo-1517059224940-d4af9eec41b7?w=300',
                             steps: [
                                 '🚇 <strong>地鐵：</strong> 葵興站 ➔ 太子站。',
                                 '📍 <strong>導航白癡指南：</strong> 從 <strong>太子站 C2 出口</strong> 出來，右轉沿著 <strong>太子道西</strong> 走，看到 <strong>上海街</strong> 左轉。',
@@ -232,7 +245,7 @@
                             ], cost: '地鐵 HK$10.5', open: '一點心 10:00 開門'
                         },
                         {
-                            time: '11:30 - 14:00', title: '上環/中環 購物馬拉松', img: 'https://lh3.googleusercontent.com/p/AF1QipPX5p3X4qB5M4Z5S1R3W8Q9Z5R3W8Q9Z5R3W8Q9=s1360-w1360-h1020',
+                            time: '11:30 - 14:00', title: '上環/中環 購物馬拉松', img: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=300',
                             steps: [
                                 '🚇 <strong>地鐵：</strong> 太子站 ➔ 上環站。',
                                 '📍 <strong>兆成行：</strong> 蘇杭街（精油）。從 <strong>上環站 A2 出口</strong> 走。',
@@ -260,7 +273,7 @@
                     ],
                     day3: [
                         {
-                            time: '10:30 - 12:00', title: '世紀咖啡 (早餐)', img: 'https://lh3.googleusercontent.com/p/AF1QipN9_8X0E_U9_vD9z-r9V6lO0B6gX6p-j9W8O8S=s1360-w1360-h1020',
+                            time: '10:30 - 12:00', title: '世紀咖啡 (早餐)', img: 'https://images.unsplash.com/photo-1540331547168-8b63109225b7?w=300',
                             steps: [
                                 '📍 <strong>導航：</strong> 步行或搭車至 <strong>新馬路附近</strong> 或 <strong>官也街店</strong>。',
                                 '🍨 <strong>必點：</strong> 厚蛋吐司、瓦煲奶茶。'
@@ -305,5 +318,3 @@
     </script>
 </body>
 </html>
-
-
