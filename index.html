@@ -3,231 +3,491 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026港澳吃喝團</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>2026 港澳吃喝團 - 專業詳細版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
     <style>
-        :root { --neon-cyan: #06b6d4; --neon-pink: #ec4899; --neon-yellow: #eab308; }
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #020617; color: #f8fafc; margin: 0; }
-        .bg-header {
-            background: linear-gradient(rgba(2, 6, 23, 0.8), #020617), url('https://images.unsplash.com/photo-1506354666786-959d6d497f1a?q=80&w=1200');
-            background-size: cover; background-position: center;
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        :root {
+            --primary: #3b82f6;
+            --bg-dark: #020617;
+            --card-bg: #0f172a;
         }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-        .active-tab-btn { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan); }
-        .active-day-btn { border-bottom: 3px solid var(--neon-pink); color: var(--neon-pink); }
-        .mini-pass { background: #fff; color: #000; border-radius: 12px; font-size: 0.7rem; position: relative; overflow: hidden; }
-        .mini-pass::after { content: ""; position: absolute; right: 28%; top: 0; bottom: 0; border-left: 1px dashed #ccc; }
-        .step-img { width: 100%; height: 160px; object-fit: cover; border-radius: 16px; margin-bottom: 12px; }
-        .path-box { border-left: 3px solid var(--neon-pink); padding-left: 10px; background: rgba(236, 72, 153, 0.05); }
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+        .tab-active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 900;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .step-node {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+        .step-node::before {
+            content: '';
+            position: absolute;
+            left: 0.75rem;
+            top: 0.5rem;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #3b82f6, transparent);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+        .important-tag {
+            background: linear-gradient(90deg, #ef4444, #f97316);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+        [v-cloak] { display: none; }
     </style>
 </head>
-<body>
-    <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col bg-slate-950 shadow-2xl">
+<body class="antialiased">
+    <div id="app" v-cloak class="max-w-4xl mx-auto shadow-2xl min-h-screen border-x border-white/5">
         
-        <!-- 1. Header: 標題與成員名單 -->
-        <header class="bg-header pt-12 pb-6 text-center px-4 sticky top-0 z-50">
-            <h1 class="text-3xl font-black text-white drop-shadow-lg leading-tight">
-                2026 港澳吃喝團<br><span class="text-cyan-400 text-2xl">小馬哥首航導航手冊</span>
-            </h1>
-            <!-- 成員名單 -->
-            <p class="text-sm text-cyan-200/80 mt-3 font-bold tracking-widest">
-                小馬哥 • 小村 • 陳RuRu • Ruby • 妹妹
-            </p>
-
-            <!-- 2. 分頁選單 (移至標題下方) -->
-            <nav class="flex justify-between items-center mt-6 p-1 bg-white/5 rounded-2xl border border-white/10">
-                <button @click="activeTab = 'itinerary'" :class="activeTab === 'itinerary' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">📅 行程表</button>
-                <button @click="activeTab = 'info'" :class="activeTab === 'info' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">🎫 資訊</button>
-                <button @click="activeTab = 'packing'" :class="activeTab === 'packing' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">🎒 清單</button>
-                <button @click="activeTab = 'tips'" :class="activeTab === 'tips' ? 'active-tab-btn' : 'text-gray-400'" class="flex-1 py-2 text-[10px] font-black rounded-xl transition-all">📢 叮嚀</button>
+        <!-- Header -->
+        <header class="p-6 bg-slate-900 border-b border-white/10 sticky top-0 z-50">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-2xl font-black tracking-tighter text-white">2026 港澳首航 <span class="text-blue-500">MISSION LOG</span></h1>
+                    <p class="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest italic">Commander: 小馬哥 | Version 4.0.0 Stable</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-xl font-bold text-white">{{ currentTime }}</div>
+                    <div class="text-[10px] text-slate-500 font-mono tracking-tighter">EST. DEPARTURE: 2026-08-28</div>
+                </div>
+            </div>
+            
+            <!-- 四個分頁導航 -->
+            <nav class="flex space-x-1 bg-slate-950 p-1 rounded-xl border border-white/5">
+                <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
+                    :class="['flex-1 py-3 px-2 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1', 
+                    activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-900']">
+                    <i :data-lucide="tab.icon" class="w-4 h-4"></i>
+                    {{ tab.name }}
+                </button>
             </nav>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="flex-grow px-4 pb-10 pt-4">
+        <!-- 主要內容區 -->
+        <main class="p-4 md:p-6 pb-32">
             
-            <!-- 分頁 1: 行程表 (含三日切換) -->
-            <div v-if="activeTab === 'itinerary'" class="space-y-6">
-                <!-- 三日切換按鈕 -->
-                <div class="flex border-b border-white/10 mb-4">
-                    <button @click="activeDay = 0" :class="activeDay === 0 ? 'active-day-btn' : 'text-gray-500'" class="flex-1 py-3 text-sm font-bold transition-all">Day 1</button>
-                    <button @click="activeDay = 1" :class="activeDay === 1 ? 'active-day-btn' : 'text-gray-500'" class="flex-1 py-3 text-sm font-bold transition-all">Day 2</button>
-                    <button @click="activeDay = 2" :class="activeDay === 2 ? 'active-day-btn' : 'text-gray-500'" class="flex-1 py-3 text-sm font-bold transition-all">Day 3</button>
+            <!-- 分頁一：行程全拆解 (Detailed Itinerary) -->
+            <section v-if="activeTab === 'schedule'" class="space-y-6">
+                <div class="flex gap-2 mb-4">
+                    <button v-for="d in 3" @click="selectedDay = d"
+                        :class="['px-4 py-2 rounded-full text-xs font-black transition-all', selectedDay === d ? 'bg-white text-black' : 'bg-slate-800 text-slate-400']">
+                        DAY 0{{ d }}
+                    </button>
                 </div>
 
-                <!-- 當日行程顯示 -->
-                <div v-for="(day, dIdx) in itinerary" :key="dIdx" v-show="activeDay === dIdx">
-                    <div class="mb-6 flex justify-between items-end">
-                        <div>
-                            <h2 class="text-3xl font-black text-white">{{ day.date }}</h2>
-                            <p class="text-pink-500 font-bold tracking-widest">{{ day.week }} | {{ day.location }}</p>
+                <div v-for="(item, idx) in filteredSchedule" :key="idx" class="step-node animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <div class="absolute left-[0.25rem] top-1.5 w-4 h-4 rounded-full border-2 border-blue-500 bg-slate-900 z-10"></div>
+                    <div class="glass p-5 rounded-2xl mb-4 hover:border-blue-500/50 transition-all group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="code-font text-blue-400 text-sm font-bold tracking-widest">{{ item.time }}</span>
+                            <span class="text-[10px] px-2 py-1 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20 font-bold uppercase">{{ item.category }}</span>
                         </div>
-                        <div class="text-right glass px-3 py-1 rounded-lg">
-                            <span class="text-xs text-yellow-400 font-bold block">☀️ {{ day.weather }}</span>
-                            <span class="text-[10px] text-gray-400">{{ day.temp }}</span>
-                        </div>
-                    </div>
+                        <h3 class="text-lg font-black text-white mb-3 group-hover:text-blue-400 transition-colors">{{ item.title }}</h3>
+                        
+                        <!-- 詳細步驟清單 -->
+                        <ul class="space-y-2 mb-4">
+                            <li v-for="(step, sIdx) in item.steps" :key="sIdx" class="text-sm text-slate-400 flex gap-2">
+                                <span class="text-blue-500 font-mono text-[10px] mt-1 tracking-tighter">[{{sIdx+1}}]</span>
+                                <span v-html="step"></span>
+                            </li>
+                        </ul>
 
-                    <div class="space-y-10 relative border-l-2 border-pink-500/20 ml-4">
-                        <div v-for="step in day.steps" class="relative pl-10 mb-10">
-                            <!-- 時間標記 -->
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-4 border-slate-950 bg-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]"></div>
-                            
-                            <div class="text-[11px] font-bold text-gray-500 mb-2">⏱️ {{ step.time }} <span v-if="step.cost" class="ml-2 text-emerald-400 font-black">💰 {{ step.cost }}</span></div>
-
-                            <div class="glass p-5 rounded-3xl">
-                                <img v-if="step.img" :src="step.img" class="step-img">
-                                <h3 class="text-lg font-black text-white mb-3 flex items-center gap-2">
-                                    <span>{{ step.emoji }}</span> {{ step.location }}
-                                </h3>
-                                
-                                <div class="space-y-4 text-xs leading-relaxed text-gray-300">
-                                    <div v-if="step.transport" class="p-3 bg-cyan-400/5 rounded-xl border border-cyan-400/10">
-                                        <p class="text-cyan-400 font-bold mb-1">🚇 交通銜接</p>
-                                        <p v-html="step.transport"></p>
-                                    </div>
-                                    <div class="path-box p-3 rounded-xl border border-pink-500/10">
-                                        <p class="text-pink-400 font-bold mb-1">🚶 步行/細節導航</p>
-                                        <p v-html="step.routeDetail"></p>
-                                    </div>
-                                    <div v-if="step.recommend" class="p-3 bg-yellow-400/5 rounded-xl text-yellow-100 border border-yellow-400/10">
-                                        <p class="text-yellow-400 font-bold mb-1">✨ 大師筆記</p>
-                                        {{ step.recommend }}
-                                    </div>
-                                </div>
-                                <button @click="openMap(step.location)" class="w-full mt-5 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black border border-white/10 tracking-widest uppercase">📍 Google Map 導航</button>
+                        <!-- 地點資訊與備註 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="bg-slate-950/50 p-3 rounded-lg border border-white/5">
+                                <div class="text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-wider">交通/預算提示</div>
+                                <p class="text-xs text-slate-300 italic">{{ item.transport }}</p>
+                            </div>
+                            <div class="bg-amber-500/5 p-3 rounded-lg border border-amber-500/10">
+                                <div class="text-[10px] text-amber-500 font-bold mb-1 uppercase tracking-wider">避坑 & 關鍵提醒</div>
+                                <p class="text-xs text-amber-200">{{ item.tips }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- 分頁 2: 資訊 -->
-            <div v-if="activeTab === 'info'" class="space-y-8">
-                <section>
-                    <h3 class="text-xs font-black mb-4 text-cyan-400 tracking-widest uppercase">Flight Details 航班</h3>
+            <!-- 分頁二：交通與寄存細節 (Logistics & Transport) -->
+            <section v-if="activeTab === 'logistics'" class="space-y-6">
+                <!-- 太子站專區 -->
+                <div class="glass p-6 rounded-3xl border-l-8 border-blue-500">
+                    <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="package" class="text-blue-500"></i> 太子站行李寄存專案
+                    </h2>
                     <div class="space-y-4">
-                        <div v-for="f in flights" :key="f.no" class="mini-pass p-4">
-                            <div class="flex justify-between border-b border-gray-100 pb-2 mb-3">
-                                <span class="font-black text-gray-400 uppercase tracking-tighter text-[8px]">{{ f.airline }}</span>
-                                <span class="font-black" :class="f.color">{{ f.no }}</span>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-white/10">
+                            <h4 class="text-sm font-bold text-blue-400 mb-2 italic underline underline-offset-4">站點位置：上海街 695 號 (環島中港通太子站)</h4>
+                            <ul class="text-xs text-slate-400 space-y-2">
+                                <li>• <b>地鐵指引：</b>太子站 A 出口步行約 150 米，運動場道與上海街交界。</li>
+                                <li>• <b>營業時間：</b>07:30 - 20:00 (請務必在 15:00 登車前 30 分鐘取回或確認)。</li>
+                                <li>• <b>流程：</b>直接進入辦事處櫃台告知要寄存行李，領取號碼牌，費用約 $20-40 HKD。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 港澳快線細節 -->
+                <div class="glass p-6 rounded-3xl border-l-8 border-emerald-500">
+                    <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="bus" class="text-emerald-500"></i> 港澳快線 Cross-Border Bus
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-950 rounded-xl border border-white/10">
+                            <h4 class="text-sm font-bold text-emerald-400 mb-2">出境流程 (HK ➔ MO)</h4>
+                            <div class="text-[11px] text-slate-400 space-y-2 leading-relaxed">
+                                1. 上海街站點上車，請出示 <b>QR Code</b> 換票。<br>
+                                2. 行駛至 <b>港珠澳大橋香港口岸</b>，全體下車過海關。<br>
+                                3. <b>重要：</b>下車需帶齊所有行李，過關後按指示回到「港澳快線」指定月台再次上車。<br>
+                                4. 經跨海大橋抵達澳門口岸，再次下車過澳門關。
                             </div>
-                            <div class="flex justify-between items-center text-center">
-                                <div><p class="text-xl font-black">{{ f.from }}</p><p class="text-[8px] text-gray-400 uppercase">{{ f.fromCity }}</p></div>
-                                <div class="flex-1 px-4 text-center">
-                                    <div class="text-[9px] font-bold mb-1 text-blue-900">{{ f.time }}</div>
-                                    <div class="h-[1px] bg-gray-200 w-full relative"><div class="absolute -top-1.5 left-1/2 -translate-x-1/2">✈️</div></div>
+                        </div>
+                        <div class="p-4 bg-slate-950 rounded-xl border border-white/10">
+                            <h4 class="text-sm font-bold text-emerald-400 mb-2">車票與銜接</h4>
+                            <div class="text-[11px] text-slate-400 space-y-2">
+                                • <b>票價：</b>日間約 $160 / 晚間約 $180。<br>
+                                • <b>終點：</b>建議選擇「銀河」或「威尼斯人」下車再轉計程車至利澳飯店。<br>
+                                • <b>班次：</b>半小時一班，錯過需候補。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 澳門巴士導航 -->
+                <div class="glass p-6 rounded-3xl border-l-8 border-amber-500">
+                    <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="map" class="text-amber-500"></i> 澳門內部交通攻略
+                    </h2>
+                    <div class="info-grid">
+                        <div class="bg-slate-800 p-3 rounded text-center">
+                            <p class="text-[10px] text-slate-500 uppercase font-bold">公車票價</p>
+                            <p class="text-sm font-bold">MOP 6.0</p>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded text-center">
+                            <p class="text-[10px] text-slate-500 uppercase font-bold">必備卡片</p>
+                            <p class="text-sm font-bold text-blue-400">澳門通/MPay</p>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded text-center">
+                            <p class="text-[10px] text-slate-500 uppercase font-bold">計程車起步</p>
+                            <p class="text-sm font-bold">MOP 19.0</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-slate-950 rounded-xl border border-white/10">
+                        <h4 class="text-sm font-bold text-amber-400 mb-2">路環 vs 本島 關鍵路線</h4>
+                        <ul class="text-[11px] text-slate-400 space-y-1">
+                            <li>• <b>前往路環：</b>搭乘 21A, 25, 26A, 50 號巴士。</li>
+                            <li>• <b>金光大道：</b>搭乘 MT4 或 25B 快速穿越本島與離島。</li>
+                            <li>• <b>利澳飯店：</b>位於新口岸，可步行至金蓮花廣場搭各路巴士。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 分頁三：島嶼導航與店家 (Destinations & Stores) -->
+            <section v-if="activeTab === 'destinations'" class="space-y-6">
+                <!-- 路環深度圖鑑 -->
+                <div class="glass overflow-hidden rounded-3xl">
+                    <div class="bg-gradient-to-r from-cyan-900 to-blue-900 p-6">
+                        <h2 class="text-2xl font-black text-white">COLOANE 路環村</h2>
+                        <p class="text-cyan-200 text-xs">澳門最後的後花園 - 漫遊攻略</p>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-black text-cyan-400 flex items-center gap-2">
+                                <i data-lucide="store" class="w-4 h-4"></i> 必訪店家
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="bg-slate-800/50 p-3 rounded-lg">
+                                    <div class="flex justify-between">
+                                        <span class="text-sm font-bold text-white">安德魯餅店 (總店)</span>
+                                        <span class="important-tag">必吃</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">必買蛋塔，建議買一盒分享。營業至 21:00。</p>
                                 </div>
-                                <div><p class="text-xl font-black">{{ f.to }}</p><p class="text-[8px] text-gray-400 uppercase">{{ f.toCity }}</p></div>
+                                <div class="bg-slate-800/50 p-3 rounded-lg">
+                                    <span class="text-sm font-bold text-white">路環碼頭麵館</span>
+                                    <p class="text-[11px] text-slate-400 mt-1">馳名墨魚餅、紅豆冰。適合午餐。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-black text-cyan-400 flex items-center gap-2">
+                                <i data-lucide="camera" class="w-4 h-4"></i> 打卡路線
+                            </h3>
+                            <div class="text-xs text-slate-400 space-y-2 italic">
+                                1. 聖方濟各聖堂 (Tiffany 藍建築)<br>
+                                2. 路環圖書館 (古樸建築外牆)<br>
+                                3. 十月初五馬路 (沿海堤岸步道)<br>
+                                4. 彩虹屋 (恩尼斯總統前地附近)
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <section>
-                    <h3 class="text-xs font-black mb-4 text-pink-400 tracking-widest uppercase">Hotels 住宿</h3>
-                    <div class="space-y-4">
-                        <div v-for="h in hotels" :key="h.name" class="glass p-5 rounded-2xl border-t-4 shadow-xl" :class="h.border">
-                            <p class="text-[10px] font-bold opacity-60 mb-1 tracking-widest uppercase">{{ h.day }}</p>
-                            <h4 class="text-xl font-black text-white">{{ h.name }}</h4>
-                            <p class="text-xs text-gray-400 mt-2">📍 {{ h.addr }}</p>
-                            <div class="mt-4 p-3 bg-white/5 rounded-xl text-[11px] text-gray-300 leading-normal" v-html="h.note"></div>
+                <!-- 澳門本島手信圖鑑 -->
+                <div class="glass overflow-hidden rounded-3xl">
+                    <div class="bg-gradient-to-r from-rose-900 to-red-900 p-6">
+                        <h2 class="text-2xl font-black text-white">MACAU MAINLAND 澳門本島</h2>
+                        <p class="text-rose-200 text-xs">歷史與繁華交織 - 購物指南</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div v-for="shop in macauShops" class="bg-slate-950 p-4 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white text-sm mb-1">{{ shop.name }}</h4>
+                                <p class="text-[10px] text-rose-400 font-bold mb-2 uppercase tracking-tighter">{{ shop.item }}</p>
+                                <p class="text-[10px] text-slate-500 leading-tight">{{ shop.desc }}</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
+                            <h4 class="text-xs font-black text-white mb-2 italic">小馬哥推薦：本島隱藏小吃</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-[11px] text-slate-400">• <b>義順牛奶：</b>雙皮燉奶</div>
+                                <div class="text-[11px] text-slate-400">• <b>南屏雅敘：</b>古早味三明治</div>
+                                <div class="text-[11px] text-slate-400">• <b>芬記燒臘：</b>在地最強叉燒</div>
+                                <div class="text-[11px] text-slate-400">• <b>恆友魚蛋：</b>咖哩牛雜</div>
+                            </div>
                         </div>
                     </div>
-                </section>
-            </div>
+                </div>
+            </section>
 
-            <!-- 分頁 3: 清單 -->
-            <div v-if="activeTab === 'packing'" class="space-y-6">
-                <div v-for="cat in packing" :key="cat.name" class="glass p-6 rounded-3xl">
-                    <h4 class="font-black text-white mb-4 flex items-center gap-3 text-lg"><span>{{ cat.icon }}</span> {{ cat.name }}</h4>
-                    <div class="space-y-3">
-                        <label v-for="item in cat.items" class="flex items-center gap-4 p-3 bg-white/10 rounded-xl border border-white/5 active:bg-white/20">
-                            <input type="checkbox" class="w-6 h-6 rounded-lg border-white/20 bg-transparent text-cyan-500 focus:ring-0">
-                            <span class="text-sm text-gray-200 font-bold">{{ item }}</span>
-                        </label>
+            <!-- 分頁四：住宿與準備 (Accommodation & Gear) -->
+            <section v-if="activeTab === 'prep'" class="space-y-6">
+                <!-- 住宿詳情 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass p-5 rounded-2xl border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-blue-500 rounded-lg text-white"><i data-lucide="hotel"></i></div>
+                            <div>
+                                <h4 class="font-black text-white">旭逸酒店 · 荃灣</h4>
+                                <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">HK STAY</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-xs text-slate-400">
+                            <p><b>地址：</b>香港葵涌圳邊街15-19號</p>
+                            <p><b>接駁：</b>飯店提供接駁巴士往返葵興站/青衣站。</p>
+                            <p><b>附近：</b>步行 5 分鐘有茶餐廳與便利店。</p>
+                        </div>
+                    </div>
+                    <div class="glass p-5 rounded-2xl border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-emerald-500 rounded-lg text-white"><i data-lucide="building"></i></div>
+                            <div>
+                                <h4 class="font-black text-white">利澳酒店 Rio Hotel</h4>
+                                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">MO STAY</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-xs text-slate-400">
+                            <p><b>地址：</b>澳門高美士街33號</p>
+                            <p><b>設施：</b>內設賭場、桑拿，附近有盛世蓮花廣場。</p>
+                            <p><b>優勢：</b>距離外港碼頭近，門口巴士線路極多。</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 分頁 4: 叮嚀 -->
-            <div v-if="activeTab === 'tips'" class="space-y-6">
-                <div v-for="(tip, idx) in tips" :key="idx" class="glass p-6 rounded-3xl relative overflow-hidden">
-                    <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl font-black italic text-pink-500">{{ idx + 1 }}</div>
-                    <div class="relative z-10">
-                        <h4 class="font-black text-lg text-white mb-2 flex items-center gap-2">
-                            <span class="text-yellow-400">💡</span> {{ tip.title }}
-                        </h4>
-                        <p class="text-xs text-gray-400 leading-relaxed" v-html="tip.content"></p>
+                <!-- 電子設備與清單 -->
+                <div class="glass p-6 rounded-3xl">
+                    <h2 class="text-lg font-black text-white mb-4">MISSION CHECKLIST</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div v-for="(cat, cName) in prepList" :key="cName">
+                            <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-3">{{ cName }}</h5>
+                            <div class="space-y-2">
+                                <label v-for="item in cat" class="flex items-center gap-2 group cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-0">
+                                    <span class="text-xs text-slate-400 group-hover:text-slate-200">{{ item }}</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+                <!-- 通訊與匯率 -->
+                <div class="bg-slate-900/80 p-6 rounded-3xl border border-white/5">
+                    <div class="flex flex-wrap gap-6 justify-around">
+                        <div class="text-center">
+                            <i data-lucide="wifi" class="w-5 h-5 mx-auto text-blue-400 mb-2"></i>
+                            <p class="text-xs font-bold text-white">通訊網路</p>
+                            <p class="text-[10px] text-slate-500">建議 eSIM (CMHK/CTM)</p>
+                        </div>
+                        <div class="text-center">
+                            <i data-lucide="banknote" class="w-5 h-5 mx-auto text-emerald-400 mb-2"></i>
+                            <p class="text-xs font-bold text-white">匯率概算</p>
+                            <p class="text-[10px] text-slate-500">1 TWD ≈ 0.24 HKD/MOP</p>
+                        </div>
+                        <div class="text-center">
+                            <i data-lucide="plug" class="w-5 h-5 mx-auto text-amber-400 mb-2"></i>
+                            <p class="text-xs font-bold text-white">轉接頭</p>
+                            <p class="text-[10px] text-slate-500">三腳英標 BS 1363</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+
+        <!-- 底部快捷列 -->
+        <footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl glass border-t border-white/10 p-4 z-50">
+            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-tighter">
+                <div class="flex gap-4">
+                    <span class="text-blue-500">STATUS: READY</span>
+                    <span class="text-slate-500">MEMBERS: 5</span>
+                </div>
+                <div class="text-slate-500">© 2026 GANG-AO FIRST VOYAGE</div>
+            </div>
+        </footer>
     </div>
 
     <script>
-        const { createApp } = Vue;
+        const { createApp, ref, computed, onMounted, watch } = Vue;
+
         createApp({
-            data() {
+            setup() {
+                const activeTab = ref('schedule');
+                const selectedDay = ref(1);
+                const currentTime = ref('');
+
+                const tabs = [
+                    { id: 'schedule', name: '全行程拆解', icon: 'calendar' },
+                    { id: 'logistics', name: '交通與寄存', icon: 'truck' },
+                    { id: 'destinations', name: '島嶼與導航', icon: 'map-pin' },
+                    { id: 'prep', name: '準備與住宿', icon: 'clipboard-list' }
+                ];
+
+                const scheduleData = [
+                    // DAY 1
+                    { 
+                        day: 1, time: '14:15', category: 'Arrival', title: '抵達香港赤鱲角機場 (HKG)', 
+                        steps: [
+                            '辦理入境後領取行李，前往<b>抵港大堂</b>。',
+                            '至 A 出口客務中心辦理<b>八達通增值</b>。',
+                            '尋找 A21 或機場快線指標，準備前往飯店。'
+                        ],
+                        transport: 'A21 城巴 或 機場快線 $35-100', 
+                        tips: '機場冷氣極強，長袖外套需放在背包。'
+                    },
+                    { 
+                        day: 1, time: '16:00', category: 'Check-in', title: '旭逸酒店辦理入住', 
+                        steps: [
+                            '搭乘 A21 於葵涌區下車或搭飯店接駁車。',
+                            '放置行李，確認房號，稍作休整。',
+                            '成員會合，確認今晚覓食區域（旺角/尖沙咀）。'
+                        ],
+                        transport: '地鐵葵興站步行或接駁車', 
+                        tips: '飯店需押金，建議備好信用卡或港幣現金。'
+                    },
+
+                    // DAY 2
+                    { 
+                        day: 2, time: '10:00', category: 'Mission', title: '太子站行李寄存 (CRITICAL)', 
+                        steps: [
+                            '退房後攜全行李前往太子站。',
+                            '導航至<b>上海街 695 號</b>。',
+                            '將行李交付寄存櫃台，領取單據。'
+                        ],
+                        transport: '地鐵荃灣線 (紅線) 直達太子站', 
+                        tips: '這是今天最關鍵一步，沒寄放就不能逛九龍。'
+                    },
+                    { 
+                        day: 2, time: '15:00', category: 'Transit', title: '港澳快線出發 (跨海任務)', 
+                        steps: [
+                            '回到上海街 695 號憑票根取回行李上車。',
+                            '行經港珠澳大橋，需在<b>香港口岸下車過關</b>。',
+                            '抵達澳門口岸後再次下車過關，轉乘巴士/TAXI。'
+                        ],
+                        transport: '港澳快線大巴 $160', 
+                        tips: '過關時「人車分離」，所有行李一定要帶下車！'
+                    },
+                    { 
+                        day: 2, time: '18:00', category: 'Hotel', title: '利澳酒店 Check-in', 
+                        steps: [
+                            '進入本島新口岸區。',
+                            '完成入住手續，放下大件行李。',
+                            '準備前往本島議事亭前地、大三巴區域晚餐。'
+                        ],
+                        transport: '澳門計程車約 MOP 60-80', 
+                        tips: '澳門本島單行道多，計程車有時會繞路是正常的。'
+                    },
+
+                    // DAY 3
+                    { 
+                        day: 3, time: '09:30', category: 'Exploring', title: '路環島：聖方濟各與蛋塔', 
+                        steps: [
+                            '飯店門口搭乘前往路環的巴士 (21A/25/26A)。',
+                            '首站直衝<b>安德魯餅店</b>。',
+                            '漫步十月初五馬路，參觀圖書館與聖堂。'
+                        ],
+                        transport: '巴士 MOP 6.0 (不找零)', 
+                        tips: '安德魯蛋塔排隊約 15 分鐘，建議買完到海邊坐著吃。'
+                    },
+                    { 
+                        day: 3, time: '18:30', category: 'Departure', title: '澳門機場 (MFM) 星宇回程', 
+                        steps: [
+                            '飯店取回行李，搭車前往機場。',
+                            'JX206 20:50 起飛，務必 19:00 前抵達。',
+                            '最後一次手信採買 (機場內亦有鉅記)。'
+                        ],
+                        transport: '飯店接駁或 Taxi 約 20 分鐘', 
+                        tips: '星宇航空澳門櫃台通常在 B 區。'
+                    }
+                ];
+
+                const macauShops = [
+                    { name: '鉅記手信', item: '杏仁餅 / 鳳凰卷', desc: '分店極多，大三巴一條街就有三間，建議最後再買。' },
+                    { name: '英記餅家', item: '史努比聯名系列', desc: '包裝漂亮，適合送禮。炭燒杏仁餅味道獨特。' },
+                    { name: '安德魯蛋塔', item: '葡式蛋塔', desc: '路環總店最正宗，本島大運河也有分店但較貴。' }
+                ];
+
+                const prepList = {
+                    '必須證件': ['護照 (效期>6個月)', '台胞證 / 港簽列印', '保險證明文件', '機票/酒店預約單'],
+                    '電子/通訊': ['英規三腳轉接頭', '20000mAh 行充', 'eSIM QR Code', '充電線組合'],
+                    '金流相關': ['HKD/MOP 現金', '八達通卡', '支援海外支付信用卡', 'MPay (可選)']
+                };
+
+                const filteredSchedule = computed(() => {
+                    return scheduleData.filter(i => i.day === selectedDay.value);
+                });
+
+                const updateTime = () => {
+                    const now = new Date();
+                    currentTime.value = now.toLocaleTimeString('zh-TW', { hour12: false });
+                };
+
+                onMounted(() => {
+                    updateTime();
+                    setInterval(updateTime, 1000);
+                    lucide.createIcons();
+                });
+
+                watch([activeTab, selectedDay], () => {
+                    setTimeout(() => lucide.createIcons(), 50);
+                });
+
                 return {
-                    activeTab: 'itinerary',
-                    activeDay: 0,
-                    flights: [
-                        { airline: 'Hong Kong Airlines', no: 'HB703', from: 'TPE', fromCity: 'TAIPEI', to: 'HKG', toCity: 'HONG KONG', time: '08.28 11:30', color: 'text-blue-600' },
-                        { airline: 'STARLUX', no: 'JX206', from: 'MFM', fromCity: 'MACAU', to: 'TPE', toCity: 'TAIPEI', time: '08.30 20:50', color: 'text-orange-600' }
-                    ],
-                    hotels: [
-                        { day: 'Day 1 - Hong Kong', name: '旭逸酒店 荃灣', addr: '香港葵涌圳邊街15-19號', border: 'border-cyan-400', note: '<b>交通攻略：</b>從地鐵「葵興站」C 出口出站，步行至 7-11 旁有飯店免費接駁巴士，約 20 分鐘一班。' },
-                        { day: 'Day 2 - Macau', name: '利澳酒店 Rio Hotel', addr: '澳門新口岸高美士街33號', border: 'border-pink-500', note: '<b>交通攻略：</b>抵達外港碼頭後，可搭乘飯店免費接駁車；或搭乘 10、10B 號巴士至「高美士/馬里奧」站下車即達。' }
-                    ],
-                    itinerary: [
-                        {
-                            date: '08/28', week: 'Friday', location: '香港啟航', weather: '晴時多雲', temp: '28°C-33°C',
-                            steps: [
-                                { time: '13:00', location: '抵達香港機場', emoji: '🛬', transport: '完成入境手續與行李領取。', routeDetail: '機場 B 出口方向，前往「地面運輸中心」。', recommend: '先檢查八達通餘額是否足夠。' },
-                                { time: '14:30', location: '機場 ➔ 東薈城 Citygate', emoji: '🚌', cost: 'HK$3.7', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800', 
-                                  transport: '搭乘 **S1 巴士**（機場循環線）。', routeDetail: '巴士停在東薈城門口。進入商場後行李可寄放在 B2/B3 儲物櫃。' },
-                                { time: '18:30', location: '竺扶大班燒味 (灣仔店)', emoji: '🍱', cost: 'HK$15.0', img: 'https://images.unsplash.com/photo-1512132411229-c30391241dd8?q=80&w=800',
-                                  transport: '地鐵「灣仔站」**A3 出口**。', routeDetail: '出站後橫過莊士敦道，沿著**莊士敦道**向左步行約 3 分鐘，看到**三角街**路標即抵達。' },
-                                { time: '22:00', location: '佳佳甜品 ➔ 樂酒場', emoji: '🍧', img: 'https://images.unsplash.com/photo-1634125866752-60144c802bc6?q=80&w=800',
-                                  transport: '從佐敦步行。', routeDetail: '從佳佳甜品門口出來，**右轉**沿寧波街走，至**白加士街**左轉，步行 2 分鐘即可見樂酒場。' }
-                            ]
-                        },
-                        {
-                            date: '08/29', week: 'Saturday', location: '港澳跨境', weather: '短暫陣雨', temp: '27°C-31°C',
-                            steps: [
-                                { time: '10:00', location: '一點心 (One Dim Sum)', emoji: '🥟', img: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800',
-                                  transport: '地鐵「太子站」**C2 出口**。', routeDetail: '行李寄放上海街 695 號，沿上海街直行，**右轉**運動場道，再**右轉**通菜街。', recommend: '必點薄皮鮮蝦腸粉。' },
-                                { time: '15:00', location: '上環碼頭 ➔ 澳門', emoji: '⛴️', cost: 'HK$175+', transport: '搭乘噴射飛航或金光飛航。', routeDetail: '請預早 30 分鐘抵達信德中心辦理出境手續。' },
-                                { time: '18:30', location: '大三巴 & 杏香園', emoji: '🏛️', img: 'https://images.unsplash.com/photo-1589147572342-990e660852e9?q=80&w=800',
-                                  transport: '碼頭搭乘巴士 MT4 或 3 號。', routeDetail: '參觀完大三巴後走往**清平直街**，杏香園就在巷弄內，主打腐竹白果糖水。' }
-                            ]
-                        },
-                        {
-                            date: '08/30', week: 'Sunday', location: '澳門巡禮', weather: '多雲局部雨', temp: '27°C-30°C',
-                            steps: [
-                                { time: '11:00', location: '路環市區 (安德魯蛋塔)', emoji: '🍮', transport: '搭乘巴士至「路環市區站」。', routeDetail: '下車後沿恩尼斯總統前地步行 1 分鐘，蛋塔就在轉角。' },
-                                { time: '14:00', location: '官也街吃喝', emoji: '🍪', transport: '計程車或巴士。', routeDetail: '這是步行街，可以一路吃到尾。莫義記榴槤雪糕是重點。' },
-                                { time: '18:30', location: '澳門機場', emoji: '🛫', transport: '搭乘 JX206 返台。', routeDetail: '提早 2 小時抵達機場。' }
-                            ]
-                        }
-                    ],
-                    packing: [
-                        { name: '證件必備', icon: '📄', items: ['護照 (正本)', '港簽紙本 / 台胞證', '身分證', '港幣/澳門幣現金 (預留零錢)'] },
-                        { name: '電子與生活', icon: '🔌', items: ['英規轉接頭', '行動電源', 'eSim/漫遊設定', '舒適好走的鞋', '雨傘/輕便雨衣'] }
-                    ],
-                    tips: [
-                        { title: '交通秘訣', content: '<b>香港：</b>搭叮叮車「後門上車、前門下車刷卡」。<br><b>澳門：</b>巴士均一價 6 蚊，不找零，建議使用澳門通或零錢。' },
-                        { title: '行李寄放', content: '飯店退房後均可寄放行李，若要在市中心寄放，可下載 **LuggAgent** 或尋找地鐵站儲物櫃。' }
-                    ]
-                }
-            },
-            methods: { openMap(l) { window.open(`https://www.google.com/maps/search/${encodeURIComponent(l)}`, '_blank'); } }
+                    tabs, activeTab, selectedDay, filteredSchedule, 
+                    currentTime, macauShops, prepList
+                };
+            }
         }).mount('#app');
     </script>
 </body>
