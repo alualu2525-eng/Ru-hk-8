@@ -1,173 +1,215 @@
+```html
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 港澳吃喝團 - 絕對不迷路白癡導航版</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 港澳吃喝團之小馬哥首航</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
-        body { font-family: 'Noto+Sans+TC', sans-serif; background-color: #0b0e14; color: #e5e7eb; }
-        .tab-active { color: #00f2ff; border-bottom: 3px solid #00f2ff; font-weight: 900; }
-        .white-box { background: #1a1d24; border-radius: 12px; padding: 16px; margin: 10px 0; border: 1px solid #2d333f; }
-        .highlight { color: #ff00ff; font-weight: 900; }
-        .direction { color: #00f2ff; font-weight: 900; }
-        .nav-step { position: relative; padding-left: 24px; border-left: 2px solid #374151; margin-bottom: 25px; }
-        .nav-step::before { content: ""; position: absolute; left: -7px; top: 5px; width: 12px; height: 12px; background: #00f2ff; border-radius: 50%; box-shadow: 0 0 10px #00f2ff; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .day-active { background: #2563eb !important; color: white !important; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4); }
+        .step-card { border-left: 4px solid #3b82f6; background: white; margin-bottom: 1rem; border-radius: 0 12px 12px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .food-highlight { color: #e11d48; font-weight: 800; }
+        .transport-tag { background: #fef9c3; color: #854d0e; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .price-tag { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
     </style>
 </head>
 <body>
-    <div id="app" class="max-w-md mx-auto min-h-screen pb-24">
-        
-        <header class="p-6 text-center bg-[#11141b] border-b-2 border-cyan-500">
-            <h1 class="text-2xl font-black italic tracking-tighter">2026 港澳極致導航</h1>
-            <p class="text-[10px] text-gray-500 mt-1 uppercase">絕不精簡一字一句 / 小馬哥家庭團</p>
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-slate-50 pb-20">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 sticky top-0 z-50">
+            <div class="flex justify-between items-end mb-2">
+                <h1 class="text-2xl font-black italic">2026 港澳吃喝團</h1>
+                <span class="text-xs font-bold bg-white/20 px-2 py-1 rounded">小馬哥首航版</span>
+            </div>
+            <div class="flex gap-2 mt-4 overflow-x-auto no-scrollbar">
+                <button v-for="d in [1,2,3]" @click="currentDay = d" :class="['px-5 py-2 rounded-full text-sm font-bold transition-all', currentDay === d ? 'day-active' : 'bg-white/10 text-white/70']">
+                    DAY {{ d }}
+                </button>
+                <button @click="currentDay = 'tips'" :class="['px-5 py-2 rounded-full text-sm font-bold transition-all', currentDay === 'tips' ? 'day-active' : 'bg-white/10 text-white/70']">
+                    攻略
+                </button>
+            </div>
         </header>
 
-        <nav class="sticky top-0 z-50 bg-[#0b0e14]/95 flex justify-around border-b border-gray-800 font-black text-[11px] py-4">
-            <button @click="currentTab = 'itinerary'" :class="{'tab-active': currentTab === 'itinerary'}">🗺️ 逐彎導航</button>
-            <button @click="currentTab = 'list'" :class="{'tab-active': currentTab === 'list'}">🧳 完整行李</button>
-            <button @click="currentTab = 'note'" :class="{'tab-active': currentTab === 'note'}">🔥 大師叮嚀</button>
-        </nav>
-
         <main class="p-4">
-            <div v-if="currentTab === 'itinerary'">
-                <div class="flex gap-2 mb-6">
-                    <button v-for="n in 3" @click="activeDay = n" :class="activeDay === n ? 'bg-cyan-500 text-black' : 'bg-gray-800 text-gray-400'" class="flex-1 py-3 rounded-xl text-xs font-black">DAY {{ n }}</button>
+            <!-- Day 1: 香港抵達 -->
+            <div v-if="currentDay === 1" class="space-y-4">
+                <div class="bg-blue-600 text-white p-3 rounded-lg font-bold flex justify-between">
+                    <span>📅 第一天：登陸香港保姆教學</span>
+                    <span>預算: HK$500</span>
                 </div>
 
-                <div v-if="activeDay === 1">
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">1. 飯店 ➔ 竺扶大班燒味</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🚇 葵興站搭 <span class="direction">荃灣線(中環方向)</span> ➔ <span class="highlight">「金鐘站」</span> 轉 <span class="direction">港島線(柴灣方向)</span> ➔ <span class="highlight">「灣仔站」A3出口</span>。<br>
-                            👣 出站後過馬路，沿 <span class="direction">灣仔道</span> 步行約 5 分鐘抵達 <span class="highlight">竺扶大班燒味</span>。
-                        </div>
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">抵達</span>
+                        <span class="font-black">13:30 香港機場 (HKG)</span>
                     </div>
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">2. 竺扶大班 ➔ 半山扶梯</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            👣 離開餐廳 <span class="direction">右轉</span> 沿灣仔道走 ➔ 看到 <span class="direction">菲林明道左轉</span> ➔ 走到底在大街(莊士敦道)等車。<br>
-                            🚃 找到「菲林明道 42E」叮叮車站 ➔ 搭乘 <span class="direction">西行車(往堅尼地城/屈地街)</span> ➔ 在 <span class="highlight">「72W 租庇利街」</span> 下車。<br>
-                            👣 下車過馬路進入 <span class="direction">租庇利街</span> 直行 ➔ 穿過德輔道中 ➔ 抵達 <span class="highlight">半山扶梯</span>。
-                        </div>
-                    </div>
-                    <div class="nav-step">
-                        <p class="font-black text-pink-500 italic">3. 太平山下山 ➔ 天星小輪 ➔ 佳佳甜品 ➔ 樂酒場</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🚌 山頂總站搭 <span class="direction">15 號巴士</span> 下山 ➔ 在 <span class="highlight">「中環 5 號碼頭」</span> 下車 ➔ 步行至隔壁 <span class="highlight">7 號碼頭</span>。<br>
-                            ⛴️ 搭 <span class="direction">天星小輪</span> 往尖沙咀 ➔ 抵港後沿梳士巴利道走 ➔ 進 <span class="highlight">尖沙咀站</span> 搭地鐵至 <span class="highlight">「佐敦站」A出口</span>。<br>
-                            👣 A出口出來 <span class="direction">右轉</span> 沿佐敦道走 ➔ 第一個路口 <span class="direction">右轉</span> 白加士街 ➔ 直走 3 分鐘抵達 <span class="highlight">佳佳甜品</span> (寧波街口)。<br>
-                            🍻 往廟街方向走 ➔ 抵達 <span class="highlight">樂酒場</span> 居酒屋。
-                        </div>
-                    </div>
+                    <p class="text-sm text-slate-600 mb-2">1. 下機後跟著「入境」指標走，持<b>台胞證</b>過關。<br>2. 領完行李出來到大廳，找「機場快綫」櫃台或 7-11 買<b>八達通卡</b>（儲值 HK$200）。</p>
                 </div>
 
-                <div v-if="activeDay === 2">
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">1. 寄存行李 ➔ 一點心</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🕒 09:00 旭逸退房 ➔ 搭接駁車至葵興站 ➔ 地鐵至 <span class="highlight">「太子站」D出口</span>。<br>
-                            👣 出站直走 <span class="direction">長沙灣道</span> ➔ 到上海街路口 <span class="direction">左轉</span> ➔ 步行至 <span class="highlight">上海街 695 號門市</span> 寄存行李。<br>
-                            👣 離開寄存點 <span class="direction">左轉</span> 上海街 ➔ 走到運動場道路口 <span class="direction">右轉</span> ➔ 抵達 <span class="highlight">一點心</span>。
-                        </div>
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">A32 巴士</span>
+                        <span class="font-black">前往旭逸酒店 (荃灣)</span>
                     </div>
-                    <div class="nav-step">
-                        <p class="font-black text-pink-500 italic">2. 採買行程：珍妮 ➔ 兆成行 ➔ 蘭芳園</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🚇 太子站搭地鐵至 <span class="highlight">「上環站」E2出口</span> ➔ 出站過馬路入 <span class="direction">永和街</span> ➔ 抵達 <span class="highlight">珍妮曲奇</span>。<br>
-                            👣 離開珍妮 <span class="direction">右轉</span> 出巷口 ➔ <span class="direction">右轉</span> 蘇杭街直走 2 分鐘 ➔ 抵達 <span class="highlight">兆成行</span>。<br>
-                            👣 離開兆成行，沿蘇杭街往中環方向走 ➔ 接大路德輔道中 ➔ <span class="direction">右轉</span> 進入 <span class="direction">租庇利街</span> ➔ 沿半山扶梯旁的小路(結志街)走 ➔ 抵達 <span class="highlight">蘭芳園</span>。
-                        </div>
-                    </div>
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">3. 前往澳門：港澳快線</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🚇 中環/上環搭地鐵回 <span class="highlight">太子站</span> ➔ 回上海街 695 號 <span class="direction">領取行李</span> ➔ 現場搭乘 <span class="highlight">港澳快線</span> 跨境巴士 ➔ 抵達澳門口岸/飯店。
-                        </div>
-                    </div>
-                    <div class="nav-step">
-                        <p class="font-black text-pink-500 italic">4. 澳門入住後：禮記 ➔ 大三巴 ➔ 最香餅家</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🏨 <span class="highlight">利澳酒店</span> 入住放行李。<br>
-                            👣 步行 10 分鐘往 <span class="direction">荷蘭園大馬路</span> ➔ 趁 20:00 前吃 <span class="highlight">禮記雪糕</span>。<br>
-                            👣 往西南方(噴水池方向)走 ➔ 抵達 <span class="highlight">大三巴牌坊</span>。<br>
-                            👣 離開大三巴，往南方走進入 <span class="direction">夜呣街 12 號</span> ➔ 買 <span class="highlight">最香餅家</span> (這家很早關，一定要先衝)。
-                        </div>
-                    </div>
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">5. 晚餐 ➔ 夜景 ➔ 宵夜 ➔ 回飯店</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            📍 晚餐：<span class="highlight">陳光記燒鵝</span> ➔ 約翰四世大馬路搭 <span class="highlight">MT1/MT2</span> 至 <span class="highlight">新濠影滙(8字摩天輪)</span>。<br>
-                            🚠 步行至 <span class="highlight">永利皇宮</span> 看水舞 ➔ 至 <span class="highlight">路氹西站</span> 搭輕軌遊夜景。<br>
-                            🚌 搭車回新馬路 ➔ 吃 <span class="highlight">杏香園</span> ➔ 步行回 <span class="highlight">利澳酒店</span>。
-                        </div>
-                    </div>
+                    <p class="text-sm text-slate-600">走到機場巴士站（地面運輸中心），搭乘 <b class="text-blue-600">A32 巴士</b>（車資 $19.8）。<br>在<b>「葵康苑」</b>站下車，步行約 8 分鐘到達酒店。<br><span class="text-xs text-slate-400 italic">※ 若行李多可搭 A21 到青衣站改小黃 (約 $50)。</span></p>
                 </div>
 
-                <div v-if="activeDay === 3">
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">1. 世紀咖啡 ➔ 官也街</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🎒 10:00 退房 ➔ <span class="highlight">行李寄存利澳酒店前台</span>。<br>
-                            ☕ 搭 3 號巴士至「新馬路」 ➔ 沿 <span class="direction">東方斜巷</span> 爬坡至 <span class="highlight">世紀咖啡(崗頂店)</span>。<br>
-                            🚌 搭車往氹仔 ➔ 在 <span class="highlight">官也街</span> 站下車 ➔ 散策、伴手禮。
-                        </div>
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">地鐵</span>
+                        <span class="font-black">18:00 旺角/太子 狂吃模式</span>
                     </div>
-                    <div class="nav-step">
-                        <p class="font-black text-white italic">2. 金光大道：威尼斯人 ➔ 倫敦人</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            👣 官也街走 <span class="direction">望德聖母灣自動步行系統</span> ➔ 直達 <span class="highlight">威尼斯人</span>。<br>
-                            👣 穿過室內天橋或步行 ➔ 抵達 <span class="highlight">倫敦人</span> 拍大笨鐘、夜景。
-                        </div>
-                    </div>
-                    <div class="nav-step">
-                        <p class="font-black text-pink-500 italic">3. 領行李 ➔ 機場</p>
-                        <div class="white-box text-xs leading-relaxed">
-                            🚕 從倫敦人搭計程車(或巴士) <span class="direction">返回利澳酒店領取行李</span> (這點極重要！)。<br>
-                            🚌 領完行李，在酒店門口搭接駁車或巴士 ➔ 抵達 <span class="highlight">澳門機場</span> 辦理登機。
-                        </div>
+                    <p class="text-sm text-slate-600 mb-3">從飯店搭接駁車或步行到<b>葵興地鐵站</b>，搭荃灣線（紅線）直達<b>旺角站</b>。</p>
+                    <div class="bg-rose-50 p-3 rounded-md border border-rose-100">
+                        <p class="font-bold text-rose-700 text-xs mb-1">🔥 推薦掃街菜單：</p>
+                        <ul class="text-xs space-y-1 text-rose-600">
+                            <li>• <b>金華冰廳：</b>必點 <span class="food-highlight">得獎菠蘿油</span> ($14) + 熱奶茶。</li>
+                            <li>• <b>肥姐小食：</b>生腸、墨魚（要加芥末勁爽）。</li>
+                            <li>• <b>富記粥品：</b>馳名生滾牛肉粥。</li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
-            <div v-if="currentTab === 'list'">
-                <div class="white-box">
-                    <h3 class="font-black text-pink-500 mb-2 italic">💳 證件財物</h3>
-                    <p class="text-[11px]">護照、台胞證、港簽(2份)、機票電子檔、港幣現金(5000+)、實體八達通、利澳/旭逸憑證。</p>
+            <!-- Day 2: 港澳轉移 -->
+            <div v-if="currentDay === 2" class="space-y-4">
+                <div class="bg-indigo-600 text-white p-3 rounded-lg font-bold flex justify-between">
+                    <span>📅 第二天：超細節港澳跨海</span>
+                    <span>預算: HK$800</span>
                 </div>
-                <div class="white-box">
-                    <h3 class="font-black text-cyan-400 mb-2 italic">🔌 電子設備</h3>
-                    <p class="text-[11px]">英規轉接頭x3、快充頭、Apple Watch/iPhone線、2萬內行動電源、澳門SIM卡。</p>
+
+                <div class="step-card p-4 border-l-orange-500">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">寄放</span>
+                        <span class="font-black">09:30 太子行李寄存</span>
+                    </div>
+                    <p class="text-sm text-slate-600">退房後搭地鐵到<b>太子站 C2 出口</b>。步行至「環島中港通」辦公室（上海街 695 號）。<br><b>寄件：</b>每件約 $30-50。這一步最重要，這樣才能空手吃點心！</p>
                 </div>
-                <div class="white-box">
-                    <h3 class="font-black text-green-400 mb-2 italic">💊 應急藥品</h3>
-                    <p class="text-[11px]">EVE止痛、感冒藥、止瀉藥、太田胃散、小林退熱貼、酒精棉片、OK繃。</p>
+
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">美食</span>
+                        <span class="font-black">11:00 一點心 (米其林)</span>
+                    </div>
+                    <p class="text-sm text-slate-600">就在寄存點附近！必點：<span class="food-highlight">薄皮鮮蝦餃、叉燒焗餐包</span>。<br>人多要抽號碼牌，建議一開門就去。</p>
+                </div>
+
+                <div class="step-card p-4 bg-yellow-50 border-l-yellow-600">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">重頭戲</span>
+                        <span class="font-black">14:30 港澳快線啟航</span>
+                    </div>
+                    <ul class="text-xs space-y-2 text-slate-700">
+                        <li>1. 14:30 回上海街 695 號領行李。</li>
+                        <li>2. 15:00 上車。車子開到<b>香港口岸</b>。</li>
+                        <li>3. <b>全部行李下車</b>過海關（刷台胞證）。</li>
+                        <li>4. 過關後按指標找原本那台車座位。</li>
+                        <li>5. 過大橋，抵達澳門。在<b>「美高梅」</b>下車。</li>
+                    </ul>
+                </div>
+
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">入住</span>
+                        <span class="font-black">18:00 利澳酒店 & 晚餐</span>
+                    </div>
+                    <p class="text-sm text-slate-600">搭計程車去利澳。晚上步行去<b>馬慶康南天咖啡室</b>。<br>必點：<span class="food-highlight">滑蛋牛肉炒河、西多士</span>。</p>
                 </div>
             </div>
 
-            <div v-if="currentTab === 'note'">
-                <div class="white-box text-[11px] space-y-3">
-                    <p>● <span class="highlight">洗杯水</span>：茶餐廳第一桶茶水是洗筷子的，別喝。</p>
-                    <p>● <span class="highlight">電子菸</span>：絕對不可入香港境，罰款 5 萬元起。</p>
-                    <p>● <span class="highlight">澳門交通</span>：計程車易坑人，多利用發財車與輕軌。</p>
-                    <p>● <span class="highlight">下車按鈴</span>：公車要提早按鈴，司機才停。</p>
-                    <p>● <span class="highlight">手扶梯</span>：香港靠右站，左側讓趕路人。</p>
+            <!-- Day 3: 澳門漫遊 -->
+            <div v-if="currentDay === 3" class="space-y-4">
+                <div class="bg-emerald-600 text-white p-3 rounded-lg font-bold flex justify-between">
+                    <span>📅 第三天：路環悠閒與返航</span>
+                    <span>預算: MOP 600</span>
+                </div>
+
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">巴士 26A</span>
+                        <span class="font-black">09:30 挺進路環村</span>
+                    </div>
+                    <p class="text-sm text-slate-600">在酒店附近站點搭 <b class="text-blue-600">21A 或 26A</b> 公車到<b>路環街市</b>下車。<br>直奔<b>安德魯餅店總店</b>。剛出爐的蛋塔 ($11/個) 一次買兩盒！</p>
+                </div>
+
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">散步</span>
+                        <span class="font-black">11:00 路環網美之路</span>
+                    </div>
+                    <p class="text-sm text-slate-600">沿著<b>十月初五馬路</b>走。路經：聖方濟各聖堂、圖書館、彩虹牆。這裏人少景美，拍照滿分。</p>
+                </div>
+
+                <div class="step-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">手信</span>
+                        <span class="font-black">14:00 官也街瘋狂採買</span>
+                    </div>
+                    <p class="text-sm text-slate-600">回氹仔官也街。必買：<br>1. <b>鉅記/咀香園：</b>杏仁餅、鳳凰卷。<br>2. <b>莫義記：</b>大菜糕、榴槤雪糕。<br>3. <b>晃記餅家：</b>這家不試吃但超強，必排。</p>
+                </div>
+
+                <div class="step-card p-4 border-l-red-600 bg-red-50">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="transport-tag">返台</span>
+                        <span class="font-black">18:30 澳門機場報到</span>
+                    </div>
+                    <p class="text-sm text-slate-600 font-bold">星宇 JX206 (20:50起飛)。</p>
+                    <p class="text-xs text-red-700 mt-1">記得行李重量！手信很重，別超標了！</p>
+                </div>
+            </div>
+
+            <!-- Tips & Tools -->
+            <div v-if="currentDay === 'tips'" class="space-y-4">
+                <div class="bg-slate-800 text-white p-4 rounded-xl">
+                    <h2 class="font-black mb-3">🛠️ 出行必備「白癡工具箱」</h2>
+                    <ul class="text-xs space-y-3 leading-loose">
+                        <li class="flex gap-2">🔌 <span class="font-bold">轉接頭：</span>港澳是英標三角大扁頭，飯店不一定夠，一定要帶。</li>
+                        <li class="flex gap-2">💳 <span class="font-bold">八達通/澳門通：</span>香港沒八達通等於沒腿；澳門公車 $6 不找零。</li>
+                        <li class="flex gap-2">📄 <span class="font-bold">證件：</span>台胞證全程帶在身上，不要放在行李箱託運。</li>
+                        <li class="flex gap-2">📱 <span class="font-bold">網路：</span>建議買「港澳共用」的流量卡，不用換卡最方便。</li>
+                    </ul>
+                </div>
+                
+                <div class="card p-4 bg-white border border-blue-200">
+                    <h3 class="font-black text-blue-700 mb-2">💰 換匯指南</h3>
+                    <p class="text-xs text-slate-600">港幣在澳門可以直接用 (1:1)，但澳門幣在香港不能用。建議換 HKD 就好。官也街小店通常只收現金。</p>
                 </div>
             </div>
         </main>
+
+        <!-- Navigation Bar -->
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around p-3 shadow-2xl">
+            <div @click="activeTab = 'loc'" class="flex flex-col items-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="text-[10px] mt-1 font-bold">導航</span>
+            </div>
+            <div @click="activeTab = 'money'" class="flex flex-col items-center">
+                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-[10px] mt-1">支出</span>
+            </div>
+            <div @click="activeTab = 'food'" class="flex flex-col items-center">
+                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span class="text-[10px] mt-1">食譜</span>
+            </div>
+        </nav>
     </div>
 
     <script>
         const { createApp, ref } = Vue;
         createApp({
             setup() {
-                const currentTab = ref('itinerary');
-                const activeDay = ref(1);
-                return { currentTab, activeDay };
+                const currentDay = ref(1);
+                const activeTab = ref('loc');
+                return { currentDay, activeTab };
             }
         }).mount('#app');
     </script>
 </body>
 </html>
+
+```
